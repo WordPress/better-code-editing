@@ -5,7 +5,7 @@
 
 class CodeMirror_WP {
 	static $codemirror_opts = false;
-	const CODEMIRROR_VERSION = '5.23.0';
+	const CODEMIRROR_VERSION = '5.26.0';
 
 	public static function go() {
 		add_action( 'admin_init', array( __CLASS__, 'register_scripts' ) );
