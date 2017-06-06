@@ -96,7 +96,7 @@ class CodeMirror_WP {
 					'lineNumbers'    => true,
 					'mode'           => 'application/x-httpd-php',
 					'indentUnit'     => 4,
-		        	'indentWithTabs' => true,
+					'indentWithTabs' => true,
 				);
 				break;
 			default :
@@ -139,7 +139,7 @@ class CodeMirror_WP {
 		<script>
 		jQuery(document).ready(function($){
 			wp.codemirror = CodeMirror.fromTextArea( document.getElementById('newcontent'), <?php echo json_encode( self::$codemirror_opts ); ?> );
-	    });
+		});
 		</script>
 		<?php
 	}
