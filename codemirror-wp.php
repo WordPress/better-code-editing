@@ -82,6 +82,28 @@ class CodeMirror_WP {
 					'indentWithTabs' => true,
 				);
 				break;
+			case 'js' :
+				wp_enqueue_script( 'codemirror-mode-javascript' );
+				wp_enqueue_style( 'codemirror' );
+				self::$codemirror_opts = array(
+					'inputStyle'     => 'contenteditable',
+					'lineNumbers'    => true,
+					'mode'           => 'text/javascript',
+					'indentUnit'     => 4,
+					'indentWithTabs' => true,
+				);
+				break;
+			case 'xml' :
+				wp_enqueue_script( 'codemirror-mode-xml' );
+				wp_enqueue_style( 'codemirror' );
+				self::$codemirror_opts = array(
+					'inputStyle'     => 'contenteditable',
+					'lineNumbers'    => true,
+					'mode'           => 'application/xml',
+					'indentUnit'     => 4,
+					'indentWithTabs' => true,
+				);
+				break;
 			default :
 				break;
 		}
