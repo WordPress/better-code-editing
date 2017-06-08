@@ -11,6 +11,7 @@ class CodeMirror_WP {
 		add_action( 'admin_init', array( __CLASS__, 'register_scripts' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_styles' ) );
 		add_action( 'load-theme-editor.php', array( __CLASS__, 'load_theme_editor_php' ) );
+		add_action( 'load-plugin-editor.php', array( __CLASS__, 'load_plugin_editor_php' ) );
 	}
 
 	public static function register_scripts() {
@@ -55,25 +56,7 @@ class CodeMirror_WP {
 		wp_register_style( 'codemirror-addon-show-hint', plugins_url( "CodeMirror/lib/codemirror.css", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
 	}
 
-	public static function load_theme_editor_php() {
-		global $file, $theme;
-
-		wp_reset_vars( array( 'file', 'theme' ) );
-
-		if ( $theme ) {
-			$stylesheet = $theme;
-		} else {
-			$stylesheet = get_stylesheet();
-		}
-
-		$theme = wp_get_theme( $stylesheet );
-
-		if ( empty( $file ) ) {
-			$file = 'style.css';
-		}
-
-		self::$codemirror_opts = false;
-
+	public static function prep_codemirror_for_file( $file ) {
 		switch ( @pathinfo( $file, PATHINFO_EXTENSION ) ) {
 			case 'css' :
 				wp_enqueue_script( 'codemirror-mode-css' );
@@ -102,6 +85,28 @@ class CodeMirror_WP {
 			default :
 				break;
 		}
+	}
+
+	public static function load_theme_editor_php() {
+		global $file, $theme;
+
+		wp_reset_vars( array( 'file', 'theme' ) );
+
+		if ( $theme ) {
+			$stylesheet = $theme;
+		} else {
+			$stylesheet = get_stylesheet();
+		}
+
+		$theme = wp_get_theme( $stylesheet );
+
+		if ( empty( $file ) ) {
+			$file = 'style.css';
+		}
+
+		self::$codemirror_opts = false;
+
+		self::prep_codemirror_for_file( $file );
 
 		/**
 		 * Give folks a chance to filter the arguments passed to CodeMirror -- This will let them enable
@@ -114,11 +119,59 @@ class CodeMirror_WP {
 		self::$codemirror_opts = apply_filters( 'theme_editor_codemirror_opts', self::$codemirror_opts, $file, $theme );
 
 		if ( self::$codemirror_opts ) {
-			add_action( 'admin_footer-theme-editor.php', array( __CLASS__, 'do_codemirror' ) );
+			add_action( 'admin_footer-theme-editor.php', array( __CLASS__, 'do_codemirror_admin_editor' ) );
 		}
 	}
 
-	public static function do_codemirror() {
+	public static function load_plugin_editor_php() {
+		$file = '';
+		$plugin = '';
+		$plugins = @get_plugins();
+		if ( isset( $_REQUEST['file'] ) ) {
+			$file = sanitize_text_field( $_REQUEST['file'] );
+		}
+
+		if ( isset( $_REQUEST['plugin'] ) ) {
+			$plugin = sanitize_text_field( $_REQUEST['plugin'] );
+		}
+
+		if ( empty( $plugin ) ) {
+			if ( $file ) {
+				$plugin = $file;
+			} else {
+				$plugin = array_keys( $plugins );
+				$plugin = $plugin[0];
+			}
+		}
+
+		$plugin_files = get_plugin_files($plugin);
+
+		if ( empty( $file ) ) {
+			$file = $plugin_files[0];
+		}
+
+		$file = validate_file_to_edit( $file, $plugin_files );
+
+		self::$codemirror_opts = false;
+
+		self::prep_codemirror_for_file( $file );
+
+		/**
+		 * Give folks a chance to filter the arguments passed to CodeMirror -- This will let them enable
+		 * or disable it (by returning something that evaluates to false) as they choose as well.
+		 *
+		 * @param $codemirror_opts The array of options to be passed to codemirror. Falsey doesn't use codemirror.
+		 * @param $file            The file being displayed.
+		 * @param $plugin          The plugin file.
+		 */
+		self::$codemirror_opts = apply_filters( 'plugin_editor_codemirror_opts', self::$codemirror_opts, $file, $plugin );
+
+		if ( self::$codemirror_opts ) {
+			add_action( 'admin_footer-plugin-editor.php', array( __CLASS__, 'do_codemirror_admin_editor' ) );
+		}
+	}
+
+	public static function do_codemirror_admin_editor() {
 		?>
 		<style>
 		#template div {
