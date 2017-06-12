@@ -12,6 +12,7 @@ class CodeMirror_WP {
 		add_action( 'admin_init', array( __CLASS__, 'register_styles' ) );
 		add_action( 'load-theme-editor.php', array( __CLASS__, 'load_theme_editor_php' ) );
 		add_action( 'load-plugin-editor.php', array( __CLASS__, 'load_plugin_editor_php' ) );
+		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'customize_controls_enqueue_scripts' ) );
 	}
 
 	public static function register_scripts() {
@@ -224,6 +225,54 @@ class CodeMirror_WP {
 		jQuery(document).ready(function($){
 			wp.codemirror = CodeMirror.fromTextArea( document.getElementById('newcontent'), <?php echo json_encode( self::$codemirror_opts ); ?> );
 		});
+		</script>
+		<?php
+	}
+
+	public static function customize_controls_enqueue_scripts() {
+		wp_enqueue_script( 'codemirror-mode-css' );
+		wp_enqueue_style( 'codemirror' );
+		self::$codemirror_opts = apply_filters( 'customizer_custom_css_codemirror_opts', array(
+			'inputStyle'     => 'contenteditable',
+			'lineNumbers'    => true,
+			'mode'           => 'text/css',
+			'indentUnit'     => 2,
+			'indentWithTabs' => true,
+		) );
+
+		add_action( 'customize_controls_print_footer_scripts', array( __CLASS__, 'customize_controls_print_footer_scripts' ) );
+	}
+
+	public static function customize_controls_print_footer_scripts() {
+		?>
+		<style>
+		#customize-control-custom_css .CodeMirror {
+			height: calc( 100vh - 185px );
+		}
+		</style>
+		<script>
+			jQuery(document).ready(function($){
+				var $textarea = $('#customize-control-custom_css textarea');
+
+				wp.codemirror = CodeMirror.fromTextArea( $textarea[0], <?php echo json_encode( self::$codemirror_opts ); ?> );
+
+				// refresh the CodeMirror instance's rendering because it's initially hidden
+				// 250ms because that's the open animation duration
+				$( '#accordion-section-custom_css > .accordion-section-title' ).click( _.bind( _.debounce( wp.codemirror.refresh, 250 ), wp.codemirror ) );
+
+				// also refresh when focusing
+				wp.codemirror.on( 'focus', function( editor ) {
+					editor.refresh();
+				} );
+
+				// when the CodeMirror instance changes, mirror to the textarea,
+				// where we have our "true" change event handler bound.
+				wp.codemirror.on( 'change', function( editor ) {
+					$textarea.val( editor.getValue() ).trigger( 'change' );
+				} );
+
+				// To do: bind something to setting change, so that we can catch other plugins modifying the css and update CodeMirror?
+			});
 		</script>
 		<?php
 	}
