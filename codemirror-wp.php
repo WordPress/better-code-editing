@@ -105,6 +105,7 @@ class CodeMirror_WP {
 					'indentWithTabs' => true,
 				);
 				break;
+			case 'txt' :
 			default :
 				wp_enqueue_script( 'codemirror' );
 				wp_enqueue_style( 'codemirror' );
