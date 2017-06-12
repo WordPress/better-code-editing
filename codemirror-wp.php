@@ -105,6 +105,15 @@ class CodeMirror_WP {
 				);
 				break;
 			default :
+				wp_enqueue_script( 'codemirror' );
+				wp_enqueue_style( 'codemirror' );
+				self::$codemirror_opts = array(
+					'inputStyle'     => 'contenteditable',
+					'lineNumbers'    => true,
+					'mode'           => 'text/plain',
+					'indentUnit'     => 4,
+					'indentWithTabs' => true,
+				);
 				break;
 		}
 	}
