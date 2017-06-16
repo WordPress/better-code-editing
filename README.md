@@ -10,7 +10,7 @@ Clone this repository, and then build CodeMirror -- the last step is necessary, 
 
 ```bash
 cd wp-content/plugins/
-git clone https://github.com/georgestephanis/codemirror-wp.git
+git clone https://github.com/georgestephanis/codemirror-wp.git --recursive
 cd codemirror-wp/CodeMirror/
 npm install
 npm run-script build
