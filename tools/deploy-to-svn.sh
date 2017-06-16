@@ -41,20 +41,17 @@ git checkout $TARGET
 rm -rf $SVN_DIR
 
 echo "Checking out SVN shallowly to $SVN_DIR"
-# svn -q checkout "http://plugins.svn.wordpress.org/$SVN_SLUG/" --depth=empty $SVN_DIR
-mkdir $SVN_DIR
+svn -q checkout "http://plugins.svn.wordpress.org/$SVN_SLUG/" --depth=empty $SVN_DIR
 echo "Done!"
 
 cd $SVN_DIR
 
 echo "Checking out SVN trunk to $SVN_DIR/trunk"
-# svn -q up trunk
-mkdir trunk
+svn -q up trunk
 echo "Done!"
 
 echo "Checking out SVN tags shallowly to $SVN_DIR/tags"
-# svn -q up tags --depth=empty
-mkdir tags
+svn -q up tags --depth=empty
 echo "Done!"
 
 echo "Deleting everything in trunk except for .svn directories"
@@ -83,4 +80,4 @@ if [ "$TARGET" != "HEAD" ]; then
 	perl -pi -e "s/Stable tag: .*/Stable tag: $TARGET/" trunk/readme.txt
 fi
 
-echo "Now you just need to `cd $SVN_DIR && svn ci`"
+echo "Now you just need to 'cd $SVN_DIR && svn ci'"
