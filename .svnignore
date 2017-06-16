@@ -4,6 +4,7 @@
 .gitmodules
 .svnignore
 README.md
+tools
 CodeMirror/.git
 CodeMirror/.gitattributes
 CodeMirror/.gitignore
