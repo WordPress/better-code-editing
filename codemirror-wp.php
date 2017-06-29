@@ -65,8 +65,8 @@ class CodeMirror_WP {
 	}
 
 	public static function register_styles() {
-		wp_register_style( 'codemirror',                 plugins_url( "CodeMirror/lib/codemirror.css", __FILE__ ), array(), SELF::CODEMIRROR_VERSION );
-		wp_register_style( 'codemirror-addon-show-hint', plugins_url( "CodeMirror/lib/codemirror.css", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
+		wp_register_style( 'codemirror',                 plugins_url( "CodeMirror/lib/codemirror.css", __FILE__ ),       array(),               SELF::CODEMIRROR_VERSION );
+		wp_register_style( 'codemirror-addon-show-hint', plugins_url( "CodeMirror/addon/hint/show-hint.css", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
 		wp_register_style( 'codemirror-addon-lint',      plugins_url( "CodeMirror/addon/lint/lint.css", __FILE__ ),      array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
 	}
 
