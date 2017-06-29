@@ -275,6 +275,9 @@ class CodeMirror_WP {
 		#customize-control-custom_css .CodeMirror {
 			height: calc( 100vh - 185px );
 		}
+		.CodeMirror-lint-tooltip {
+			z-index: 500000;
+		}
 		</style>
 		<script>
 			jQuery(document).ready(function($){
