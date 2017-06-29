@@ -91,17 +91,13 @@ class CodeMirror_WP {
 				wp_enqueue_script( 'codemirror-mode-javascript' );
 				wp_enqueue_script( 'codemirror-mode-css' );
 				wp_enqueue_script( 'codemirror-mode-php' );
-				wp_enqueue_script( 'codemirror-addon-lint-html' );
 				wp_enqueue_style( 'codemirror' );
-				wp_enqueue_style( 'codemirror-addon-lint' );
 				self::$codemirror_opts = array(
 					'inputStyle'     => 'contenteditable',
 					'lineNumbers'    => true,
 					'mode'           => 'application/x-httpd-php',
 					'indentUnit'     => 4,
 					'indentWithTabs' => true,
-					'gutters'        => array( 'CodeMirror-lint-markers' ),
-					'lint'           => true,
 				);
 				break;
 			case 'js' :
