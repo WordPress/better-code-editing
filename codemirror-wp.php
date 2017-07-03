@@ -13,6 +13,7 @@ class CodeMirror_WP {
 		add_action( 'load-theme-editor.php', array( __CLASS__, 'load_theme_editor_php' ) );
 		add_action( 'load-plugin-editor.php', array( __CLASS__, 'load_plugin_editor_php' ) );
 		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'customize_controls_enqueue_scripts' ) );
+		add_action( 'rest_api_init', array( __CLASS__, 'register_rest_routes' ) );
 	}
 
 	public static function register_scripts() {
@@ -36,6 +37,12 @@ class CodeMirror_WP {
 		wp_register_script( 'codemirror-addon-lint-html',       plugins_url( "CodeMirror/addon/lint/html-lint.js", __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint' ), SELF::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-addon-lint-javascript', plugins_url( "CodeMirror/addon/lint/javascript-lint.js", __FILE__ ), array( 'codemirror-addon-lint', 'jshint' ), SELF::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-addon-lint-json',       plugins_url( "CodeMirror/addon/lint/json-lint.js", __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), SELF::CODEMIRROR_VERSION );
+
+		wp_register_script( 'codemirror-addon-lint-php',        plugins_url( "js/addon-lint-php.js",               __FILE__ ),       array( 'codemirror-addon-lint' ), time() );
+		wp_localize_script( 'codemirror-addon-lint-php', 'cmLintPHP', array(
+			'endpoint' => rest_url( 'codemirror-wp/v1/lint-php' ),
+			'nonce' => wp_create_nonce( 'wp_rest' ),
+		) );
 
 		wp_register_script( 'codemirror-addon-comment',                 plugins_url( "CodeMirror/addon/comment/comment.js", __FILE__ ),         array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-addon-comment-continuecomment', plugins_url( "CodeMirror/addon/comment/continuecomment.js", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
@@ -70,6 +77,43 @@ class CodeMirror_WP {
 		wp_register_style( 'codemirror-addon-lint',      plugins_url( "CodeMirror/addon/lint/lint.css", __FILE__ ),      array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
 	}
 
+	public static function register_rest_routes() {
+		register_rest_route( 'codemirror-wp/v1', '/lint-php', array(
+			'methods' => WP_REST_Server::EDITABLE,
+			'callback' => array( __CLASS__, 'rest_lint_php' ),
+			'permission_callback' => array( __CLASS__, 'can_edit_files' ),
+			'args' => array(
+				'code' => array(
+					'required' => true,
+				)
+			)
+		) );
+	}
+
+	public static function can_edit_files() {
+		return current_user_can( 'edit_files' );
+	}
+
+	public static function rest_lint_php( $args ) {
+		$code = $args['code'];
+		$file = tempnam( get_temp_dir(), 'phplinting' );
+		file_put_contents( $file, $code );
+		$result = shell_exec( sprintf( 'php -l %s 2>&1 1> /dev/null', escapeshellarg( $file ) ) );
+		unlink( $file );
+
+		if ( preg_match( '/^(.*) in ' . preg_quote( $file, '/' ) . ' on line (\d+)$/', $result, $matches ) ) {
+			return array(
+				array(
+					'from'    => $matches[2],
+					'to'      => $matches[2],
+					'message' => $matches[1],
+				)
+			);
+		}
+
+		return array();
+	}
+
 	public static function prep_codemirror_for_file( $file ) {
 		switch ( @pathinfo( $file, PATHINFO_EXTENSION ) ) {
 			case 'css' :
@@ -91,13 +135,17 @@ class CodeMirror_WP {
 				wp_enqueue_script( 'codemirror-mode-javascript' );
 				wp_enqueue_script( 'codemirror-mode-css' );
 				wp_enqueue_script( 'codemirror-mode-php' );
+				wp_enqueue_script( 'codemirror-addon-lint-php' );
 				wp_enqueue_style( 'codemirror' );
+				wp_enqueue_style( 'codemirror-addon-lint' );
 				self::$codemirror_opts = array(
 					'inputStyle'     => 'contenteditable',
 					'lineNumbers'    => true,
 					'mode'           => 'application/x-httpd-php',
 					'indentUnit'     => 4,
 					'indentWithTabs' => true,
+					'gutters'        => array( 'CodeMirror-lint-markers' ),
+					'lint'           => true,
 				);
 				break;
 			case 'js' :
