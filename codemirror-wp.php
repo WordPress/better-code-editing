@@ -25,6 +25,18 @@ class CodeMirror_WP {
 		wp_register_script( 'codemirror-addon-hint-sql',        plugins_url( "CodeMirror/addon/hint/sql-hint.js", __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-sql' ), SELF::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-addon-hint-xml',        plugins_url( "CodeMirror/addon/hint/xml-hint.js", __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-xml' ), SELF::CODEMIRROR_VERSION );
 
+		// The linting engines for the lint addons...
+		wp_register_script( 'csslint',  'http://csslint.net/js/csslint.js' );
+		wp_register_script( 'htmlhint', 'http://htmlhint.com/js/htmlhint.js' );
+		wp_register_script( 'jshint',   '//ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js' );
+		wp_register_script( 'jsonlint', 'https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js' );
+
+		wp_register_script( 'codemirror-addon-lint',            plugins_url( "CodeMirror/addon/lint/lint.js",      __FILE__ ),       array( 'codemirror' ),            SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-lint-css',        plugins_url( "CodeMirror/addon/lint/css-lint.js",  __FILE__ ),       array( 'codemirror-addon-lint', 'csslint' ), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-lint-html',       plugins_url( "CodeMirror/addon/lint/html-lint.js", __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint' ), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-lint-javascript', plugins_url( "CodeMirror/addon/lint/javascript-lint.js", __FILE__ ), array( 'codemirror-addon-lint', 'jshint' ), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-lint-json',       plugins_url( "CodeMirror/addon/lint/json-lint.js", __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), SELF::CODEMIRROR_VERSION );
+
 		wp_register_script( 'codemirror-addon-comment',                 plugins_url( "CodeMirror/addon/comment/comment.js", __FILE__ ),         array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-addon-comment-continuecomment', plugins_url( "CodeMirror/addon/comment/continuecomment.js", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
 
@@ -53,19 +65,24 @@ class CodeMirror_WP {
 	}
 
 	public static function register_styles() {
-		wp_register_style( 'codemirror',                 plugins_url( "CodeMirror/lib/codemirror.css", __FILE__ ), array(), SELF::CODEMIRROR_VERSION );
-		wp_register_style( 'codemirror-addon-show-hint', plugins_url( "CodeMirror/lib/codemirror.css", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
+		wp_register_style( 'codemirror',                 plugins_url( "CodeMirror/lib/codemirror.css", __FILE__ ),       array(),               SELF::CODEMIRROR_VERSION );
+		wp_register_style( 'codemirror-addon-show-hint', plugins_url( "CodeMirror/addon/hint/show-hint.css", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
+		wp_register_style( 'codemirror-addon-lint',      plugins_url( "CodeMirror/addon/lint/lint.css", __FILE__ ),      array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
 	}
 
 	public static function prep_codemirror_for_file( $file ) {
 		switch ( @pathinfo( $file, PATHINFO_EXTENSION ) ) {
 			case 'css' :
 				wp_enqueue_script( 'codemirror-mode-css' );
+				wp_enqueue_script( 'codemirror-addon-lint-css' );
 				wp_enqueue_style( 'codemirror' );
+				wp_enqueue_style( 'codemirror-addon-lint' );
 				self::$codemirror_opts = array(
 					'inputStyle'  => 'contenteditable',
 					'lineNumbers' => true,
 					'mode'        => 'text/css',
+					'gutters'     => array( 'CodeMirror-lint-markers' ),
+					'lint'        => true,
 				);
 				break;
 			case 'php' :
@@ -85,13 +102,17 @@ class CodeMirror_WP {
 				break;
 			case 'js' :
 				wp_enqueue_script( 'codemirror-mode-javascript' );
+				wp_enqueue_script( 'codemirror-addon-lint-javascript' );
 				wp_enqueue_style( 'codemirror' );
+				wp_enqueue_style( 'codemirror-addon-lint' );
 				self::$codemirror_opts = array(
 					'inputStyle'     => 'contenteditable',
 					'lineNumbers'    => true,
 					'mode'           => 'text/javascript',
 					'indentUnit'     => 4,
 					'indentWithTabs' => true,
+					'gutters'        => array( 'CodeMirror-lint-markers' ),
+					'lint'           => true,
 				);
 				break;
 			case 'xml' :
@@ -232,13 +253,17 @@ class CodeMirror_WP {
 
 	public static function customize_controls_enqueue_scripts() {
 		wp_enqueue_script( 'codemirror-mode-css' );
+		wp_enqueue_script( 'codemirror-addon-lint-css' );
 		wp_enqueue_style( 'codemirror' );
+		wp_enqueue_style( 'codemirror-addon-lint' );
 		self::$codemirror_opts = apply_filters( 'customizer_custom_css_codemirror_opts', array(
 			'inputStyle'     => 'contenteditable',
 			'lineNumbers'    => true,
 			'mode'           => 'text/css',
 			'indentUnit'     => 2,
 			'indentWithTabs' => true,
+			'gutters'        => array( 'CodeMirror-lint-markers' ),
+			'lint'           => true,
 		) );
 
 		add_action( 'customize_controls_print_footer_scripts', array( __CLASS__, 'customize_controls_print_footer_scripts' ) );
@@ -249,6 +274,9 @@ class CodeMirror_WP {
 		<style>
 		#customize-control-custom_css .CodeMirror {
 			height: calc( 100vh - 185px );
+		}
+		.CodeMirror-lint-tooltip {
+			z-index: 500000;
 		}
 		</style>
 		<script>
