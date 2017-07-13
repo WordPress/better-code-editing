@@ -280,27 +280,43 @@ class CodeMirror_WP {
 		}
 		</style>
 		<script>
-			jQuery(document).ready(function($){
-				var $textarea = $('#customize-control-custom_css textarea');
+			wp.customize.section( 'custom_css', function( section ) {
+				wp.customize.control( 'custom_css', function( control ) {
+					var onceExpanded, onExpandedChange;
 
-				wp.codemirror = CodeMirror.fromTextArea( $textarea[0], <?php echo json_encode( self::$codemirror_opts ); ?> );
+					onceExpanded = function() {
+						var $textarea = control.container.find( 'textarea' );
 
-				// refresh the CodeMirror instance's rendering because it's initially hidden
-				// 250ms because that's the open animation duration
-				$( '#accordion-section-custom_css > .accordion-section-title' ).click( _.bind( _.debounce( wp.codemirror.refresh, 250 ), wp.codemirror ) );
+						wp.codemirror = CodeMirror.fromTextArea( $textarea[0], <?php echo json_encode( self::$codemirror_opts ); ?> );
 
-				// also refresh when focusing
-				wp.codemirror.on( 'focus', function( editor ) {
-					editor.refresh();
-				} );
+						// also refresh when focusing
+						wp.codemirror.on( 'focus', function( editor ) {
+							editor.refresh();
+						} );
 
-				// when the CodeMirror instance changes, mirror to the textarea,
-				// where we have our "true" change event handler bound.
-				wp.codemirror.on( 'change', function( editor ) {
-					$textarea.val( editor.getValue() ).trigger( 'change' );
-				} );
+						// when the CodeMirror instance changes, mirror to the textarea,
+						// where we have our "true" change event handler bound.
+						wp.codemirror.on( 'change', function( editor ) {
+							$textarea.val( editor.getValue() ).trigger( 'change' );
+						} );
 
-				// To do: bind something to setting change, so that we can catch other plugins modifying the css and update CodeMirror?
+						// To do: bind something to setting change, so that we can catch other plugins modifying the css and update CodeMirror?
+					};
+
+					onExpandedChange = function( isExpanded ) {
+						if ( isExpanded ) {
+							onceExpanded();
+							section.expanded.unbind( onExpandedChange );
+						}
+					};
+					control.deferred.embedded.done( function() {
+						if ( section.expanded() ) {
+							onceExpanded();
+						} else {
+							section.expanded.bind( onExpandedChange );
+						}
+					});
+				});
 			});
 		</script>
 		<?php
