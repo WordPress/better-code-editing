@@ -284,6 +284,18 @@ class CodeMirror_WP {
 				wp.customize.control( 'custom_css', function( control ) {
 					var onceExpanded, onExpandedChange;
 
+					// Workaround for disabling server-sent syntax checking notifications.
+					// @todo Listen for errors in CodeMirror and opt-to add invalidity notifications for them? The presence of such notification error allows saving to be blocked.
+					control.setting.notifications.add = (function( originalAdd ) {
+						return function( id, notification ) {
+							if ( 'imbalanced_curly_brackets' === id && notification.fromServer ) {
+								return null;
+							} else {
+								return originalAdd( id, notification );
+							}
+						};
+					})( control.setting.notifications );
+
 					onceExpanded = function() {
 						var $textarea = control.container.find( 'textarea' );
 
