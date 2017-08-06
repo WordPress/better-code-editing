@@ -280,27 +280,55 @@ class CodeMirror_WP {
 		}
 		</style>
 		<script>
-			jQuery(document).ready(function($){
-				var $textarea = $('#customize-control-custom_css textarea');
+			wp.customize.section( 'custom_css', function( section ) {
+				wp.customize.control( 'custom_css', function( control ) {
+					var onceExpanded, onExpandedChange;
 
-				wp.codemirror = CodeMirror.fromTextArea( $textarea[0], <?php echo json_encode( self::$codemirror_opts ); ?> );
+					// Workaround for disabling server-sent syntax checking notifications.
+					// @todo Listen for errors in CodeMirror and opt-to add invalidity notifications for them? The presence of such notification error allows saving to be blocked.
+					control.setting.notifications.add = (function( originalAdd ) {
+						return function( id, notification ) {
+							if ( 'imbalanced_curly_brackets' === id && notification.fromServer ) {
+								return null;
+							} else {
+								return originalAdd( id, notification );
+							}
+						};
+					})( control.setting.notifications );
 
-				// refresh the CodeMirror instance's rendering because it's initially hidden
-				// 250ms because that's the open animation duration
-				$( '#accordion-section-custom_css > .accordion-section-title' ).click( _.bind( _.debounce( wp.codemirror.refresh, 250 ), wp.codemirror ) );
+					onceExpanded = function() {
+						var $textarea = control.container.find( 'textarea' );
 
-				// also refresh when focusing
-				wp.codemirror.on( 'focus', function( editor ) {
-					editor.refresh();
-				} );
+						wp.codemirror = CodeMirror.fromTextArea( $textarea[0], <?php echo json_encode( self::$codemirror_opts ); ?> );
 
-				// when the CodeMirror instance changes, mirror to the textarea,
-				// where we have our "true" change event handler bound.
-				wp.codemirror.on( 'change', function( editor ) {
-					$textarea.val( editor.getValue() ).trigger( 'change' );
-				} );
+						// also refresh when focusing
+						wp.codemirror.on( 'focus', function( editor ) {
+							editor.refresh();
+						} );
 
-				// To do: bind something to setting change, so that we can catch other plugins modifying the css and update CodeMirror?
+						// when the CodeMirror instance changes, mirror to the textarea,
+						// where we have our "true" change event handler bound.
+						wp.codemirror.on( 'change', function( editor ) {
+							$textarea.val( editor.getValue() ).trigger( 'change' );
+						} );
+
+						// To do: bind something to setting change, so that we can catch other plugins modifying the css and update CodeMirror?
+					};
+
+					onExpandedChange = function( isExpanded ) {
+						if ( isExpanded ) {
+							onceExpanded();
+							section.expanded.unbind( onExpandedChange );
+						}
+					};
+					control.deferred.embedded.done( function() {
+						if ( section.expanded() ) {
+							onceExpanded();
+						} else {
+							section.expanded.bind( onExpandedChange );
+						}
+					});
+				});
 			});
 		</script>
 		<?php
