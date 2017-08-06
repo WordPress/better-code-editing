@@ -1,12 +1,31 @@
 <?php
 /**
  * Plugin Name: CodeMirror WP
+ * Version: 0.1.0
+ *
+ * @package WordPress
  */
 
+/**
+ * Plugin class.
+ */
 class CodeMirror_WP {
-	static $codemirror_opts = false;
+
+	/**
+	 * CodeMirror version.
+	 */
 	const CODEMIRROR_VERSION = '5.26.0';
 
+	/**
+	 * CodeMirror options.
+	 *
+	 * @var array|bool
+	 */
+	static $codemirror_opts = false;
+
+	/**
+	 * Add hooks.
+	 */
 	public static function go() {
 		add_action( 'admin_init', array( __CLASS__, 'register_scripts' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_styles' ) );
@@ -15,15 +34,18 @@ class CodeMirror_WP {
 		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'customize_controls_enqueue_scripts' ) );
 	}
 
+	/**
+	 * Register scripts.
+	 */
 	public static function register_scripts() {
-		wp_register_script( 'codemirror', plugins_url( "CodeMirror/lib/codemirror.js", __FILE__ ), array(), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror', plugins_url( 'CodeMirror/lib/codemirror.js', __FILE__ ), array(), self::CODEMIRROR_VERSION );
 
-		wp_register_script( 'codemirror-addon-hint-show',       plugins_url( "CodeMirror/addon/hint/show-hint.js", __FILE__ ),       array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-hint-css',        plugins_url( "CodeMirror/addon/hint/css-hint.js", __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-css' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-hint-html',       plugins_url( "CodeMirror/addon/hint/html-hint.js", __FILE__ ),       array( 'codemirror-addon-hint-show', 'codemirror-mode-html' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-hint-javascript', plugins_url( "CodeMirror/addon/hint/javascript-hint.js", __FILE__ ), array( 'codemirror-addon-hint-show', 'codemirror-mode-javascript' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-hint-sql',        plugins_url( "CodeMirror/addon/hint/sql-hint.js", __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-sql' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-hint-xml',        plugins_url( "CodeMirror/addon/hint/xml-hint.js", __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-xml' ), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-hint-show',       plugins_url( 'CodeMirror/addon/hint/show-hint.js', __FILE__ ),       array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-hint-css',        plugins_url( 'CodeMirror/addon/hint/css-hint.js', __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-css' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-hint-html',       plugins_url( 'CodeMirror/addon/hint/html-hint.js', __FILE__ ),       array( 'codemirror-addon-hint-show', 'codemirror-mode-html' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-hint-javascript', plugins_url( 'CodeMirror/addon/hint/javascript-hint.js', __FILE__ ), array( 'codemirror-addon-hint-show', 'codemirror-mode-javascript' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-hint-sql',        plugins_url( 'CodeMirror/addon/hint/sql-hint.js', __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-sql' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-hint-xml',        plugins_url( 'CodeMirror/addon/hint/xml-hint.js', __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-xml' ), self::CODEMIRROR_VERSION );
 
 		// The linting engines for the lint addons...
 		wp_register_script( 'csslint',  'http://csslint.net/js/csslint.js' );
@@ -31,48 +53,56 @@ class CodeMirror_WP {
 		wp_register_script( 'jshint',   '//ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js' );
 		wp_register_script( 'jsonlint', 'https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js' );
 
-		wp_register_script( 'codemirror-addon-lint',            plugins_url( "CodeMirror/addon/lint/lint.js",      __FILE__ ),       array( 'codemirror' ),            SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-lint-css',        plugins_url( "CodeMirror/addon/lint/css-lint.js",  __FILE__ ),       array( 'codemirror-addon-lint', 'csslint' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-lint-html',       plugins_url( "CodeMirror/addon/lint/html-lint.js", __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-lint-javascript', plugins_url( "CodeMirror/addon/lint/javascript-lint.js", __FILE__ ), array( 'codemirror-addon-lint', 'jshint' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-lint-json',       plugins_url( "CodeMirror/addon/lint/json-lint.js", __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-lint',            plugins_url( 'CodeMirror/addon/lint/lint.js',      __FILE__ ),       array( 'codemirror' ),            self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-lint-css',        plugins_url( 'CodeMirror/addon/lint/css-lint.js',  __FILE__ ),       array( 'codemirror-addon-lint', 'csslint' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-lint-html',       plugins_url( 'CodeMirror/addon/lint/html-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-lint-javascript', plugins_url( 'CodeMirror/addon/lint/javascript-lint.js', __FILE__ ), array( 'codemirror-addon-lint', 'jshint' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-lint-json',       plugins_url( 'CodeMirror/addon/lint/json-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), self::CODEMIRROR_VERSION );
 
-		wp_register_script( 'codemirror-addon-comment',                 plugins_url( "CodeMirror/addon/comment/comment.js", __FILE__ ),         array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-comment-continuecomment', plugins_url( "CodeMirror/addon/comment/continuecomment.js", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-comment',                 plugins_url( 'CodeMirror/addon/comment/comment.js', __FILE__ ),         array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-comment-continuecomment', plugins_url( 'CodeMirror/addon/comment/continuecomment.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
-		wp_register_script( 'codemirror-addon-edit-closebrackets', plugins_url( "CodeMirror/addon/edit/closebrackets.js", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-edit-closetag',      plugins_url( "CodeMirror/addon/edit/closetag.js", __FILE__ ),      array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-edit-continuelist',  plugins_url( "CodeMirror/addon/edit/continuelist.js", __FILE__ ),  array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-edit-matchbrackets', plugins_url( "CodeMirror/addon/edit/matchbrackets.js", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-edit-matchtags',     plugins_url( "CodeMirror/addon/edit/matchtags.js", __FILE__ ),     array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-edit-trailingspace', plugins_url( "CodeMirror/addon/edit/trailingspace.js", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-edit-closebrackets', plugins_url( 'CodeMirror/addon/edit/closebrackets.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-edit-closetag',      plugins_url( 'CodeMirror/addon/edit/closetag.js', __FILE__ ),      array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-edit-continuelist',  plugins_url( 'CodeMirror/addon/edit/continuelist.js', __FILE__ ),  array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-edit-matchbrackets', plugins_url( 'CodeMirror/addon/edit/matchbrackets.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-edit-matchtags',     plugins_url( 'CodeMirror/addon/edit/matchtags.js', __FILE__ ),     array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-edit-trailingspace', plugins_url( 'CodeMirror/addon/edit/trailingspace.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
-		wp_register_script( 'codemirror-addon-selection-active-line',    plugins_url( "CodeMirror/addon/selection/active-line.js", __FILE__ ),       array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-selection-mark-selection', plugins_url( "CodeMirror/addon/selection/mark-selection.js", __FILE__ ),    array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-addon-selection-pointer',        plugins_url( "CodeMirror/addon/selection/selection-pointer.js", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-selection-active-line',    plugins_url( 'CodeMirror/addon/selection/active-line.js', __FILE__ ),       array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-selection-mark-selection', plugins_url( 'CodeMirror/addon/selection/mark-selection.js', __FILE__ ),    array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-addon-selection-pointer',        plugins_url( 'CodeMirror/addon/selection/selection-pointer.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
-		wp_register_script( 'codemirror-mode-clike',      plugins_url( "CodeMirror/mode/clike/clike.js", __FILE__ ),           array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-css',        plugins_url( "CodeMirror/mode/css/css.js", __FILE__ ),               array( 'codemirror', 'codemirror-addon-edit-matchbrackets' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-diff',       plugins_url( "CodeMirror/mode/diff/diff.js", __FILE__ ),             array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-html',       plugins_url( "CodeMirror/mode/htmlmixed/htmlmixed.js", __FILE__ ),   array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-http',       plugins_url( "CodeMirror/mode/http/http.js", __FILE__ ),             array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-javascript', plugins_url( "CodeMirror/mode/javascript/javascript.js", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-markdown',   plugins_url( "CodeMirror/mode/markdown/markdown.js", __FILE__ ),     array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-php',        plugins_url( "CodeMirror/mode/php/php.js", __FILE__ ),               array( 'codemirror-mode-clike', 'codemirror-addon-edit-matchbrackets' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-shell',      plugins_url( "CodeMirror/mode/shell/shell.js", __FILE__ ),           array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-sql',        plugins_url( "CodeMirror/mode/sql/sql.js", __FILE__ ),               array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-xml',        plugins_url( "CodeMirror/mode/xml/xml.js", __FILE__ ),               array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-clike',      plugins_url( 'CodeMirror/mode/clike/clike.js', __FILE__ ),           array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-css',        plugins_url( 'CodeMirror/mode/css/css.js', __FILE__ ),               array( 'codemirror', 'codemirror-addon-edit-matchbrackets' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-diff',       plugins_url( 'CodeMirror/mode/diff/diff.js', __FILE__ ),             array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-html',       plugins_url( 'CodeMirror/mode/htmlmixed/htmlmixed.js', __FILE__ ),   array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-http',       plugins_url( 'CodeMirror/mode/http/http.js', __FILE__ ),             array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-javascript', plugins_url( 'CodeMirror/mode/javascript/javascript.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-markdown',   plugins_url( 'CodeMirror/mode/markdown/markdown.js', __FILE__ ),     array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-php',        plugins_url( 'CodeMirror/mode/php/php.js', __FILE__ ),               array( 'codemirror-mode-clike', 'codemirror-addon-edit-matchbrackets' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-shell',      plugins_url( 'CodeMirror/mode/shell/shell.js', __FILE__ ),           array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-sql',        plugins_url( 'CodeMirror/mode/sql/sql.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-xml',        plugins_url( 'CodeMirror/mode/xml/xml.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
 	}
 
+	/**
+	 * Register styles.
+	 */
 	public static function register_styles() {
-		wp_register_style( 'codemirror',                 plugins_url( "CodeMirror/lib/codemirror.css", __FILE__ ),       array(),               SELF::CODEMIRROR_VERSION );
-		wp_register_style( 'codemirror-addon-show-hint', plugins_url( "CodeMirror/addon/hint/show-hint.css", __FILE__ ), array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
-		wp_register_style( 'codemirror-addon-lint',      plugins_url( "CodeMirror/addon/lint/lint.css", __FILE__ ),      array( 'codemirror' ), SELF::CODEMIRROR_VERSION );
+		wp_register_style( 'codemirror',                 plugins_url( 'CodeMirror/lib/codemirror.css', __FILE__ ),       array(),               self::CODEMIRROR_VERSION );
+		wp_register_style( 'codemirror-addon-show-hint', plugins_url( 'CodeMirror/addon/hint/show-hint.css', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_style( 'codemirror-addon-lint',      plugins_url( 'CodeMirror/addon/lint/lint.css', __FILE__ ),      array( 'codemirror' ), self::CODEMIRROR_VERSION );
 	}
 
+	/**
+	 * Prepare CodeMirror for editing a given file.
+	 *
+	 * @param string $file File being edited.
+	 */
 	public static function prep_codemirror_for_file( $file ) {
 		switch ( @pathinfo( $file, PATHINFO_EXTENSION ) ) {
-			case 'css' :
+			case 'css':
 				wp_enqueue_script( 'codemirror-mode-css' );
 				wp_enqueue_script( 'codemirror-addon-lint-css' );
 				wp_enqueue_style( 'codemirror' );
@@ -85,7 +115,7 @@ class CodeMirror_WP {
 					'lint'        => true,
 				);
 				break;
-			case 'php' :
+			case 'php':
 				wp_enqueue_script( 'codemirror-mode-html' );
 				wp_enqueue_script( 'codemirror-mode-xml' );
 				wp_enqueue_script( 'codemirror-mode-javascript' );
@@ -100,7 +130,7 @@ class CodeMirror_WP {
 					'indentWithTabs' => true,
 				);
 				break;
-			case 'js' :
+			case 'js':
 				wp_enqueue_script( 'codemirror-mode-javascript' );
 				wp_enqueue_script( 'codemirror-addon-lint-javascript' );
 				wp_enqueue_style( 'codemirror' );
@@ -115,7 +145,7 @@ class CodeMirror_WP {
 					'lint'           => true,
 				);
 				break;
-			case 'xml' :
+			case 'xml':
 				wp_enqueue_script( 'codemirror-mode-xml' );
 				wp_enqueue_style( 'codemirror' );
 				self::$codemirror_opts = array(
@@ -126,8 +156,8 @@ class CodeMirror_WP {
 					'indentWithTabs' => true,
 				);
 				break;
-			case 'txt' :
-			default :
+			case 'txt':
+			default:
 				wp_enqueue_script( 'codemirror' );
 				wp_enqueue_style( 'codemirror' );
 				self::$codemirror_opts = array(
@@ -141,6 +171,9 @@ class CodeMirror_WP {
 		}
 	}
 
+	/**
+	 * Load theme editor config.
+	 */
 	public static function load_theme_editor_php() {
 		global $file, $theme;
 
@@ -166,9 +199,9 @@ class CodeMirror_WP {
 		 * Give folks a chance to filter the arguments passed to CodeMirror -- This will let them enable
 		 * or disable it (by returning something that evaluates to false) as they choose as well.
 		 *
-		 * @param $codemirror_opts The array of options to be passed to codemirror. Falsey doesn't use codemirror.
-		 * @param $file            The file being displayed.
-		 * @param $theme           The WP_Theme object for the current theme being edited.
+		 * @param array    $codemirror_opts The array of options to be passed to codemirror. Falsey doesn't use codemirror.
+		 * @param string   $file            The file being displayed.
+		 * @param WP_Theme $theme           The WP_Theme object for the current theme being edited.
 		 */
 		self::$codemirror_opts = apply_filters( 'theme_editor_codemirror_opts', self::$codemirror_opts, $file, $theme );
 
@@ -177,6 +210,9 @@ class CodeMirror_WP {
 		}
 	}
 
+	/**
+	 * Load plugin editor PHP.
+	 */
 	public static function load_plugin_editor_php() {
 		$file = '';
 		$plugin = '';
@@ -198,7 +234,7 @@ class CodeMirror_WP {
 			}
 		}
 
-		$plugin_files = get_plugin_files($plugin);
+		$plugin_files = get_plugin_files( $plugin );
 
 		if ( empty( $file ) ) {
 			$file = $plugin_files[0];
@@ -214,9 +250,9 @@ class CodeMirror_WP {
 		 * Give folks a chance to filter the arguments passed to CodeMirror -- This will let them enable
 		 * or disable it (by returning something that evaluates to false) as they choose as well.
 		 *
-		 * @param $codemirror_opts The array of options to be passed to codemirror. Falsey doesn't use codemirror.
-		 * @param $file            The file being displayed.
-		 * @param $plugin          The plugin file.
+		 * @param array  $codemirror_opts The array of options to be passed to codemirror. Falsey doesn't use codemirror.
+		 * @param string $file            The file being displayed.
+		 * @param string $plugin          The plugin file.
 		 */
 		self::$codemirror_opts = apply_filters( 'plugin_editor_codemirror_opts', self::$codemirror_opts, $file, $plugin );
 
@@ -225,6 +261,9 @@ class CodeMirror_WP {
 		}
 	}
 
+	/**
+	 * Integrate with admin editor.
+	 */
 	public static function do_codemirror_admin_editor() {
 		?>
 		<style>
@@ -251,24 +290,32 @@ class CodeMirror_WP {
 		<?php
 	}
 
+	/**
+	 * Enqueue assets for Customizer.
+	 */
 	public static function customize_controls_enqueue_scripts() {
 		wp_enqueue_script( 'codemirror-mode-css' );
 		wp_enqueue_script( 'codemirror-addon-lint-css' );
 		wp_enqueue_style( 'codemirror' );
 		wp_enqueue_style( 'codemirror-addon-lint' );
-		self::$codemirror_opts = apply_filters( 'customizer_custom_css_codemirror_opts', array(
-			'inputStyle'     => 'contenteditable',
-			'lineNumbers'    => true,
-			'mode'           => 'text/css',
-			'indentUnit'     => 2,
-			'indentWithTabs' => true,
-			'gutters'        => array( 'CodeMirror-lint-markers' ),
-			'lint'           => true,
-		) );
+		self::$codemirror_opts = apply_filters(
+			'customizer_custom_css_codemirror_opts', array(
+				'inputStyle'     => 'contenteditable',
+				'lineNumbers'    => true,
+				'mode'           => 'text/css',
+				'indentUnit'     => 2,
+				'indentWithTabs' => true,
+				'gutters'        => array( 'CodeMirror-lint-markers' ),
+				'lint'           => true,
+			)
+		);
 
 		add_action( 'customize_controls_print_footer_scripts', array( __CLASS__, 'customize_controls_print_footer_scripts' ) );
 	}
 
+	/**
+	 * Add Customizer integration.
+	 */
 	public static function customize_controls_print_footer_scripts() {
 		?>
 		<style>

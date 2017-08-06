@@ -1,3 +1,7 @@
 [submodule "CodeMirror"]
 	path = CodeMirror
 	url = https://github.com/codemirror/CodeMirror.git
+[submodule "dev-lib"]
+	path = dev-lib
+	url = https://github.com/xwp/wp-dev-lib.git
+	branch = master

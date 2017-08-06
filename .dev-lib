@@ -1,0 +1,6 @@
+CHECK_SCOPE=all
+WPCS_GIT_TREE=develop
+
+if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.2" ]]; then
+	DEV_LIB_SKIP="phpcs,$DEV_LIB_SKIP"
+fi

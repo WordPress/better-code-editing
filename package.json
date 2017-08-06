@@ -1,0 +1,21 @@
+{
+  "name": "codemirror-wp",
+  "version": "0.1.0",
+  "description": "Howdy!  This is currently a Work In Progress playground for experimenting with bringing syntax highlighting to WordPress Core.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WordPress/codemirror-wp.git"
+  },
+  "author": "WordPress Contributors",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/WordPress/codemirror-wp/issues"
+  },
+  "homepage": "https://github.com/WordPress/codemirror-wp#readme",
+  "devDependencies": {
+    "eslint": "^4.4.0"
+  }
+}
