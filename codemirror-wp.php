@@ -1,7 +1,11 @@
 <?php
 /**
  * Plugin Name: CodeMirror WP
+ * Plugin URI: https://wordpress.org/plugins/codemirror-wp/
+ * Description: Code highlighting and linting, powered by CodeMirror.
  * Version: 0.1.0
+ * Author: The WordPress Team
+ * Text Domain: codemirror-wp
  *
  * @package WordPress
  */
@@ -21,7 +25,12 @@ class CodeMirror_WP {
 	 *
 	 * @var array|bool
 	 */
-	static $codemirror_opts = false;
+	static $options = array(
+		'indentUnit'     => 4,
+		'indentWithTabs' => true,
+		'inputStyle'     => 'contenteditable',
+		'lineNumbers'    => true,
+	);
 
 	/**
 	 * Add hooks.
@@ -102,19 +111,20 @@ class CodeMirror_WP {
 	 */
 	public static function prep_codemirror_for_file( $file ) {
 		switch ( @pathinfo( $file, PATHINFO_EXTENSION ) ) {
+
 			case 'css':
 				wp_enqueue_script( 'codemirror-mode-css' );
 				wp_enqueue_script( 'codemirror-addon-lint-css' );
 				wp_enqueue_style( 'codemirror' );
 				wp_enqueue_style( 'codemirror-addon-lint' );
-				self::$codemirror_opts = array(
-					'inputStyle'  => 'contenteditable',
-					'lineNumbers' => true,
-					'mode'        => 'text/css',
-					'gutters'     => array( 'CodeMirror-lint-markers' ),
-					'lint'        => true,
-				);
+
+				self::$options = array_merge( self::$options, array(
+					'mode'    => 'text/css',
+					'gutters' => array( 'CodeMirror-lint-markers' ),
+					'lint'    => true,
+				) );
 				break;
+
 			case 'php':
 				wp_enqueue_script( 'codemirror-mode-html' );
 				wp_enqueue_script( 'codemirror-mode-xml' );
@@ -122,51 +132,36 @@ class CodeMirror_WP {
 				wp_enqueue_script( 'codemirror-mode-css' );
 				wp_enqueue_script( 'codemirror-mode-php' );
 				wp_enqueue_style( 'codemirror' );
-				self::$codemirror_opts = array(
-					'inputStyle'     => 'contenteditable',
-					'lineNumbers'    => true,
-					'mode'           => 'application/x-httpd-php',
-					'indentUnit'     => 4,
-					'indentWithTabs' => true,
-				);
+
+				self::$options['mode'] = 'application/x-httpd-php';
 				break;
+
 			case 'js':
 				wp_enqueue_script( 'codemirror-mode-javascript' );
 				wp_enqueue_script( 'codemirror-addon-lint-javascript' );
 				wp_enqueue_style( 'codemirror' );
 				wp_enqueue_style( 'codemirror-addon-lint' );
-				self::$codemirror_opts = array(
-					'inputStyle'     => 'contenteditable',
-					'lineNumbers'    => true,
+
+				self::$options = array(
 					'mode'           => 'text/javascript',
-					'indentUnit'     => 4,
-					'indentWithTabs' => true,
 					'gutters'        => array( 'CodeMirror-lint-markers' ),
 					'lint'           => true,
 				);
 				break;
+
 			case 'xml':
 				wp_enqueue_script( 'codemirror-mode-xml' );
 				wp_enqueue_style( 'codemirror' );
-				self::$codemirror_opts = array(
-					'inputStyle'     => 'contenteditable',
-					'lineNumbers'    => true,
-					'mode'           => 'application/xml',
-					'indentUnit'     => 4,
-					'indentWithTabs' => true,
-				);
+
+				self::$options['mode'] = 'application/xml';
 				break;
+
 			case 'txt':
 			default:
 				wp_enqueue_script( 'codemirror' );
 				wp_enqueue_style( 'codemirror' );
-				self::$codemirror_opts = array(
-					'inputStyle'     => 'contenteditable',
-					'lineNumbers'    => true,
-					'mode'           => 'text/plain',
-					'indentUnit'     => 4,
-					'indentWithTabs' => true,
-				);
+
+				self::$options['mode'] = 'text/plain';
 				break;
 		}
 	}
@@ -179,19 +174,12 @@ class CodeMirror_WP {
 
 		wp_reset_vars( array( 'file', 'theme' ) );
 
-		if ( $theme ) {
-			$stylesheet = $theme;
-		} else {
-			$stylesheet = get_stylesheet();
-		}
-
-		$theme = wp_get_theme( $stylesheet );
+		$stylesheet = $theme ? $theme : get_stylesheet();
+		$wp_theme   = wp_get_theme( $stylesheet );
 
 		if ( empty( $file ) ) {
 			$file = 'style.css';
 		}
-
-		self::$codemirror_opts = false;
 
 		self::prep_codemirror_for_file( $file );
 
@@ -199,13 +187,13 @@ class CodeMirror_WP {
 		 * Give folks a chance to filter the arguments passed to CodeMirror -- This will let them enable
 		 * or disable it (by returning something that evaluates to false) as they choose as well.
 		 *
-		 * @param array    $codemirror_opts The array of options to be passed to codemirror. Falsey doesn't use codemirror.
-		 * @param string   $file            The file being displayed.
-		 * @param WP_Theme $theme           The WP_Theme object for the current theme being edited.
+		 * @param array    $options The array of options to be passed to CodeMirror. Falsey doesn't use CodeMirror.
+		 * @param string   $file    The file being displayed.
+		 * @param WP_Theme $theme   The WP_Theme object for the current theme being edited.
 		 */
-		self::$codemirror_opts = apply_filters( 'theme_editor_codemirror_opts', self::$codemirror_opts, $file, $theme );
+		self::$options = apply_filters( 'theme_editor_codemirror_opts', self::$options, $file, $wp_theme );
 
-		if ( self::$codemirror_opts ) {
+		if ( self::$options ) {
 			add_action( 'admin_footer-theme-editor.php', array( __CLASS__, 'do_codemirror_admin_editor' ) );
 		}
 	}
@@ -214,24 +202,12 @@ class CodeMirror_WP {
 	 * Load plugin editor PHP.
 	 */
 	public static function load_plugin_editor_php() {
-		$file = '';
-		$plugin = '';
-		$plugins = @get_plugins();
-		if ( isset( $_REQUEST['file'] ) ) {
-			$file = sanitize_text_field( $_REQUEST['file'] );
-		}
-
-		if ( isset( $_REQUEST['plugin'] ) ) {
-			$plugin = sanitize_text_field( $_REQUEST['plugin'] );
-		}
+		$file    = isset( $_REQUEST['file'] ) ? sanitize_text_field( $_REQUEST['file'] ) : '';
+		$plugin  = isset( $_REQUEST['plugin'] ) ? sanitize_text_field( $_REQUEST['plugin'] ) : '';
 
 		if ( empty( $plugin ) ) {
-			if ( $file ) {
-				$plugin = $file;
-			} else {
-				$plugin = array_keys( $plugins );
-				$plugin = $plugin[0];
-			}
+			$file_paths = array_keys( get_plugins() );
+			$plugin = $file ? $file : array_shift( $file_paths );
 		}
 
 		$plugin_files = get_plugin_files( $plugin );
@@ -242,21 +218,19 @@ class CodeMirror_WP {
 
 		$file = validate_file_to_edit( $file, $plugin_files );
 
-		self::$codemirror_opts = false;
-
 		self::prep_codemirror_for_file( $file );
 
 		/**
 		 * Give folks a chance to filter the arguments passed to CodeMirror -- This will let them enable
 		 * or disable it (by returning something that evaluates to false) as they choose as well.
 		 *
-		 * @param array  $codemirror_opts The array of options to be passed to codemirror. Falsey doesn't use codemirror.
-		 * @param string $file            The file being displayed.
-		 * @param string $plugin          The plugin file.
+		 * @param array    $options The array of options to be passed to CodeMirror. Falsey doesn't use CodeMirror.
+		 * @param string   $file    The file being displayed.
+		 * @param WP_Theme $theme   The WP_Theme object for the current theme being edited.
 		 */
-		self::$codemirror_opts = apply_filters( 'plugin_editor_codemirror_opts', self::$codemirror_opts, $file, $plugin );
+		self::$options = apply_filters( 'plugin_editor_codemirror_opts', self::$options, $file, $plugin );
 
-		if ( self::$codemirror_opts ) {
+		if ( self::$options ) {
 			add_action( 'admin_footer-plugin-editor.php', array( __CLASS__, 'do_codemirror_admin_editor' ) );
 		}
 	}
@@ -283,9 +257,9 @@ class CodeMirror_WP {
 		}
 		</style>
 		<script>
-		jQuery(document).ready(function($){
-			wp.codemirror = CodeMirror.fromTextArea( document.getElementById('newcontent'), <?php echo json_encode( self::$codemirror_opts ); ?> );
-		});
+		jQuery( function() {
+			wp.codemirror = window.CodeMirror.fromTextArea( document.getElementById( 'newcontent' ), <?php echo json_encode( self::$options ); ?> );
+		} );
 		</script>
 		<?php
 	}
@@ -298,17 +272,12 @@ class CodeMirror_WP {
 		wp_enqueue_script( 'codemirror-addon-lint-css' );
 		wp_enqueue_style( 'codemirror' );
 		wp_enqueue_style( 'codemirror-addon-lint' );
-		self::$codemirror_opts = apply_filters(
-			'customizer_custom_css_codemirror_opts', array(
-				'inputStyle'     => 'contenteditable',
-				'lineNumbers'    => true,
-				'mode'           => 'text/css',
-				'indentUnit'     => 2,
-				'indentWithTabs' => true,
-				'gutters'        => array( 'CodeMirror-lint-markers' ),
-				'lint'           => true,
-			)
-		);
+
+		self::$options = apply_filters( 'customizer_custom_css_codemirror_opts', array_merge( self::$options, array(
+			'mode'    => 'text/css',
+			'gutters' => array( 'CodeMirror-lint-markers' ),
+			'lint'    => true,
+		) ) );
 
 		add_action( 'customize_controls_print_footer_scripts', array( __CLASS__, 'customize_controls_print_footer_scripts' ) );
 	}
@@ -346,15 +315,17 @@ class CodeMirror_WP {
 					onceExpanded = function() {
 						var $textarea = control.container.find( 'textarea' );
 
-						wp.codemirror = CodeMirror.fromTextArea( $textarea[0], <?php echo json_encode( self::$codemirror_opts ); ?> );
+						wp.codemirror = window.CodeMirror.fromTextArea( $textarea[0], <?php echo json_encode( self::$options ); ?> );
 
-						// also refresh when focusing
+						// Refresh when receiving focus.
 						wp.codemirror.on( 'focus', function( editor ) {
 							editor.refresh();
 						} );
 
-						// when the CodeMirror instance changes, mirror to the textarea,
-						// where we have our "true" change event handler bound.
+						/*
+						 * When the CodeMirror instance changes, mirror to the textarea,
+						 * where we have our "true" change event handler bound.
+						 */
 						wp.codemirror.on( 'change', function( editor ) {
 							$textarea.val( editor.getValue() ).trigger( 'change' );
 						} );
@@ -381,4 +352,5 @@ class CodeMirror_WP {
 		<?php
 	}
 }
+
 CodeMirror_WP::go();
