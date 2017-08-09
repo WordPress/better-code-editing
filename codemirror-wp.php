@@ -85,7 +85,7 @@ class CodeMirror_WP {
 		wp_register_script( 'codemirror-mode-clike',      plugins_url( 'CodeMirror/mode/clike/clike.js', __FILE__ ),           array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-mode-css',        plugins_url( 'CodeMirror/mode/css/css.js', __FILE__ ),               array( 'codemirror', 'codemirror-addon-edit-matchbrackets' ), self::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-mode-diff',       plugins_url( 'CodeMirror/mode/diff/diff.js', __FILE__ ),             array( 'codemirror' ), self::CODEMIRROR_VERSION );
-		wp_register_script( 'codemirror-mode-html',       plugins_url( 'CodeMirror/mode/htmlmixed/htmlmixed.js', __FILE__ ),   array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		wp_register_script( 'codemirror-mode-html',       plugins_url( 'CodeMirror/mode/htmlmixed/htmlmixed.js', __FILE__ ),   array( 'codemirror', 'codemirror-mode-css', 'codemirror-mode-javascript', 'codemirror-mode-xml' ), self::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-mode-http',       plugins_url( 'CodeMirror/mode/http/http.js', __FILE__ ),             array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-mode-javascript', plugins_url( 'CodeMirror/mode/javascript/javascript.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-mode-markdown',   plugins_url( 'CodeMirror/mode/markdown/markdown.js', __FILE__ ),     array( 'codemirror' ), self::CODEMIRROR_VERSION );
@@ -127,9 +127,6 @@ class CodeMirror_WP {
 
 			case 'php':
 				wp_enqueue_script( 'codemirror-mode-html' );
-				wp_enqueue_script( 'codemirror-mode-xml' );
-				wp_enqueue_script( 'codemirror-mode-javascript' );
-				wp_enqueue_script( 'codemirror-mode-css' );
 				wp_enqueue_script( 'codemirror-mode-php' );
 				wp_enqueue_style( 'codemirror' );
 
@@ -147,6 +144,13 @@ class CodeMirror_WP {
 					'gutters'        => array( 'CodeMirror-lint-markers' ),
 					'lint'           => true,
 				);
+				break;
+
+			case 'html':
+				wp_enqueue_script( 'codemirror-mode-html' );
+				wp_enqueue_style( 'codemirror' );
+
+				self::$options['mode'] = 'text/html';
 				break;
 
 			case 'xml':
