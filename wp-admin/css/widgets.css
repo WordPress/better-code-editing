@@ -1,0 +1,9 @@
+/* To be added under "Specific widget styling" */
+
+.custom-html-widget-fields > p > .CodeMirror {
+	border: 1px solid #e5e5e5;
+}
+.custom-html-widget-fields code {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}

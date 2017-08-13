@@ -41,6 +41,7 @@ class CodeMirror_WP {
 		add_action( 'load-theme-editor.php', array( __CLASS__, 'load_theme_editor_php' ) );
 		add_action( 'load-plugin-editor.php', array( __CLASS__, 'load_plugin_editor_php' ) );
 		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'customize_controls_enqueue_scripts' ) );
+		add_action( 'widgets_init', array( __CLASS__, 'register_custom_html_widget' ) );
 	}
 
 	/**
@@ -93,6 +94,17 @@ class CodeMirror_WP {
 		wp_register_script( 'codemirror-mode-shell',      plugins_url( 'CodeMirror/mode/shell/shell.js', __FILE__ ),           array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-mode-sql',        plugins_url( 'CodeMirror/mode/sql/sql.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-mode-xml',        plugins_url( 'CodeMirror/mode/xml/xml.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
+
+		wp_register_script( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', __FILE__ ), array( 'jquery', 'backbone', 'wp-util', 'codemirror-mode-html', 'codemirror-addon-lint-html' ) );
+		$options = array_merge( self::$options, array(
+			'mode' => 'htmlmixed',
+			'gutters' => array( 'CodeMirror-lint-markers' ),
+			'lint' => true,
+		) );
+		wp_scripts()->add_inline_script( 'custom-html-widgets', sprintf( 'wp.customHtmlWidgets.init( %s );', wp_json_encode( $options ) ), 'after' );
+
+		// Patch the stylesheet.
+		wp_styles()->add_inline_style( 'widgets', file_get_contents( dirname( __FILE__ ) . '/wp-admin/css/widgets.css' ) );
 	}
 
 	/**
@@ -354,6 +366,15 @@ class CodeMirror_WP {
 			});
 		</script>
 		<?php
+	}
+
+	/**
+	 * Replace Custom HTML widget with CodeMirror Custom HTML Widget.
+	 */
+	public static function register_custom_html_widget() {
+		require_once dirname( __FILE__ ) . '/wp-includes/widgets/class-wp-widget-custom-html-codemirror.php';
+		unregister_widget( 'WP_Widget_Custom_HTML' );
+		register_widget( 'WP_Widget_Custom_HTML_CodeMirror' );
 	}
 }
 
