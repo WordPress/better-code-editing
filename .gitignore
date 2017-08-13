@@ -1,3 +1,7 @@
+
+# CodeMirror sources
+wp-includes/js/codemirror
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
