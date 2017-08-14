@@ -372,9 +372,11 @@ class CodeMirror_WP {
 	 * Replace Custom HTML widget with CodeMirror Custom HTML Widget.
 	 */
 	public static function register_custom_html_widget() {
-		require_once dirname( __FILE__ ) . '/wp-includes/widgets/class-wp-widget-custom-html-codemirror.php';
-		unregister_widget( 'WP_Widget_Custom_HTML' );
-		register_widget( 'WP_Widget_Custom_HTML_CodeMirror' );
+		if ( class_exists( 'WP_Widget_Custom_HTML' ) ) {
+			require_once dirname( __FILE__ ) . '/wp-includes/widgets/class-wp-widget-custom-html-codemirror.php';
+			unregister_widget( 'WP_Widget_Custom_HTML' );
+			register_widget( 'WP_Widget_Custom_HTML_CodeMirror' );
+		}
 	}
 }
 
