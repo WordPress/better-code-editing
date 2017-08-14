@@ -18,7 +18,12 @@ class CodeMirror_WP {
 	/**
 	 * CodeMirror version.
 	 */
-	const CODEMIRROR_VERSION = '5.26.0';
+	const VERSION = '0.1.0';
+
+	/**
+	 * CodeMirror version.
+	 */
+	const CODEMIRROR_VERSION = '5.28.0';
 
 	/**
 	 * CodeMirror options.
@@ -95,7 +100,7 @@ class CodeMirror_WP {
 		wp_register_script( 'codemirror-mode-sql',        plugins_url( 'wp-includes/js/codemirror/mode/sql/sql.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		wp_register_script( 'codemirror-mode-xml',        plugins_url( 'wp-includes/js/codemirror/mode/xml/xml.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
-		wp_register_script( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', __FILE__ ), array( 'jquery', 'backbone', 'wp-util', 'codemirror-mode-html', 'codemirror-addon-lint-html' ) );
+		wp_register_script( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', __FILE__ ), array( 'jquery', 'backbone', 'wp-util', 'codemirror-mode-html', 'codemirror-addon-lint-html' ), self::VERSION );
 		$options = array_merge( self::$options, array(
 			'mode' => 'htmlmixed',
 			'gutters' => array( 'CodeMirror-lint-markers' ),

@@ -20,6 +20,6 @@
     "eslint": "^4.4.0"
   },
   "dependencies": {
-    "codemirror": "^5.28.0"
+    "codemirror": "5.28.0"
   }
 }
