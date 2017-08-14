@@ -4,7 +4,7 @@
 Adding CodeMirror functionality to the Plugin and Theme file editors, as well as the Customizer Custom CSS box and Custom HTML widget.
 
 **Contributors:** [georgestephanis](https://profiles.wordpress.org/georgestephanis), [westonruter](https://profiles.wordpress.org/westonruter), [obenland](https://profiles.wordpress.org/obenland), [wordpressdotorg](https://profiles.wordpress.org/wordpressdotorg)  
-**Tags:** [codemirror](https://wordpress.org/plugins/tags/codemirror), [syntax highlighting](https://wordpress.org/plugins/tags/syntax highlighting)  
+**Tags:** [codemirror](https://wordpress.org/plugins/tags/codemirror), [syntax-highlighter](https://wordpress.org/plugins/tags/syntax-highlighter), [linting](https://wordpress.org/plugins/tags/linting)  
 **Requires at least:** 4.7  
 **Tested up to:** 4.9-alpha  
 **Stable tag:** trunk (master)  

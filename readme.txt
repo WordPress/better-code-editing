@@ -1,6 +1,6 @@
 === Syntax Highlighting Code Editor for WordPress Core ===
 Contributors: georgestephanis, westonruter, obenland, wordpressdotorg
-Tags: codemirror, syntax highlighting
+Tags: codemirror, syntax-highlighter, linting
 Stable tag: trunk
 Requires at least: 4.7
 Tested up to: 4.9-alpha
