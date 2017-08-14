@@ -21,15 +21,21 @@ We're working around discussion on a Core ticket, [#12423](https://core.trac.wor
 
 ## Getting Started
 
-You can locate a ZIP for this plugin on the [releases page](https://github.com/WordPress/codemirror-wp/releases) on GitHub. To install, simply go to your WP Admin and Plugins > Add New. Then click "Upload Plugin" and select the `codemirror-wp.zip` you downloaded from the releases page. Then click "Install Now" and on the next screen click "Activate Plugin".
+You can locate a ZIP for this plugin on the [releases page](https://github.com/WordPress/codemirror-wp/releases) on GitHub. To install, simply go to your WP Admin and Plugins > Add New. Then click "Upload Plugin" and select the `codemirror-wp.zip` you downloaded from the releases page. Then click "Install Now" and on the next screen click "Activate Plugin". _Note on upgrading:_ If you want to update the plugin from a previous version, you must first deactivate it and uninstall it completely and then re-install and re-activate the new version (see [#9757](https://core.trac.wordpress.org/ticket/9757) for fixing this).
 
 Otherwise, to set up the plugin for development: clone this repository and run `npm install` to download CodeMirror and other assets.
 
 ```bash
 cd wp-content/plugins/
-git clone https://github.com/WordPress/codemirror-wp.git
+git clone --recursive https://github.com/WordPress/codemirror-wp.git
 cd codemirror-wp
 npm install
+```
+
+Also install the pre-commit hook via:
+
+```bash
+cd .git/hooks && ln -s ../../dev-lib/pre-commit pre-commit && cd -
 ```
 
 Any questions, reach out to #core-customize on WordPress.org Slack or better open an issue on GitHub!
