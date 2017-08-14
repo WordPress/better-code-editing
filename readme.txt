@@ -1,5 +1,5 @@
 === Syntax Highlighting Code Editor for WordPress Core ===
-Contributors: georgestephanis
+Contributors: georgestephanis, westonruter, obenland, wordpressdotorg
 Tags: codemirror, syntax highlighting
 Stable tag: trunk
 Requires at least: 4.7
@@ -17,7 +17,9 @@ We're working around discussion on a Core ticket, [#12423](https://core.trac.wor
 
 ## Getting Started
 
-Clone this repository, and then build CodeMirror -- the last step is necessary, otherwise the main CodeMirror JS library won't be available to be enqueued.
+You can locate a ZIP for this plugin on the [releases page](https://github.com/WordPress/codemirror-wp/releases) on GitHub. To install, simply go to your WP Admin and Plugins > Add New. Then click "Upload Plugin" and select the `codemirror-wp.zip` you downloaded from the releases page. Then click "Install Now" and on the next screen click "Activate Plugin".
+
+Otherwise, to set up the plugin for development: clone this repository and run `npm install` to download CodeMirror and other assets.
 
 <pre lang="bash">
 cd wp-content/plugins/
@@ -25,8 +27,6 @@ git clone https://github.com/WordPress/codemirror-wp.git
 cd codemirror-wp
 npm install
 </pre>
-
-For simplicity's sake we're running CM as a Git Submodule, rather than duplicating it in this repository.
 
 Any questions, reach out to #core-customize on WordPress.org Slack or better open an issue on GitHub!
 

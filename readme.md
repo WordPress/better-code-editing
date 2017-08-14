@@ -3,7 +3,7 @@
 
 Adding CodeMirror functionality to the Plugin and Theme file editors, as well as the Customizer Custom CSS box and Custom HTML widget.
 
-**Contributors:** [georgestephanis](https://profiles.wordpress.org/georgestephanis)  
+**Contributors:** [georgestephanis](https://profiles.wordpress.org/georgestephanis), [westonruter](https://profiles.wordpress.org/westonruter), [obenland](https://profiles.wordpress.org/obenland), [wordpressdotorg](https://profiles.wordpress.org/wordpressdotorg)  
 **Tags:** [codemirror](https://wordpress.org/plugins/tags/codemirror), [syntax highlighting](https://wordpress.org/plugins/tags/syntax highlighting)  
 **Requires at least:** 4.7  
 **Tested up to:** 4.9-alpha  
@@ -21,7 +21,9 @@ We're working around discussion on a Core ticket, [#12423](https://core.trac.wor
 
 ## Getting Started
 
-Clone this repository, and then build CodeMirror -- the last step is necessary, otherwise the main CodeMirror JS library won't be available to be enqueued.
+You can locate a ZIP for this plugin on the [releases page](https://github.com/WordPress/codemirror-wp/releases) on GitHub. To install, simply go to your WP Admin and Plugins > Add New. Then click "Upload Plugin" and select the `codemirror-wp.zip` you downloaded from the releases page. Then click "Install Now" and on the next screen click "Activate".
+
+Otherwise, to set up the plugin for development: clone this repository and run `npm install` to download CodeMirror and other assets.
 
 ```bash
 cd wp-content/plugins/
@@ -29,8 +31,6 @@ git clone https://github.com/WordPress/codemirror-wp.git
 cd codemirror-wp
 npm install
 ```
-
-For simplicity's sake we're running CM as a Git Submodule, rather than duplicating it in this repository.
 
 Any questions, reach out to #core-customize on WordPress.org Slack or better open an issue on GitHub!
 
