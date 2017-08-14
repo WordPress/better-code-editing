@@ -16,4 +16,4 @@ zip -r ../codemirror-wp.zip .
 cd ..
 
 echo
-echo "Please see: codemirror-wp.zip"
+echo "Please see: $(pwd)/codemirror-wp.zip"

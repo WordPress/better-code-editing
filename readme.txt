@@ -31,3 +31,11 @@ npm install
 Any questions, reach out to #core-customize on WordPress.org Slack or better open an issue on GitHub!
 
 **Development of this plugin is done [on GitHub](https://github.com/WordPress/codemirror-wp). Pull requests welcome. Please see [issues](https://github.com/WordPress/codemirror-wp/issues) reported there.**
+
+## Creating a Release
+
+Contributors who want to make a new release, follow these steps:
+
+1. Bump plugin versions in `package.json` (×1) and in `codemirror-wp.php` (×2: the metadata block in the header and also the `CodeMirror_WP::VERSION` constant).
+2. Run `npm run build-release-zip` to create a `codemirror-wp.zip` in the plugin's root directory.
+3. [Create new release](https://github.com/WordPress/codemirror-wp/releases/new) on GitHub targeting `master`, with the new plugin version as the tag and release title, and upload the `codemirror-wp.zip` as the associated binary. Publish the release.
