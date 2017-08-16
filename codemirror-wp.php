@@ -47,6 +47,10 @@ class CodeMirror_WP {
 		add_action( 'load-plugin-editor.php', array( __CLASS__, 'load_plugin_editor_php' ) );
 		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'customize_controls_enqueue_scripts' ) );
 		add_action( 'widgets_init', array( __CLASS__, 'register_custom_html_widget' ) );
+
+		add_action( 'personal_options', array( __CLASS__, 'add_syntax_highlighting_user_setting_field' ) );
+		add_action( 'personal_options_update', array( __CLASS__, 'update_syntax_highlighting_user_setting' ) );
+		add_action( 'edit_user_profile_update', array( __CLASS__, 'update_syntax_highlighting_user_setting' ) );
 	}
 
 	/**
@@ -102,7 +106,7 @@ class CodeMirror_WP {
 		$scripts->add( 'codemirror-mode-sql',        plugins_url( 'wp-includes/js/codemirror/mode/sql/sql.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-mode-xml',        plugins_url( 'wp-includes/js/codemirror/mode/xml/xml.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
-		$scripts->add( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', __FILE__ ), array( 'jquery', 'backbone', 'wp-util', 'codemirror-mode-html', 'codemirror-addon-lint-html' ), self::VERSION );
+		$scripts->add( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', __FILE__ ), array( 'jquery', 'backbone', 'wp-util' ), self::VERSION );
 		$options = array_merge( self::$options, array(
 			'mode' => 'htmlmixed',
 			'gutters' => array( 'CodeMirror-lint-markers' ),
@@ -197,6 +201,10 @@ class CodeMirror_WP {
 	public static function load_theme_editor_php() {
 		global $file, $theme;
 
+		if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
+			return;
+		}
+
 		wp_reset_vars( array( 'file', 'theme' ) );
 
 		$stylesheet = $theme ? $theme : get_stylesheet();
@@ -227,6 +235,11 @@ class CodeMirror_WP {
 	 * Load plugin editor PHP.
 	 */
 	public static function load_plugin_editor_php() {
+
+		if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
+			return;
+		}
+
 		$file    = isset( $_REQUEST['file'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['file'] ) ) : '';
 		$plugin  = isset( $_REQUEST['plugin'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) : '';
 
@@ -313,6 +326,11 @@ class CodeMirror_WP {
 	 * Add Customizer integration.
 	 */
 	public static function customize_controls_print_footer_scripts() {
+
+		if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
+			return;
+		}
+
 		?>
 		<style>
 		#customize-control-custom_css .CodeMirror {
@@ -388,6 +406,54 @@ class CodeMirror_WP {
 			unregister_widget( 'WP_Widget_Custom_HTML' );
 			register_widget( 'WP_Widget_Custom_HTML_CodeMirror' );
 		}
+	}
+
+	/**
+	 * Render the toggle to disable CodeMirror for the current user.
+	 *
+	 * @param WP_User $profileuser Current user being edited.
+	 */
+	public static function add_syntax_highlighting_user_setting_field( $profileuser ) {
+		$should_show_setting = (
+			// For Custom HTML widget and Additional CSS in Customizer.
+			user_can( $profileuser, 'edit_theme_options' )
+			||
+			// Edit plugins.
+			user_can( $profileuser, 'edit_plugins' )
+			||
+			// Edit themes.
+			user_can( $profileuser, 'edit_themes' )
+		);
+		if ( ! $should_show_setting ) {
+			return;
+		}
+
+		?>
+		<tr class="user-code-editing-wrap">
+			<th scope="row"><?php _e( 'Syntax Highlighting' ); ?></th>
+			<td>
+				<label for="syntax_highlighting"><input name="syntax_highlighting" type="checkbox" id="syntax_highlighting" value="false" <?php checked( 'false', $profileuser->syntax_highlighting ); ?> /> <?php _e( 'Disable syntax highlighting when editing code' ); ?></label>
+				<script>
+					// Move the option right after the Visual Editor.
+					jQuery( function( $ ) {
+						$( '.user-rich-editing-wrap' ).after( $( '.user-code-editing-wrap' ) );
+					} );
+				</script>
+			</td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Update the syntax_highlighting user setting.
+	 *
+	 * @param int $user_id User being edited.
+	 */
+	public function update_syntax_highlighting_user_setting( $user_id ) {
+		if ( ! current_user_can( 'edit_user', $user_id ) ) {
+			return;
+		}
+		update_user_meta( $user_id, 'syntax_highlighting', isset( $_POST['syntax_highlighting'] ) && 'false' === $_POST['syntax_highlighting'] ? 'false' : 'true' );
 	}
 }
 
