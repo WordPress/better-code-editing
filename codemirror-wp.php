@@ -35,6 +35,7 @@ class CodeMirror_WP {
 		'indentWithTabs' => true,
 		'inputStyle'     => 'contenteditable',
 		'lineNumbers'    => true,
+		'lineWrapping'   => true,
 	);
 
 	/**
