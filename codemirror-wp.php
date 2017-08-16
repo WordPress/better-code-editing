@@ -227,12 +227,14 @@ class CodeMirror_WP {
 	 * Load plugin editor PHP.
 	 */
 	public static function load_plugin_editor_php() {
-		$file    = isset( $_REQUEST['file'] ) ? sanitize_text_field( $_REQUEST['file'] ) : '';
-		$plugin  = isset( $_REQUEST['plugin'] ) ? sanitize_text_field( $_REQUEST['plugin'] ) : '';
+		$file    = isset( $_REQUEST['file'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['file'] ) ) : '';
+		$plugin  = isset( $_REQUEST['plugin'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) : '';
 
 		if ( empty( $plugin ) ) {
 			$file_paths = array_keys( get_plugins() );
 			$plugin = $file ? $file : array_shift( $file_paths );
+		} elseif ( 0 !== validate_file( $plugin ) ) {
+			wp_die( __( 'Sorry, that file cannot be edited.' ) );
 		}
 
 		$plugin_files = get_plugin_files( $plugin );
@@ -249,9 +251,9 @@ class CodeMirror_WP {
 		 * Give folks a chance to filter the arguments passed to CodeMirror -- This will let them enable
 		 * or disable it (by returning something that evaluates to false) as they choose as well.
 		 *
-		 * @param array    $options The array of options to be passed to CodeMirror. Falsey doesn't use CodeMirror.
-		 * @param string   $file    The file being displayed.
-		 * @param WP_Theme $theme   The WP_Theme object for the current theme being edited.
+		 * @param array   $options The array of options to be passed to CodeMirror. Falsey doesn't use CodeMirror.
+		 * @param string  $file    The file being displayed.
+		 * @param string  $plugin  The plugin slug for the file being edited.
 		 */
 		self::$options = apply_filters( 'plugin_editor_codemirror_opts', self::$options, $file, $plugin );
 
