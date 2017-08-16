@@ -5,7 +5,8 @@ wp.customHtmlWidgets = ( function( $ ) {
 
 	var component = {
 		idBases: [ 'custom_html' ],
-		codeMirrorOptions: {}
+		codeMirrorOptions: {},
+		syntaxHighlightingDisabled: false
 	};
 
 	/**
@@ -99,6 +100,10 @@ wp.customHtmlWidgets = ( function( $ ) {
 		 */
 		initializeEditor: function initializeEditor() {
 			var control = this;
+
+			if ( component.syntaxHighlightingDisabled ) {
+				return;
+			}
 
 			control.editor = CodeMirror.fromTextArea(
 				control.fields.content[0],
