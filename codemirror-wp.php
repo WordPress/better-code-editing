@@ -35,6 +35,7 @@ class CodeMirror_WP {
 		'indentWithTabs' => true,
 		'inputStyle'     => 'contenteditable',
 		'lineNumbers'    => true,
+		'lineWrapping'   => true,
 	);
 
 	/**
@@ -294,6 +295,7 @@ class CodeMirror_WP {
 		}
 		.CodeMirror {
 			height: calc( 100vh - 220px );
+			width: 97%;
 		}
 		</style>
 		<script>
