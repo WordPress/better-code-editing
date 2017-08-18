@@ -1,3 +1,4 @@
+/* global CodeMirror */
 (function( api ) {
 	'use strict';
 
@@ -20,10 +21,10 @@
 			onceExpanded = function() {
 				var $textarea = control.container.find( 'textarea' );
 
-				wp.codemirror = window.CodeMirror.fromTextArea( $textarea[0], api.settings.codeMirror );
+				control.editor = CodeMirror.fromTextArea( $textarea[0], api.settings.codeMirror );
 
 				// Refresh when receiving focus.
-				wp.codemirror.on( 'focus', function( editor ) {
+				control.editor.on( 'focus', function( editor ) {
 					editor.refresh();
 				} );
 
@@ -31,7 +32,7 @@
 				 * When the CodeMirror instance changes, mirror to the textarea,
 				 * where we have our "true" change event handler bound.
 				 */
-				wp.codemirror.on( 'change', function( editor ) {
+				control.editor.on( 'change', function( editor ) {
 					$textarea.val( editor.getValue() ).trigger( 'change' );
 				} );
 
