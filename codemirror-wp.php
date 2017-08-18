@@ -47,6 +47,7 @@ class CodeMirror_WP {
 		add_action( 'load-plugin-editor.php', array( __CLASS__, 'load_plugin_editor_php' ) );
 		add_action( 'customize_register', array( __CLASS__, 'amend_custom_css_help_text' ), 11 );
 		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'customize_controls_enqueue_scripts' ) );
+		add_action( 'customize_controls_print_footer_scripts', array( __CLASS__, 'amend_customize_pane_settings' ), 1001 );
 		add_action( 'widgets_init', array( __CLASS__, 'register_custom_html_widget' ) );
 
 		add_action( 'personal_options', array( __CLASS__, 'add_syntax_highlighting_user_setting_field' ) );
@@ -126,8 +127,9 @@ class CodeMirror_WP {
 		$styles->add( 'codemirror-addon-show-hint', plugins_url( 'wp-includes/js/codemirror/addon/hint/show-hint.css', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$styles->add( 'codemirror-addon-lint',      plugins_url( 'wp-includes/js/codemirror/addon/lint/lint.css', __FILE__ ),      array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
-		// Patch the stylesheet.
-		$styles->add_inline_style( 'widgets', file_get_contents( dirname( __FILE__ ) . '/wp-admin/css/widgets.css' ) );
+		// Patch the stylesheets.
+		$styles->add_inline_style( 'widgets', file_get_contents( dirname( __FILE__ ) . '/wp-admin/css/widgets-addendum.css' ) );
+		$styles->add_inline_style( 'customize-controls', file_get_contents( dirname( __FILE__ ) . '/wp-admin/css/customize-controls-addendum.css' ) );
 	}
 
 	/**
@@ -314,13 +316,7 @@ class CodeMirror_WP {
 		wp_enqueue_style( 'codemirror' );
 		wp_enqueue_style( 'codemirror-addon-lint' );
 
-		self::$options = apply_filters( 'customizer_custom_css_codemirror_opts', array_merge( self::$options, array(
-			'mode'    => 'text/css',
-			'gutters' => array( 'CodeMirror-lint-markers' ),
-			'lint'    => true,
-		) ) );
-
-		add_action( 'customize_controls_print_footer_scripts', array( __CLASS__, 'customize_controls_print_footer_scripts' ) );
+		wp_add_inline_script( 'customize-controls', file_get_contents( dirname( __FILE__ ) . '/wp-admin/js/customize-controls-addendum.js' ) );
 	}
 
 	/**
@@ -353,77 +349,22 @@ class CodeMirror_WP {
 
 	/**
 	 * Add Customizer integration.
+	 *
+	 * @see WP_Customize_Manager::customize_pane_settings()
 	 */
-	public static function customize_controls_print_footer_scripts() {
+	public static function amend_customize_pane_settings() {
 
 		if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
 			return;
 		}
 
-		?>
-		<style>
-		#customize-control-custom_css .CodeMirror {
-			height: calc( 100vh - 185px );
-		}
-		.CodeMirror-lint-tooltip {
-			z-index: 500000;
-		}
-		</style>
-		<script>
-			wp.customize.section( 'custom_css', function( section ) {
-				wp.customize.control( 'custom_css', function( control ) {
-					var onceExpanded, onExpandedChange;
+		$options = apply_filters( 'customizer_custom_css_codemirror_opts', array_merge( self::$options, array(
+			'mode'    => 'text/css',
+			'gutters' => array( 'CodeMirror-lint-markers' ),
+			'lint'    => true,
+		) ) );
 
-					// Workaround for disabling server-sent syntax checking notifications.
-					// @todo Listen for errors in CodeMirror and opt-to add invalidity notifications for them? The presence of such notification error allows saving to be blocked.
-					control.setting.notifications.add = (function( originalAdd ) {
-						return function( id, notification ) {
-							if ( 'imbalanced_curly_brackets' === id && notification.fromServer ) {
-								return null;
-							} else {
-								return originalAdd( id, notification );
-							}
-						};
-					})( control.setting.notifications );
-
-					onceExpanded = function() {
-						var $textarea = control.container.find( 'textarea' );
-
-						wp.codemirror = window.CodeMirror.fromTextArea( $textarea[0], <?php echo json_encode( self::$options ); ?> );
-
-						// Refresh when receiving focus.
-						wp.codemirror.on( 'focus', function( editor ) {
-							editor.refresh();
-						} );
-
-						/*
-						 * When the CodeMirror instance changes, mirror to the textarea,
-						 * where we have our "true" change event handler bound.
-						 */
-						wp.codemirror.on( 'change', function( editor ) {
-							$textarea.val( editor.getValue() ).trigger( 'change' );
-						} );
-
-						// To do: bind something to setting change, so that we can catch other plugins modifying the css and update CodeMirror?
-					};
-
-					onExpandedChange = function( isExpanded ) {
-						if ( isExpanded ) {
-							onceExpanded();
-							section.expanded.unbind( onExpandedChange );
-						}
-					};
-					control.deferred.embedded.done( function() {
-						if ( section.expanded() ) {
-							onceExpanded();
-						} else {
-							section.expanded.bind( onExpandedChange );
-						}
-					});
-				});
-			});
-		</script>
-		<?php
+		printf( '<script>window._wpCustomizeSettings.codeMirror = %s</script>;', wp_json_encode( $options ) );
 	}
 
 	/**
