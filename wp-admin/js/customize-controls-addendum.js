@@ -7,6 +7,11 @@
 		api.control( 'custom_css', function( control ) {
 			var onceExpanded, onExpandedChange;
 
+			// Abort if CodeMirror disabled via customizer_custom_css_codemirror_opts filter.
+			if ( ! api.settings.codeMirror ) {
+				return;
+			}
+
 			// Workaround for disabling server-sent syntax checking notifications.
 			// @todo Listen for errors in CodeMirror and opt-to add invalidity notifications for them? The presence of such notification error allows saving to be blocked.
 			control.setting.notifications.add = (function( originalAdd ) { // eslint-disable-line max-nested-callbacks

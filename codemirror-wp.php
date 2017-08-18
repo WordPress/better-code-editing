@@ -364,7 +364,9 @@ class CodeMirror_WP {
 			'lint'    => true,
 		) ) );
 
-		printf( '<script>window._wpCustomizeSettings.codeMirror = %s</script>;', wp_json_encode( $options ) );
+		if ( $options ) {
+			printf( '<script>window._wpCustomizeSettings.codeMirror = %s</script>;', wp_json_encode( $options ) );
+		}
 	}
 
 	/**
