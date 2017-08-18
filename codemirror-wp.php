@@ -3,7 +3,7 @@
  * Plugin Name: CodeMirror WP
  * Plugin URI: https://wordpress.org/plugins/codemirror-wp/
  * Description: Code highlighting and linting, powered by CodeMirror.
- * Version: 0.2.0
+ * Version: 0.3.0
  * Author: The WordPress Team
  * Text Domain: codemirror-wp
  *
@@ -18,7 +18,7 @@ class CodeMirror_WP {
 	/**
 	 * CodeMirror version.
 	 */
-	const VERSION = '0.2.0';
+	const VERSION = '0.3.0';
 
 	/**
 	 * CodeMirror version.

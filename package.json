@@ -1,6 +1,6 @@
 {
   "name": "codemirror-wp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Howdy!  This is currently a Work In Progress playground for experimenting with bringing syntax highlighting to WordPress Core.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
