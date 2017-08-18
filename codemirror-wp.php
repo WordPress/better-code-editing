@@ -399,14 +399,14 @@ class CodeMirror_WP {
 		}
 
 		?>
-		<tr class="user-code-editing-wrap">
+		<tr class="user-syntax-highlighting-wrap">
 			<th scope="row"><?php _e( 'Syntax Highlighting' ); ?></th>
 			<td>
 				<label for="syntax_highlighting"><input name="syntax_highlighting" type="checkbox" id="syntax_highlighting" value="false" <?php checked( 'false', $profileuser->syntax_highlighting ); ?> /> <?php _e( 'Disable syntax highlighting when editing code' ); ?></label>
 				<script>
 					// Move the option right after the Visual Editor.
 					jQuery( function( $ ) {
-						$( '.user-rich-editing-wrap' ).after( $( '.user-code-editing-wrap' ) );
+						$( '.user-rich-editing-wrap' ).after( $( '.user-syntax-highlighting-wrap' ) );
 					} );
 				</script>
 			</td>
