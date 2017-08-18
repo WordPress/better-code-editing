@@ -295,6 +295,7 @@ class CodeMirror_WP {
 		}
 		.CodeMirror {
 			height: calc( 100vh - 220px );
+			width: 97%;
 		}
 		</style>
 		<script>
