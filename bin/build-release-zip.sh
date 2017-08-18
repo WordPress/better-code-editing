@@ -11,6 +11,10 @@ if [ -e build ]; then
 fi
 mkdir build
 rsync -avz ./ build/ --exclude-from=.svnignore
+if [ -e codemirror-wp.zip ]; then
+	rm codemirror-wp.zip
+fi
+
 cd build
 zip -r ../codemirror-wp.zip .
 cd ..
