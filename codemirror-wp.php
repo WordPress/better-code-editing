@@ -45,6 +45,7 @@ class CodeMirror_WP {
 		add_action( 'wp_default_styles', array( __CLASS__, 'register_styles' ) );
 		add_action( 'load-theme-editor.php', array( __CLASS__, 'load_theme_editor_php' ) );
 		add_action( 'load-plugin-editor.php', array( __CLASS__, 'load_plugin_editor_php' ) );
+		add_action( 'customize_register', array( __CLASS__, 'amend_custom_css_help_text' ), 11 );
 		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'customize_controls_enqueue_scripts' ) );
 		add_action( 'widgets_init', array( __CLASS__, 'register_custom_html_widget' ) );
 
@@ -320,6 +321,34 @@ class CodeMirror_WP {
 		) ) );
 
 		add_action( 'customize_controls_print_footer_scripts', array( __CLASS__, 'customize_controls_print_footer_scripts' ) );
+	}
+
+	/**
+	 * Amend help text for Custom CSS.
+	 *
+	 * @param WP_Customize_Manager $wp_customize Manager.
+	 */
+	public static function amend_custom_css_help_text( WP_Customize_Manager $wp_customize ) {
+		if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
+			return;
+		}
+
+		$section = $wp_customize->get_section( 'custom_css' );
+		if ( ! $section ) {
+			return;
+		}
+
+		$section->description = sprintf( '%s<br /><a href="%s" class="external-link" target="_blank">%s<span class="screen-reader-text">%s</span></a>',
+			sprintf(
+				/* translators: placeholder is profile URL */
+				__( 'CSS allows you to customize the appearance and layout of your site with code. Separate CSS is saved for each of your themes. In the editing area the Tab key enters a tab character. To move below this area by pressing Tab, press the Esc key followed by the Tab key. You can disable the code syntax highlighter in your <a href="%s" target="blank" class="external-link">user profile</a>. This will allow you to work in plain text mode.' ),
+				esc_url( get_edit_profile_url() . '#syntax_highlighting' )
+			),
+			esc_url( __( 'https://codex.wordpress.org/CSS' ) ),
+			__( 'Learn more about CSS' ),
+			/* translators: accessibility text */
+			__( '(opens in a new window)' )
+		);
 	}
 
 	/**
