@@ -124,6 +124,12 @@ class CodeMirror_WP {
 	 * @param WP_Styles $styles Styles.
 	 */
 	public static function register_styles( WP_Styles $styles ) {
+		/*
+		 * Removes `#template div` and `#template textarea` styles from common.css.
+		 */
+		$styles->remove( 'common' );
+		$styles->add( 'common', plugins_url( 'wp-admin/css/common.css', __FILE__ ), array(), self::CODEMIRROR_VERSION );
+
 		$styles->add( 'codemirror',                 plugins_url( 'wp-includes/js/codemirror/lib/codemirror.css', __FILE__ ),       array(),               self::CODEMIRROR_VERSION );
 		$styles->add( 'codemirror-addon-show-hint', plugins_url( 'wp-includes/js/codemirror/addon/hint/show-hint.css', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$styles->add( 'codemirror-addon-lint',      plugins_url( 'wp-includes/js/codemirror/addon/lint/lint.css', __FILE__ ),      array( 'codemirror' ), self::CODEMIRROR_VERSION );
