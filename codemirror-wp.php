@@ -124,6 +124,12 @@ class CodeMirror_WP {
 	 * @param WP_Styles $styles Styles.
 	 */
 	public static function register_styles( WP_Styles $styles ) {
+		/*
+		 * Override common.css with patched version that has proper styling for CodeMirror and textarea.
+		 */
+		$styles->registered['common']->src = plugins_url( 'wp-admin/css/common.css', __FILE__ );
+		$styles->registered['common']->ver = self::VERSION;
+
 		$styles->add( 'codemirror',                 plugins_url( 'wp-includes/js/codemirror/lib/codemirror.css', __FILE__ ),       array(),               self::CODEMIRROR_VERSION );
 		$styles->add( 'codemirror-addon-show-hint', plugins_url( 'wp-includes/js/codemirror/addon/hint/show-hint.css', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$styles->add( 'codemirror-addon-lint',      plugins_url( 'wp-includes/js/codemirror/addon/lint/lint.css', __FILE__ ),      array( 'codemirror' ), self::CODEMIRROR_VERSION );
@@ -284,23 +290,6 @@ class CodeMirror_WP {
 	 */
 	public static function do_codemirror_admin_editor() {
 		?>
-		<style>
-		#template div {
-			margin-right: 0;
-		}
-		#template > div {
-			margin-right: 190px;
-		}
-		@media screen and (max-width: 782px) {
-			#template > div {
-				margin-right: 0;
-			}
-		}
-		.CodeMirror {
-			height: calc( 100vh - 220px );
-			width: 97%;
-		}
-		</style>
 		<script>
 		jQuery( function() {
 			wp.codemirror = window.CodeMirror.fromTextArea( document.getElementById( 'newcontent' ), <?php echo json_encode( self::$options ); ?> );
