@@ -126,9 +126,10 @@ class CodeMirror_WP {
 	public static function register_styles( WP_Styles $styles ) {
 		/*
 		 * Removes `#template div` and `#template textarea` styles from common.css.
+		 * See diff to file in core via https://github.com/WordPress/codemirror-wp/pull/39
 		 */
-		$styles->remove( 'common' );
-		$styles->add( 'common', plugins_url( 'wp-admin/css/common.css', __FILE__ ), array(), self::CODEMIRROR_VERSION );
+		$styles->registered['common']->src = plugins_url( 'wp-admin/css/common.css', __FILE__ );
+		$styles->registered['common']->ver = self::VERSION;
 
 		$styles->add( 'codemirror',                 plugins_url( 'wp-includes/js/codemirror/lib/codemirror.css', __FILE__ ),       array(),               self::CODEMIRROR_VERSION );
 		$styles->add( 'codemirror-addon-show-hint', plugins_url( 'wp-includes/js/codemirror/addon/hint/show-hint.css', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
