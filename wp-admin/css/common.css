@@ -2200,7 +2200,7 @@ h1.nav-tab-wrapper, /* Back-compat for pre-4.4 */
 	visibility: visible;
 }
 
-#template div {
+#template > div {
 	margin-right: 190px;
 }
 
@@ -3083,11 +3083,16 @@ img {
 #template textarea {
 	font-family: Consolas, Monaco, monospace;
 	font-size: 13px;
-	width: 97%;
 	background: #f9f9f9;
 	-moz-tab-size: 4;
 	-o-tab-size: 4;
 	tab-size: 4;
+}
+
+#template textarea,
+#template .CodeMirror {
+	width: 97%;
+	height: calc( 100vh - 220px );
 }
 
 /* rtl:ignore */
@@ -3662,6 +3667,17 @@ img {
 		padding: 5px;
 		margin-left: -5px;
 		margin-top: -5px;
+	}
+
+	#template > div {
+		 float: none;
+		 margin: 0;
+		 width: auto;
+	}
+
+	#template .CodeMirror,
+	#template textarea {
+		width: 100%;
 	}
 
 	.fileedit-sub .alignright {

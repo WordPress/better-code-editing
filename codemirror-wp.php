@@ -125,8 +125,7 @@ class CodeMirror_WP {
 	 */
 	public static function register_styles( WP_Styles $styles ) {
 		/*
-		 * Removes `#template div` and `#template textarea` styles from common.css.
-		 * See diff to file in core via https://github.com/WordPress/codemirror-wp/pull/39
+		 * Override common.css with patched version that has proper styling for CodeMirror and textarea.
 		 */
 		$styles->registered['common']->src = plugins_url( 'wp-admin/css/common.css', __FILE__ );
 		$styles->registered['common']->ver = self::VERSION;
@@ -291,25 +290,8 @@ class CodeMirror_WP {
 	 */
 	public static function do_codemirror_admin_editor() {
 		?>
-		<style>
-		#template div {
-			margin-right: 0;
-		}
-		#template > div {
-			margin-right: 190px;
-		}
-		@media screen and (max-width: 782px) {
-			#template > div {
-				margin-right: 0;
-			}
-		}
-		.CodeMirror {
-			height: calc( 100vh - 220px );
-			width: 97%;
-		}
-		</style>
 		<script>
-		jQuery( function() {
+		jQuery( function( $ ) {
 			wp.codemirror = window.CodeMirror.fromTextArea( document.getElementById( 'newcontent' ), <?php echo json_encode( self::$options ); ?> );
 		} );
 		</script>
