@@ -265,8 +265,8 @@ a:focus .media-icon img,
 .wp-person a:focus .gravatar {
 	color: #124964;
 	box-shadow:
-			0 0 0 1px #5b9dd9,
-			0 0 2px 1px rgba(30, 140, 190, .8);
+		0 0 0 1px #5b9dd9,
+		0 0 2px 1px rgba(30, 140, 190, .8);
 }
 
 .ie8 a:focus {
@@ -809,8 +809,8 @@ img.emoji {
 
 .tagchecklist .ntdelbutton:focus .remove-tag-icon:before {
 	box-shadow:
-			0 0 0 1px #5b9dd9,
-			0 0 2px 1px rgba(30, 140, 190, .8);
+		0 0 0 1px #5b9dd9,
+		0 0 2px 1px rgba(30, 140, 190, .8);
 }
 
 .key-labels label {
@@ -1490,8 +1490,8 @@ div.error {
 
 /* Error icon. */
 .update-message.notice-error p:before {
-	color: #dc3232;
-	content: "\f534";
+	 color: #dc3232;
+	 content: "\f534";
 }
 
 .wrap .notice p:before,
@@ -1697,7 +1697,7 @@ form.upgrade .hint {
 #contextual-help-wrap h5 {
 	margin: 0;
 	padding: 8px 0;
-	font-size: 13px;
+ 	font-size: 13px;
 	font-weight: 600;
 }
 
@@ -2165,10 +2165,10 @@ h1.nav-tab-wrapper, /* Back-compat for pre-4.4 */
 
 /* Back-compat for plugins. Deprecated. Use .wp-clearfix instead. */
 .nav-tab-wrapper:not(.wp-clearfix):after {
-	content: "";
-	display: table;
-	clear: both;
-}
+ 	content: "";
+ 	display: table;
+ 	clear: both;
+ }
 
 .ie8 .nav-tab-wrapper {
 	/* contain floats establishing a new block formatting context */
@@ -2907,8 +2907,8 @@ body.index-php #TB_window.thickbox-loading:before {
 }
 
 @media print,
-(-webkit-min-device-pixel-ratio: 1.25),
-(min-resolution: 120dpi) {
+	(-webkit-min-device-pixel-ratio: 1.25),
+	(min-resolution: 120dpi) {
 
 	body.about-php #TB_window.thickbox-loading:before,
 	body.plugin-install-php #TB_window.thickbox-loading:before,
@@ -3066,8 +3066,8 @@ img {
 
 .js .postbox .handlediv:focus .toggle-indicator:before {
 	box-shadow:
-			0 0 0 1px #5b9dd9,
-			0 0 2px 1px rgba(30, 140, 190, .8);
+		0 0 0 1px #5b9dd9,
+		0 0 2px 1px rgba(30, 140, 190, .8);
 }
 
 /* @todo: appears to be Press This only and overridden */
@@ -3214,8 +3214,8 @@ img {
 
 .widget-top .widget-action:focus .toggle-indicator:before {
 	box-shadow:
-			0 0 0 1px #5b9dd9,
-			0 0 2px 1px rgba(30,140,190,.8);
+		0 0 0 1px #5b9dd9,
+		0 0 2px 1px rgba(30,140,190,.8);
 }
 
 .control-section .accordion-section-title:after,
@@ -3489,8 +3489,8 @@ img {
  * HiDPI Displays
  */
 @media print,
-(-webkit-min-device-pixel-ratio: 1.25),
-(min-resolution: 120dpi) {
+  (-webkit-min-device-pixel-ratio: 1.25),
+  (min-resolution: 120dpi) {
 	/* Back-compat for pre-3.8 */
 	div.star-holder,
 	div.star-holder .star-rating {

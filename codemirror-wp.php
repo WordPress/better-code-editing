@@ -291,7 +291,7 @@ class CodeMirror_WP {
 	public static function do_codemirror_admin_editor() {
 		?>
 		<script>
-		jQuery( function( $ ) {
+		jQuery( function() {
 			wp.codemirror = window.CodeMirror.fromTextArea( document.getElementById( 'newcontent' ), <?php echo json_encode( self::$options ); ?> );
 		} );
 		</script>
