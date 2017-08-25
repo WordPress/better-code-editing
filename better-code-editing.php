@@ -109,6 +109,8 @@ class Better_Code_Editing_Plugin {
 		$scripts->add( 'codemirror-mode-sql',        plugins_url( 'wp-includes/js/codemirror/mode/sql/sql.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-mode-xml',        plugins_url( 'wp-includes/js/codemirror/mode/xml/xml.js', __FILE__ ),               array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
+		$scripts->add( 'file-editor', plugins_url( 'wp-admin/js/file-editor.js', __FILE__ ), array( 'jquery', 'codemirror', 'jquery-ui-core' ), self::VERSION );
+
 		$scripts->add( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', __FILE__ ), array( 'jquery', 'backbone', 'wp-util' ), self::VERSION );
 		$options = array_merge( self::$options, array(
 			'mode' => 'htmlmixed',
@@ -224,7 +226,7 @@ class Better_Code_Editing_Plugin {
 			$file = 'style.css';
 		}
 
-		wp_enqueue_script( 'jquery-ui-core' ); // For :tabbable selector.
+		wp_enqueue_script( 'file-editor' );
 		self::prep_codemirror_for_file( $file );
 
 		/**
@@ -235,11 +237,9 @@ class Better_Code_Editing_Plugin {
 		 * @param string   $file    The file being displayed.
 		 * @param WP_Theme $theme   The WP_Theme object for the current theme being edited.
 		 */
-		self::$options = apply_filters( 'theme_editor_codemirror_opts', self::$options, $file, $wp_theme );
+		$options = apply_filters( 'theme_editor_codemirror_opts', self::$options, $file, $wp_theme );
 
-		if ( self::$options ) {
-			add_action( 'admin_footer-theme-editor.php', array( __CLASS__, 'do_codemirror_admin_editor' ) );
-		}
+		wp_add_inline_script( 'file-editor', sprintf( 'var _wpCodeMirrorOptions = %s;', wp_json_encode( $options ) ) );
 	}
 
 	/**
@@ -269,7 +269,7 @@ class Better_Code_Editing_Plugin {
 
 		$file = validate_file_to_edit( $file, $plugin_files );
 
-		wp_enqueue_script( 'jquery-ui-core' ); // For :tabbable selector.
+		wp_enqueue_script( 'file-editor' );
 		self::prep_codemirror_for_file( $file );
 
 		/**
@@ -280,60 +280,9 @@ class Better_Code_Editing_Plugin {
 		 * @param string  $file    The file being displayed.
 		 * @param string  $plugin  The plugin slug for the file being edited.
 		 */
-		self::$options = apply_filters( 'plugin_editor_codemirror_opts', self::$options, $file, $plugin );
+		$options = apply_filters( 'plugin_editor_codemirror_opts', self::$options, $file, $plugin );
 
-		if ( self::$options ) {
-			add_action( 'admin_footer-plugin-editor.php', array( __CLASS__, 'do_codemirror_admin_editor' ) );
-		}
-	}
-
-	/**
-	 * Integrate with admin editor.
-	 */
-	public static function do_codemirror_admin_editor() {
-		?>
-		<script>
-		jQuery( function ( $ ) {
-			var $textarea = $( '#newcontent' ), editor;
-			editor = CodeMirror.fromTextArea( $textarea[0], <?php echo json_encode( self::$options ); ?> );
-
-			// Make sure the editor gets updated if the content was updated on the server (sanitization) but not updated in the editor since it was focused.
-			editor.on( 'blur', function() {
-				$textarea.data( 'next-tab-blurs', false );
-			});
-
-			editor.on( 'keydown', function onKeydown( editor, event ) {
-				var tabKeyCode = 9, escKeyCode = 27;
-
-				// Take note of the ESC keypress so that the next TAB can focus outside the editor.
-				if ( escKeyCode === event.keyCode ) {
-					$textarea.data( 'next-tab-blurs', true );
-					return;
-				}
-
-				// Short-circuit if tab key is not being pressed or the tab key press should move focus.
-				if ( tabKeyCode !== event.keyCode || ! $textarea.data( 'next-tab-blurs' ) ) {
-					return;
-				}
-
-				// Focus on previous or next focusable item.
-				if ( event.shiftKey ) {
-					$( '#templateside' ).find( ':tabbable' ).last().focus();
-				} else {
-					$( '#template' ).find( ':tabbable:not(.CodeMirror-code)' ).first().focus();
-				}
-
-				// Reset tab state.
-				$textarea.data( 'next-tab-blurs', false );
-
-				// Prevent tab character from being added.
-				event.preventDefault();
-			});
-
-			wp.codemirror = editor;
-		});
-		</script>
-		<?php
+		wp_add_inline_script( 'file-editor', sprintf( 'var _wpCodeMirrorOptions = %s;', wp_json_encode( $options ) ) );
 	}
 
 	/**
