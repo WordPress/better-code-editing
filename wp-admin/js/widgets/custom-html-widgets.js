@@ -126,6 +126,37 @@ wp.customHtmlWidgets = ( function( $ ) {
 				if ( control.contentUpdateBypassed ) {
 					control.syncContainer.find( '.sync-input.content' ).trigger( 'change' );
 				}
+
+				control.fields.content.data( 'next-tab-blurs', false );
+			});
+
+			control.editor.on( 'keydown', function onKeydown( editor, event ) {
+				var tabKeyCode = 9, escKeyCode = 27, tabbables;
+
+				// Take note of the ESC keypress so that the next TAB can focus outside the editor.
+				if ( escKeyCode === event.keyCode ) {
+					control.fields.content.data( 'next-tab-blurs', true );
+					return;
+				}
+
+				// Short-circuit if tab key is not being pressed or the tab key press should move focus.
+				if ( tabKeyCode !== event.keyCode || ! control.fields.content.data( 'next-tab-blurs' ) ) {
+					return;
+				}
+
+				// Focus on previous or next focusable item.
+				if ( event.shiftKey ) {
+					control.fields.title.focus();
+				} else {
+					tabbables = control.syncContainer.add( control.syncContainer.parent().find( '.widget-position, .widget-control-actions' ) ).find( ':tabbable' );
+					tabbables.first().focus();
+				}
+
+				// Reset tab state.
+				control.fields.content.data( 'next-tab-blurs', false );
+
+				// Prevent tab character from being added.
+				event.preventDefault();
 			});
 		}
 	});
