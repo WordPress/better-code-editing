@@ -1,5 +1,5 @@
 === Syntax Highlighting Code Editor for WordPress Core ===
-Contributors: georgestephanis, westonruter, obenland, wordpressdotorg
+Contributors: georgestephanis, westonruter, obenland, melchoyce, wordpressdotorg
 Tags: codemirror, syntax-highlighter, linting
 Stable tag: 0.3.0
 Requires at least: 4.7
