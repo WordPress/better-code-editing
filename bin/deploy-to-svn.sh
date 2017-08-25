@@ -5,7 +5,7 @@ if [ $# -eq 0 ]; then
 	exit 1
 fi
 
-SVN_SLUG="codemirror-wp"
+SVN_SLUG="better-code-editing"
 
 GIT_DIR=$(dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" )
 SVN_DIR="/tmp/$SVN_SLUG"

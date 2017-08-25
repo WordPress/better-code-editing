@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: CodeMirror WP
- * Plugin URI: https://wordpress.org/plugins/codemirror-wp/
+ * Plugin Name: Better Code Editing (formerly CodeMirror WP)
+ * Plugin URI: https://wordpress.org/plugins/better-code-editing/
  * Description: Code highlighting and linting, powered by CodeMirror.
  * Version: 0.3.0
  * Author: The WordPress Team
- * Text Domain: codemirror-wp
+ * Text Domain: better-code-editing
  *
  * @package WordPress
  */
@@ -13,7 +13,7 @@
 /**
  * Plugin class.
  */
-class CodeMirror_WP {
+class Better_Code_Editing_Plugin {
 
 	/**
 	 * CodeMirror version.
@@ -420,4 +420,4 @@ class CodeMirror_WP {
 	}
 }
 
-CodeMirror_WP::go();
+Better_Code_Editing_Plugin::go();

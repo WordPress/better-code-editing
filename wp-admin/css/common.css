@@ -2182,7 +2182,7 @@ h1.nav-tab-wrapper, /* Back-compat for pre-4.4 */
 ------------------------------------------------------------------------------*/
 
 .spinner {
-	background: url(../images/spinner.gif) no-repeat;
+	background: url(../../../../../wp-admin/images/spinner.gif) no-repeat;
 	background-size: 20px 20px;
 	display: inline-block;
 	visibility: hidden;
@@ -2900,7 +2900,7 @@ body.index-php #TB_window.thickbox-loading:before {
 	top: 50%;
 	z-index: -1;
 	margin: -10px 0 0 -10px;
-	background: #fcfcfc url(../images/spinner.gif) no-repeat center;
+	background: #fcfcfc url(../../../../../wp-admin/images/spinner.gif) no-repeat center;
 	background-size: 20px 20px;
 	-webkit-transform: translateZ(0);
 	transform: translateZ(0);
@@ -2916,7 +2916,7 @@ body.index-php #TB_window.thickbox-loading:before {
 	body.plugins-php #TB_window.thickbox-loading:before,
 	body.update-core-php #TB_window.thickbox-loading:before,
 	body.index-php #TB_window.thickbox-loading:before {
-		background-image: url(../images/spinner-2x.gif);
+		background-image: url(../../../../../wp-admin/images/spinner-2x.gif);
 	}
 }
 
@@ -3499,7 +3499,7 @@ img {
 	}
 
 	.spinner {
-		background-image: url(../images/spinner-2x.gif);
+		background-image: url(../../../../../wp-admin/images/spinner-2x.gif);
 	}
 
 	/* @todo: evaluate - most of these were likely replaced by dashicons */

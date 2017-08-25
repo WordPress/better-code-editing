@@ -11,13 +11,13 @@ if [ -e build ]; then
 fi
 mkdir build
 rsync -avz ./ build/ --exclude-from=.svnignore
-if [ -e codemirror-wp.zip ]; then
-	rm codemirror-wp.zip
+if [ -e better-code-editing.zip ]; then
+	rm better-code-editing.zip
 fi
 
 cd build
-zip -r ../codemirror-wp.zip .
+zip -r ../better-code-editing.zip .
 cd ..
 
 echo
-echo "Please see: $(pwd)/codemirror-wp.zip"
+echo "Please see: $(pwd)/better-code-editing.zip"
