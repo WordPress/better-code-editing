@@ -77,6 +77,9 @@
 						controls[ controlIndex + 1 ].container.find( ':focusable:first' ).focus();
 					}
 
+					// Prevent tab character from being added.
+					event.preventDefault();
+
 					// Reset tab state.
 					$textarea.data( 'next-tab-blurs', false );
 				} );
