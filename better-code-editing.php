@@ -77,10 +77,8 @@ class Better_Code_Editing_Plugin {
 		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), self::VERSION );
 		$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', __FILE__ ), array(), self::VERSION );
 
-		$scripts->add( 'wp-csslint', plugins_url( 'wp-includes/js/wp-csslint.js', __FILE__ ), array(), self::CODEMIRROR_VERSION );
-
 		$scripts->add( 'codemirror-addon-lint',            plugins_url( 'wp-includes/js/codemirror/addon/lint/lint.js',      __FILE__ ),       array( 'codemirror' ),            self::CODEMIRROR_VERSION );
-		$scripts->add( 'codemirror-addon-lint-css',        plugins_url( 'wp-includes/js/codemirror/addon/lint/css-lint.js',  __FILE__ ),       array( 'codemirror-addon-lint', 'csslint', 'wp-csslint' ), self::CODEMIRROR_VERSION );
+		$scripts->add( 'codemirror-addon-lint-css',        plugins_url( 'wp-includes/js/codemirror/addon/lint/css-lint.js',  __FILE__ ),       array( 'codemirror-addon-lint', 'csslint' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-html',       plugins_url( 'wp-includes/js/codemirror/addon/lint/html-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-javascript', plugins_url( 'wp-includes/js/codemirror/addon/lint/javascript-lint.js', __FILE__ ), array( 'codemirror-addon-lint', 'jshint' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-json',       plugins_url( 'wp-includes/js/codemirror/addon/lint/json-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), self::CODEMIRROR_VERSION );
@@ -159,6 +157,27 @@ class Better_Code_Editing_Plugin {
 				wp_enqueue_script( 'codemirror-addon-lint-css' );
 				wp_enqueue_style( 'codemirror' );
 				wp_enqueue_style( 'codemirror-addon-lint' );
+
+				// @todo Let this be filterable?
+				$css_rules = array(
+					'errors', // Parsing errors.
+					'box-model',
+					'display-property-grouping',
+					'duplicate-properties',
+					'empty-rules',
+					'known-properties',
+					'outline-none',
+				);
+
+				wp_scripts()->add_inline_script( 'csslint', sprintf( '(function( rulesToKeep ){
+					var allRules = CSSLint.getRules(), i;
+					CSSLint.clearRules();
+					for ( i = 0; i < allRules.length; i++ ) {
+						if ( -1 !== rulesToKeep.indexOf( allRules[ i ].id ) ) {
+							CSSLint.addRule( allRules[ i ] );
+						}
+					}
+				})( %s );', wp_json_encode( $css_rules ) ) );
 
 				$options = array_merge( $options, array(
 					'mode'    => 'text/css',
