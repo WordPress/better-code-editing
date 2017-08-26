@@ -173,7 +173,7 @@ class Better_Code_Editing_Plugin {
 		$type = '';
 		$extension = '';
 		if ( isset( $context['file'] ) && false !== strpos( basename( $context['file'] ), '.' ) ) {
-			$extension = pathinfo( $context['file'], PATHINFO_EXTENSION );
+			$extension = strtolower( pathinfo( $context['file'], PATHINFO_EXTENSION ) );
 			if ( ! empty( $extension ) ) {
 				foreach ( wp_get_mime_types() as $exts => $mime ) {
 					if ( preg_match( '!^(' . $exts . ')$!i', $extension ) ) {
@@ -184,22 +184,20 @@ class Better_Code_Editing_Plugin {
 			}
 		}
 
-		if ( 'text/css' === $type ) {
+		if ( 'text/css' === $type || in_array( $extension, array( 'sass', 'scss', 'less' ), true ) ) {
 			wp_enqueue_script( 'codemirror-mode-css' );
 			wp_enqueue_script( 'codemirror-addon-lint-css' );
 			wp_enqueue_style( 'codemirror' );
 			wp_enqueue_style( 'codemirror-addon-lint' );
-
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
-				'mode'    => $type,
+				'mode' => 'text/css',
 				'gutters' => array( 'CodeMirror-lint-markers' ),
-				'lint'    => true,
+				'lint' => true,
 			) );
 		} elseif ( in_array( $extension, array( 'php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'phps' ), true ) ) {
 			wp_enqueue_script( 'codemirror-mode-html' );
 			wp_enqueue_script( 'codemirror-mode-php' );
 			wp_enqueue_style( 'codemirror' );
-
 			$settings['codemirror']['mode'] = 'application/x-httpd-php';
 		} elseif ( 'application/javascript' === $type ) {
 			wp_enqueue_script( 'jshint' );
@@ -207,26 +205,22 @@ class Better_Code_Editing_Plugin {
 			wp_enqueue_script( 'codemirror-addon-lint-javascript' );
 			wp_enqueue_style( 'codemirror' );
 			wp_enqueue_style( 'codemirror-addon-lint' );
-
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
-				'mode'           => 'text/javascript',
-				'gutters'        => array( 'CodeMirror-lint-markers' ),
-				'lint'           => true,
+				'mode' => 'text/javascript',
+				'gutters' => array( 'CodeMirror-lint-markers' ),
+				'lint' => true,
 			) );
 		} elseif ( 'text/html' === $type ) {
 			wp_enqueue_script( 'codemirror-mode-html' );
 			wp_enqueue_style( 'codemirror' );
-
 			$settings['codemirror']['mode'] = 'htmlmixed';
 		} elseif ( false !== strpos( $type, 'xml' ) || in_array( $extension, array( 'xml', 'svg' ), true ) ) {
 			wp_enqueue_script( 'codemirror-mode-xml' );
 			wp_enqueue_style( 'codemirror' );
-
 			$settings['codemirror']['mode'] = 'application/xml';
 		} else {
 			wp_enqueue_script( 'codemirror' );
 			wp_enqueue_style( 'codemirror' );
-
 			$settings['codemirror']['mode'] = 'text/plain';
 		}
 
