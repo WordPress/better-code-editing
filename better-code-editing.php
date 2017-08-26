@@ -78,6 +78,22 @@ class Better_Code_Editing_Plugin {
 				),
 			),
 		),
+		'htmlhint' => array(
+			'rules' => array(
+				'tagname-lowercase' => true,
+				'attr-lowercase' => true,
+				'attr-value-double-quotes' => true,
+				'doctype-first' => false,
+				'tag-pair' => true,
+				'spec-char-escape' => true,
+				'id-unique' => true,
+				'src-not-empty' => true,
+				'attr-no-duplication' => true,
+				'alt-require' => true,
+				'space-tab-mixed-disabled' => 'tab',
+				'attr-unsafe-chars' => true,
+			),
+		),
 	);
 
 	/**
@@ -120,7 +136,7 @@ class Better_Code_Editing_Plugin {
 
 		$scripts->add( 'codemirror-addon-lint',            plugins_url( 'wp-includes/js/codemirror/addon/lint/lint.js',      __FILE__ ),       array( 'codemirror' ),            self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-css',        plugins_url( 'wp-includes/js/codemirror/addon/lint/css-lint.js',  __FILE__ ),       array( 'codemirror-addon-lint', 'csslint' ), self::CODEMIRROR_VERSION );
-		$scripts->add( 'codemirror-addon-lint-html',       plugins_url( 'wp-includes/js/codemirror/addon/lint/html-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint' ), self::CODEMIRROR_VERSION );
+		$scripts->add( 'codemirror-addon-lint-html',       plugins_url( 'wp-includes/js/codemirror/addon/lint/html-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint', 'csslint', 'jshint' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-javascript', plugins_url( 'wp-includes/js/codemirror/addon/lint/javascript-lint.js', __FILE__ ), array( 'codemirror-addon-lint', 'jshint' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-json',       plugins_url( 'wp-includes/js/codemirror/addon/lint/json-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), self::CODEMIRROR_VERSION );
 
@@ -228,6 +244,11 @@ class Better_Code_Editing_Plugin {
 				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
+
+			if ( ! current_user_can( 'unfiltered_html' ) ) {
+				$settings['htmlhint']['rules']['inline-script-disabled'] = true;
+				$settings['htmlhint']['rules']['style-disabled'] = true;
+			}
 		} elseif ( false !== strpos( $type, 'xml' ) || in_array( $extension, array( 'xml', 'svg' ), true ) ) {
 			$settings['codemirror']['mode'] = 'application/xml';
 		} else {
@@ -281,6 +302,8 @@ class Better_Code_Editing_Plugin {
 					wp_enqueue_script( 'codemirror-mode-html' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
+						wp_enqueue_script( 'jshint' );
+						wp_enqueue_script( 'csslint' );
 						wp_enqueue_script( 'codemirror-addon-lint-html' );
 					}
 					break;
@@ -288,7 +311,6 @@ class Better_Code_Editing_Plugin {
 					wp_enqueue_script( 'codemirror-mode-javascript' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
-						wp_enqueue_script( 'jshint' );
 						wp_enqueue_script( 'codemirror-addon-lint-javascript' );
 					}
 					break;
