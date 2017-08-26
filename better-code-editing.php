@@ -87,7 +87,7 @@ class Better_Code_Editing_Plugin {
 		// The linting engines for the lint addons...
 		$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', __FILE__ ), array(), self::VERSION );
 		$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), self::VERSION );
-		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), self::VERSION );
+		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', __FILE__ ), array(), self::VERSION );
 		$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', __FILE__ ), array(), self::VERSION );
 
 		$scripts->add( 'codemirror-addon-lint',            plugins_url( 'wp-includes/js/codemirror/addon/lint/lint.js',      __FILE__ ),       array( 'codemirror' ),            self::CODEMIRROR_VERSION );
@@ -202,6 +202,7 @@ class Better_Code_Editing_Plugin {
 
 			$settings['codemirror']['mode'] = 'application/x-httpd-php';
 		} elseif ( 'application/javascript' === $type ) {
+			wp_enqueue_script( 'jshint' );
 			wp_enqueue_script( 'codemirror-mode-javascript' );
 			wp_enqueue_script( 'codemirror-addon-lint-javascript' );
 			wp_enqueue_style( 'codemirror' );
