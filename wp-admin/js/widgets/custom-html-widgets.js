@@ -5,8 +5,7 @@ wp.customHtmlWidgets = ( function( $ ) {
 
 	var component = {
 		idBases: [ 'custom_html' ],
-		codeEditorSettings: {},
-		syntaxHighlightingDisabled: false
+		codeEditorSettings: {}
 	};
 
 	/**
@@ -101,7 +100,7 @@ wp.customHtmlWidgets = ( function( $ ) {
 		initializeEditor: function initializeEditor() {
 			var control = this;
 
-			if ( component.syntaxHighlightingDisabled ) {
+			if ( component.codeEditorSettings.disabled ) {
 				return;
 			}
 

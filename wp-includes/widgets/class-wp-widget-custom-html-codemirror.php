@@ -39,9 +39,6 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 
 		wp_add_inline_script( 'custom-html-widgets', sprintf( 'wp.customHtmlWidgets.idBases.push( %s );', wp_json_encode( $this->id_base ) ) );
 
-		$syntax_highlighting_disabled = 'false' === wp_get_current_user()->syntax_highlighting;
-		wp_add_inline_script( 'custom-html-widgets', sprintf( 'wp.customHtmlWidgets.syntaxHighlightingDisabled = %s', wp_json_encode( $syntax_highlighting_disabled ) ) );
-
 		// Note that the widgets component in the customizer will also do the 'admin_print_scripts-widgets.php' action in WP_Customize_Widgets::print_scripts().
 		add_action( 'admin_print_scripts-widgets.php', array( $this, 'enqueue_admin_scripts' ) );
 
@@ -55,15 +52,19 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 	 * @since 4.9.0
 	 */
 	public function enqueue_admin_scripts() {
-		if ( 'false' !== wp_get_current_user()->syntax_highlighting ) {
-			wp_enqueue_script( 'codemirror-mode-html' );
-			wp_enqueue_script( 'codemirror-addon-lint-html' );
-			wp_enqueue_style( 'codemirror' );
-			wp_enqueue_style( 'codemirror-addon-show-hint' );
-			wp_enqueue_style( 'codemirror-addon-lint' );
-		}
+		$settings = Better_Code_Editing_Plugin::get_settings( array(
+			'file' => 'custom_html_widget.html', // @todo This faux filename is not really the best.
+		) );
 
 		wp_enqueue_script( 'custom-html-widgets' );
+		if ( empty( $settings ) ) {
+			$settings = array(
+				'disabled' => true,
+			);
+		} else {
+			Better_Code_Editing_Plugin::enqueue_assets( $settings );
+		}
+		wp_add_inline_script( 'custom-html-widgets', sprintf( 'wp.customHtmlWidgets.init( %s );', wp_json_encode( $settings ) ), 'after' );
 	}
 
 	/**

@@ -58,7 +58,6 @@ class Better_Code_Editing_Plugin {
 		add_action( 'wp_default_scripts', array( __CLASS__, 'register_scripts' ) );
 		add_action( 'wp_default_styles', array( __CLASS__, 'register_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts_for_file_editor' ) );
-		add_action( 'widgets_init', array( __CLASS__, 'init_custom_html_widget' ) );
 		add_action( 'customize_register', array( __CLASS__, 'amend_custom_css_help_text' ), 11 );
 		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'customize_controls_enqueue_scripts' ) );
 		add_action( 'customize_controls_print_footer_scripts', array( __CLASS__, 'amend_customize_pane_settings' ), 1001 );
@@ -131,16 +130,6 @@ class Better_Code_Editing_Plugin {
 	}
 
 	/**
-	 * Init Custom HTML widget.
-	 */
-	public static function init_custom_html_widget() {
-		$settings = self::configure_code_editor( array(
-			'file' => 'custom_html_widget.html',
-		) );
-		wp_scripts()->add_inline_script( 'custom-html-widgets', sprintf( 'wp.customHtmlWidgets.init( %s );', wp_json_encode( $settings ) ), 'after' );
-	}
-
-	/**
 	 * Register styles.
 	 *
 	 * @param WP_Styles $styles Styles.
@@ -162,14 +151,18 @@ class Better_Code_Editing_Plugin {
 	}
 
 	/**
-	 * Prepare CodeMirror for editing a given file.
+	 * Get settings for initializing the code editor.
 	 *
 	 * @param array $context Context.
-	 * @return array Settings for code editor.
+	 * @return array|false Settings for code editor or false if disabled.
 	 */
-	public static function configure_code_editor( $context ) {
-		$settings = self::$default_settings;
+	public static function get_settings( $context ) {
 
+		if ( is_user_logged_in() && 'false' === wp_get_current_user()->syntax_highlighting ) {
+			return false;
+		}
+
+		$settings = self::$default_settings;
 		$type = '';
 		$extension = '';
 		if ( isset( $context['file'] ) && false !== strpos( basename( $context['file'] ), '.' ) ) {
@@ -185,42 +178,32 @@ class Better_Code_Editing_Plugin {
 		}
 
 		if ( 'text/css' === $type || in_array( $extension, array( 'sass', 'scss', 'less' ), true ) ) {
-			wp_enqueue_script( 'codemirror-mode-css' );
-			wp_enqueue_script( 'codemirror-addon-lint-css' );
-			wp_enqueue_style( 'codemirror' );
-			wp_enqueue_style( 'codemirror-addon-lint' );
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'text/css',
 				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
 		} elseif ( in_array( $extension, array( 'php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'phps' ), true ) ) {
-			wp_enqueue_script( 'codemirror-mode-html' );
-			wp_enqueue_script( 'codemirror-mode-php' );
-			wp_enqueue_style( 'codemirror' );
 			$settings['codemirror']['mode'] = 'application/x-httpd-php';
+			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+				'gutters' => array( 'CodeMirror-lint-markers' ),
+				'lint' => true,
+			) );
 		} elseif ( 'application/javascript' === $type ) {
-			wp_enqueue_script( 'jshint' );
-			wp_enqueue_script( 'codemirror-mode-javascript' );
-			wp_enqueue_script( 'codemirror-addon-lint-javascript' );
-			wp_enqueue_style( 'codemirror' );
-			wp_enqueue_style( 'codemirror-addon-lint' );
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'text/javascript',
 				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
 		} elseif ( 'text/html' === $type ) {
-			wp_enqueue_script( 'codemirror-mode-html' );
-			wp_enqueue_style( 'codemirror' );
-			$settings['codemirror']['mode'] = 'htmlmixed';
+			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+				'mode' => 'htmlmixed',
+				'gutters' => array( 'CodeMirror-lint-markers' ),
+				'lint' => true,
+			) );
 		} elseif ( false !== strpos( $type, 'xml' ) || in_array( $extension, array( 'xml', 'svg' ), true ) ) {
-			wp_enqueue_script( 'codemirror-mode-xml' );
-			wp_enqueue_style( 'codemirror' );
 			$settings['codemirror']['mode'] = 'application/xml';
 		} else {
-			wp_enqueue_script( 'codemirror' );
-			wp_enqueue_style( 'codemirror' );
 			$settings['codemirror']['mode'] = 'text/plain';
 		}
 
@@ -246,6 +229,63 @@ class Better_Code_Editing_Plugin {
 	}
 
 	/**
+	 * Enqueue assets needed by the code editor for the given settings.
+	 *
+	 * @see Better_Code_Editing_Plugin::get_settings()
+	 * @param array|false $settings Code editor settings.
+	 * @returns boolean Whether assets were enqueued.
+	 */
+	public static function enqueue_assets( $settings ) {
+		if ( empty( $settings ) || empty( $settings['codemirror'] ) ) {
+			return false;
+		}
+
+		wp_enqueue_script( 'codemirror' );
+		wp_enqueue_style( 'codemirror' );
+		if ( isset( $settings['codemirror']['mode'] ) ) {
+			switch ( $settings['codemirror']['mode'] ) {
+				case 'application/x-httpd-php':
+					wp_enqueue_script( 'codemirror-mode-html' );
+					wp_enqueue_script( 'codemirror-mode-php' );
+					wp_enqueue_script( 'codemirror-mode-javascript' );
+					wp_enqueue_script( 'codemirror-mode-css' );
+					break;
+				case 'htmlmixed':
+					wp_enqueue_script( 'codemirror-mode-html' );
+
+					if ( ! empty( $settings['codemirror']['lint'] ) ) {
+						wp_enqueue_script( 'codemirror-addon-lint-html' );
+					}
+					break;
+				case 'text/javascript':
+					wp_enqueue_script( 'jshint' );
+					wp_enqueue_script( 'codemirror-mode-javascript' );
+
+					if ( ! empty( $settings['codemirror']['lint'] ) ) {
+						wp_enqueue_script( 'codemirror-addon-lint-javascript' );
+					}
+					break;
+				case 'application/xml':
+					wp_enqueue_script( 'codemirror-mode-xml' );
+					break;
+				case 'text/css':
+					wp_enqueue_script( 'codemirror-mode-css' );
+
+					if ( ! empty( $settings['codemirror']['lint'] ) ) {
+						wp_enqueue_script( 'codemirror-addon-lint-css' );
+					}
+					break;
+			}
+
+			if ( ! empty( $settings['codemirror']['lint'] ) ) {
+				wp_enqueue_style( 'codemirror-addon-show-hint' );
+				wp_enqueue_style( 'codemirror-addon-lint' );
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Enqueue scripts for theme and plugin editors.
 	 *
 	 * @param string $hook Hook.
@@ -253,9 +293,6 @@ class Better_Code_Editing_Plugin {
 	public static function admin_enqueue_scripts_for_file_editor( $hook ) {
 
 		if ( 'theme-editor.php' !== $hook && 'plugin-editor.php' !== $hook ) {
-			return;
-		}
-		if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
 			return;
 		}
 
@@ -291,12 +328,13 @@ class Better_Code_Editing_Plugin {
 			$context['file'] = validate_file_to_edit( $context['file'], $plugin_files );
 		}
 
-		$settings = self::configure_code_editor( $context );
+		$settings = self::get_settings( $context );
 		if ( empty( $settings ) ) {
 			return;
 		}
 
 		wp_enqueue_script( 'jquery-ui-core' ); // For :tabbable pseudo-selector.
+		self::enqueue_assets( $settings );
 		wp_enqueue_script( 'code-editor' );
 
 		ob_start();
@@ -319,19 +357,23 @@ class Better_Code_Editing_Plugin {
 	}
 
 	/**
-	 * Enqueue assets for Customizer.
+	 * Code editor settings for Custom CSS.
+	 *
+	 * @var array
 	 */
-	public static function customize_controls_enqueue_scripts() {
-		wp_add_inline_script( 'customize-controls', file_get_contents( dirname( __FILE__ ) . '/wp-admin/js/customize-controls-addendum.js' ) );
-	}
+	public static $custom_css_code_editor_settings;
 
 	/**
-	 * Amend help text for Custom CSS.
+	 * Set up code editor for Custom CSS.
 	 *
 	 * @param WP_Customize_Manager $wp_customize Manager.
 	 */
 	public static function amend_custom_css_help_text( WP_Customize_Manager $wp_customize ) {
-		if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
+		self::$custom_css_code_editor_settings = self::get_settings( array(
+			'file' => 'custom.css',
+		) );
+
+		if ( empty( self::$custom_css_code_editor_settings ) ) {
 			return;
 		}
 
@@ -354,21 +396,23 @@ class Better_Code_Editing_Plugin {
 	}
 
 	/**
+	 * Enqueue assets for Customizer.
+	 */
+	public static function customize_controls_enqueue_scripts() {
+		if ( ! empty( self::$custom_css_code_editor_settings ) ) {
+			self::enqueue_assets( self::$custom_css_code_editor_settings );
+		}
+		wp_add_inline_script( 'customize-controls', file_get_contents( dirname( __FILE__ ) . '/wp-admin/js/customize-controls-addendum.js' ) );
+	}
+
+	/**
 	 * Add Customizer integration.
 	 *
 	 * @see WP_Customize_Manager::customize_pane_settings()
 	 */
 	public static function amend_customize_pane_settings() {
-
-		if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
-			return;
-		}
-
-		$settings = self::configure_code_editor( array(
-			'file' => 'custom.css',
-		) );
-		if ( $settings ) {
-			printf( '<script>window._wpCustomizeSettings.codeEditor = %s</script>;', wp_json_encode( $settings ) );
+		if ( ! empty( self::$custom_css_code_editor_settings ) ) {
+			printf( '<script>window._wpCustomizeSettings.codeEditor = %s</script>;', wp_json_encode( self::$custom_css_code_editor_settings ) );
 		}
 	}
 
