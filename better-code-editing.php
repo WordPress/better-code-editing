@@ -218,7 +218,7 @@ class Better_Code_Editing_Plugin {
 			wp_enqueue_style( 'codemirror' );
 
 			$settings['codemirror']['mode'] = 'htmlmixed';
-		} elseif ( false !== strpos( $type, 'xml' ) || in_array( $extension, array( 'xml' ), true ) ) {
+		} elseif ( false !== strpos( $type, 'xml' ) || in_array( $extension, array( 'xml', 'svg' ), true ) ) {
 			wp_enqueue_script( 'codemirror-mode-xml' );
 			wp_enqueue_style( 'codemirror' );
 
