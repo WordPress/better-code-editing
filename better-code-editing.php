@@ -153,8 +153,6 @@ class Better_Code_Editing_Plugin {
 		$scripts->add( 'code-editor', plugins_url( 'wp-admin/js/code-editor.js', __FILE__ ), array( 'jquery', 'codemirror' ), self::VERSION );
 		$scripts->add_inline_script( 'code-editor', sprintf( 'jQuery.extend( wp.codeEditor.defaultSettings, %s );', wp_json_encode( self::$default_settings ) ) );
 
-		$scripts->add( 'file-editor', plugins_url( 'wp-admin/js/file-editor.js', __FILE__ ), array( 'jquery', 'codemirror', 'jquery-ui-core' ), self::VERSION );
-
 		$scripts->add( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', __FILE__ ), array( 'code-editor', 'jquery', 'backbone', 'wp-util' ), self::VERSION );
 	}
 
