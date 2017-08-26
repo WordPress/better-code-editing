@@ -79,6 +79,14 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 			$textarea.data( 'next-tab-blurs', false );
 		});
 
+		editor.on( 'focus', function() {
+			if ( editor.display.wrapper.scrollIntoViewIfNeeded ) {
+				editor.display.wrapper.scrollIntoViewIfNeeded();
+			} else {
+				editor.display.wrapper.scrollIntoView();
+			}
+		});
+
 		editor.on( 'keydown', function onKeydown( _editor, event ) {
 			var tabKeyCode = 9, escKeyCode = 27;
 
