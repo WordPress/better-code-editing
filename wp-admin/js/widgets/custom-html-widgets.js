@@ -1,11 +1,11 @@
-/* global CodeMirror */
+/* global wp */
 /* eslint consistent-this: [ "error", "control" ] */
 wp.customHtmlWidgets = ( function( $ ) {
 	'use strict';
 
 	var component = {
 		idBases: [ 'custom_html' ],
-		codeMirrorOptions: {},
+		codeEditorSettings: {},
 		syntaxHighlightingDisabled: false
 	};
 
@@ -105,9 +105,17 @@ wp.customHtmlWidgets = ( function( $ ) {
 				return;
 			}
 
-			control.editor = CodeMirror.fromTextArea(
-				control.fields.content[0],
-				component.codeMirrorOptions
+			control.editor = wp.codeEditor.initialize(
+				control.fields.content,
+				_.extend( {}, component.codeEditorSettings, {
+					handleTabPrev: function() {
+						control.fields.title.focus();
+					},
+					handleTabNext: function() {
+						var tabbables = control.syncContainer.add( control.syncContainer.parent().find( '.widget-position, .widget-control-actions' ) ).find( ':tabbable' );
+						tabbables.first().focus();
+					}
+				})
 			);
 			control.fields.content.on( 'change', function() {
 				if ( this.value !== control.editor.getValue() ) {
@@ -126,37 +134,6 @@ wp.customHtmlWidgets = ( function( $ ) {
 				if ( control.contentUpdateBypassed ) {
 					control.syncContainer.find( '.sync-input.content' ).trigger( 'change' );
 				}
-
-				control.fields.content.data( 'next-tab-blurs', false );
-			});
-
-			control.editor.on( 'keydown', function onKeydown( editor, event ) {
-				var tabKeyCode = 9, escKeyCode = 27, tabbables;
-
-				// Take note of the ESC keypress so that the next TAB can focus outside the editor.
-				if ( escKeyCode === event.keyCode ) {
-					control.fields.content.data( 'next-tab-blurs', true );
-					return;
-				}
-
-				// Short-circuit if tab key is not being pressed or the tab key press should move focus.
-				if ( tabKeyCode !== event.keyCode || ! control.fields.content.data( 'next-tab-blurs' ) ) {
-					return;
-				}
-
-				// Focus on previous or next focusable item.
-				if ( event.shiftKey ) {
-					control.fields.title.focus();
-				} else {
-					tabbables = control.syncContainer.add( control.syncContainer.parent().find( '.widget-position, .widget-control-actions' ) ).find( ':tabbable' );
-					tabbables.first().focus();
-				}
-
-				// Reset tab state.
-				control.fields.content.data( 'next-tab-blurs', false );
-
-				// Prevent tab character from being added.
-				event.preventDefault();
 			});
 		}
 	});
@@ -292,12 +269,12 @@ wp.customHtmlWidgets = ( function( $ ) {
 	 * When WordPress enqueues this script, it should have an inline script
 	 * attached which calls wp.textWidgets.init().
 	 *
-	 * @param {object} codeMirrorOptions - Options for CodeMirror, exported from PHP.
+	 * @param {object} settings - Options for code editor, exported from PHP.
 	 * @returns {void}
 	 */
-	component.init = function init( codeMirrorOptions ) {
+	component.init = function init( settings ) {
 		var $document = $( document );
-		_.extend( component.codeMirrorOptions, codeMirrorOptions );
+		_.extend( component.codeEditorSettings, settings );
 
 		$document.on( 'widget-added', component.handleWidgetAdded );
 		$document.on( 'widget-synced widget-updated', component.handleWidgetUpdated );
