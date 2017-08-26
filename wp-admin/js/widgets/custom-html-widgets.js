@@ -46,7 +46,7 @@ wp.customHtmlWidgets = ( function( $ ) {
 			control.syncContainer = options.syncContainer;
 
 			control.$el.addClass( 'custom-html-widget-fields' );
-			control.$el.html( wp.template( 'widget-custom-html-control-fields' ) );
+			control.$el.html( wp.template( 'widget-custom-html-control-fields' )( { codeEditorDisabled: component.codeEditorSettings.disabled } ) );
 
 			control.fields = {
 				title: control.$el.find( '.title' ),

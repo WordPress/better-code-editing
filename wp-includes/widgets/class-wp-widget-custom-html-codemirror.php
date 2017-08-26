@@ -109,10 +109,12 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 				$disallowed_html = array_diff( $probably_unsafe_html, array_keys( $allowed_html ) );
 				?>
 				<?php if ( ! empty( $disallowed_html ) ) : ?>
-					<p>
-						<?php _e( 'Some HTML tags are not permitted, including:' ); ?>
-						<code><?php echo join( '</code>, <code>', $disallowed_html ); ?></code>
-					</p>
+					<# if ( data.codeEditorDisabled ) { #>
+						<p>
+							<?php _e( 'Some HTML tags are not permitted, including:' ); ?>
+							<code><?php echo join( '</code>, <code>', $disallowed_html ); ?></code>
+						</p>
+					<# } #>
 				<?php endif; ?>
 			<?php endif; ?>
 		</script>
