@@ -129,10 +129,10 @@ class Better_Code_Editing_Plugin {
 		$scripts->add( 'codemirror-addon-hint-xml',        plugins_url( 'wp-includes/js/codemirror/addon/hint/xml-hint.js', __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-xml' ), self::CODEMIRROR_VERSION );
 
 		// The linting engines for the lint addons...
-		$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', __FILE__ ), array(), self::VERSION ); // @todo Version like '1.0.3'.
-		$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), self::VERSION ); // @todo Version like '0.9.13'.
-		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', __FILE__ ), array(), self::VERSION );
-		$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', __FILE__ ), array(), self::VERSION );
+		$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', __FILE__ ), array(), '1.0.5' );
+		$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), '0.9.13' );
+		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', __FILE__ ), array(), '2.9.5' );
+		$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', __FILE__ ), array(), self::VERSION ); // @todo Remove.
 
 		$scripts->add( 'htmlhint-kses', plugins_url( 'wp-includes/js/htmlhint-kses.js', __FILE__ ), array( 'htmlhint' ), self::VERSION );
 
@@ -140,7 +140,7 @@ class Better_Code_Editing_Plugin {
 		$scripts->add( 'codemirror-addon-lint-css',        plugins_url( 'wp-includes/js/codemirror/addon/lint/css-lint.js',  __FILE__ ),       array( 'codemirror-addon-lint', 'csslint' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-html',       plugins_url( 'wp-includes/js/codemirror/addon/lint/html-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint', 'csslint', 'jshint' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-javascript', plugins_url( 'wp-includes/js/codemirror/addon/lint/javascript-lint.js', __FILE__ ), array( 'codemirror-addon-lint', 'jshint' ), self::CODEMIRROR_VERSION );
-		$scripts->add( 'codemirror-addon-lint-json',       plugins_url( 'wp-includes/js/codemirror/addon/lint/json-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), self::CODEMIRROR_VERSION );
+		$scripts->add( 'codemirror-addon-lint-json',       plugins_url( 'wp-includes/js/codemirror/addon/lint/json-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), self::CODEMIRROR_VERSION ); // @todo Remove.
 
 		$scripts->add( 'codemirror-addon-comment',                 plugins_url( 'wp-includes/js/codemirror/addon/comment/comment.js', __FILE__ ),         array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-comment-continuecomment', plugins_url( 'wp-includes/js/codemirror/addon/comment/continuecomment.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
