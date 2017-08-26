@@ -40,7 +40,7 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		var allRules = CSSLint.getRules(), i;
 		CSSLint.clearRules();
 		for ( i = 0; i < allRules.length; i++ ) {
-			if ( -1 !== rules.indexOf( allRules[ i ].id ) ) {
+			if ( rules[ allRules[ i ].id ] ) {
 				CSSLint.addRule( allRules[ i ] );
 			}
 		}

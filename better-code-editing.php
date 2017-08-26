@@ -40,13 +40,13 @@ class Better_Code_Editing_Plugin {
 		),
 		'csslint' => array(
 			'rules' => array(
-				'errors', // Parsing errors.
-				'box-model',
-				'display-property-grouping',
-				'duplicate-properties',
-				'empty-rules',
-				'known-properties',
-				'outline-none',
+				'errors' => true, // Parsing errors.
+				'box-model' => true,
+				'display-property-grouping' => true,
+				'duplicate-properties' => true,
+				'empty-rules' => true,
+				'known-properties' => true,
+				'outline-none' => true,
 			),
 		),
 		'jshint' => array(
@@ -113,8 +113,8 @@ class Better_Code_Editing_Plugin {
 		$scripts->add( 'codemirror-addon-hint-xml',        plugins_url( 'wp-includes/js/codemirror/addon/hint/xml-hint.js', __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-xml' ), self::CODEMIRROR_VERSION );
 
 		// The linting engines for the lint addons...
-		$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', __FILE__ ), array(), self::VERSION );
-		$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), self::VERSION );
+		$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', __FILE__ ), array(), self::VERSION ); // @todo Version like '1.0.3'.
+		$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), self::VERSION ); // @todo Version like '0.9.13'.
 		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', __FILE__ ), array(), self::VERSION );
 		$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', __FILE__ ), array(), self::VERSION );
 
@@ -287,10 +287,10 @@ class Better_Code_Editing_Plugin {
 					}
 					break;
 				case 'text/javascript':
-					wp_enqueue_script( 'jshint' );
 					wp_enqueue_script( 'codemirror-mode-javascript' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
+						wp_enqueue_script( 'jshint' );
 						wp_enqueue_script( 'codemirror-addon-lint-javascript' );
 					}
 					break;
