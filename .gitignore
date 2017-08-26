@@ -1,6 +1,7 @@
 
 # CodeMirror sources
 wp-includes/js
+!wp-includes/js/htmlhint-kses.js
 
 build
 *.zip

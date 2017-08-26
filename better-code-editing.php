@@ -134,6 +134,8 @@ class Better_Code_Editing_Plugin {
 		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', __FILE__ ), array(), self::VERSION );
 		$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', __FILE__ ), array(), self::VERSION );
 
+		$scripts->add( 'htmlhint-kses', plugins_url( 'wp-includes/js/htmlhint-kses.js', __FILE__ ), array( 'htmlhint' ), self::VERSION );
+
 		$scripts->add( 'codemirror-addon-lint',            plugins_url( 'wp-includes/js/codemirror/addon/lint/lint.js',      __FILE__ ),       array( 'codemirror' ),            self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-css',        plugins_url( 'wp-includes/js/codemirror/addon/lint/css-lint.js',  __FILE__ ),       array( 'codemirror-addon-lint', 'csslint' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-html',       plugins_url( 'wp-includes/js/codemirror/addon/lint/html-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint', 'csslint', 'jshint' ), self::CODEMIRROR_VERSION );
@@ -246,8 +248,7 @@ class Better_Code_Editing_Plugin {
 			) );
 
 			if ( ! current_user_can( 'unfiltered_html' ) ) {
-				$settings['htmlhint']['rules']['inline-script-disabled'] = true;
-				$settings['htmlhint']['rules']['style-disabled'] = true;
+				$settings['htmlhint']['rules']['kses'] = wp_kses_allowed_html( 'post' );
 			}
 		} elseif ( false !== strpos( $type, 'xml' ) || in_array( $extension, array( 'xml', 'svg' ), true ) ) {
 			$settings['codemirror']['mode'] = 'application/xml';
@@ -302,8 +303,9 @@ class Better_Code_Editing_Plugin {
 					wp_enqueue_script( 'codemirror-mode-html' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
-						wp_enqueue_script( 'jshint' );
-						wp_enqueue_script( 'csslint' );
+						if ( ! current_user_can( 'unfiltered_html' ) ) {
+							wp_enqueue_script( 'htmlhint-kses' );
+						}
 						wp_enqueue_script( 'codemirror-addon-lint-html' );
 					}
 					break;
