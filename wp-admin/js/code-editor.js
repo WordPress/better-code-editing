@@ -64,9 +64,19 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		}
 
 		instanceSettings = $.extend( {}, wp.codeEditor.defaultSettings, settings );
+		instanceSettings.codemirror = $.extend( {}, instanceSettings.codemirror );
 
-		if ( 'undefined' !== typeof CSSLint && instanceSettings.csslint && instanceSettings.csslint.rules ) {
-			updateCSSLintRules( instanceSettings.csslint.rules );
+		if ( true === instanceSettings.codemirror.lint ) {
+
+			// Configure JSHint.
+			if ( 'text/javascript' === instanceSettings.codemirror.mode && true === instanceSettings.codemirror.lint && instanceSettings.jshint && instanceSettings.jshint.rules ) {
+				instanceSettings.codemirror.lint = instanceSettings.jshint.rules;
+			}
+
+			// Configure CSSLint.
+			if ( 'undefined' !== typeof CSSLint && instanceSettings.csslint && instanceSettings.csslint.rules ) {
+				updateCSSLintRules( instanceSettings.csslint.rules );
+			}
 		}
 
 		editor = CodeMirror.fromTextArea( $textarea[0], instanceSettings.codemirror );

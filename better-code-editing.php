@@ -49,6 +49,35 @@ class Better_Code_Editing_Plugin {
 				'outline-none',
 			),
 		),
+		'jshint' => array(
+			'rules' => array(
+				// The following are copied from <https://github.com/WordPress/wordpress-develop/blob/4.8.1/.jshintrc>.
+				'boss' => true,
+				'curly' => true,
+				'eqeqeq' => true,
+				'eqnull' => true,
+				'es3' => true,
+				'expr' => true,
+				'immed' => true,
+				'noarg' => true,
+				'nonbsp' => true,
+				'onevar' => true,
+				'quotmark' => 'single',
+				'trailing' => true,
+				'undef' => true,
+				'unused' => true,
+
+				'browser' => true,
+
+				'globals' => array(
+					'_' => false,
+					'Backbone' => false,
+					'jQuery' => false,
+					'JSON' => false,
+					'wp' => false,
+				),
+			),
+		),
 	);
 
 	/**
