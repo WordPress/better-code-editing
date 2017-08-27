@@ -4,7 +4,7 @@
   "description": "Howdy!  This is currently a Work In Progress playground for experimenting with bringing syntax highlighting to WordPress Core.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "bash bin/install-codemirror.sh; bash bin/download-linter-assets.sh",
+    "postinstall": "bash bin/install-assets.sh",
     "build-release-zip": "bash bin/build-release-zip.sh"
   },
   "repository": {
@@ -21,6 +21,9 @@
     "eslint": "^4.4.0"
   },
   "dependencies": {
-    "codemirror": "5.28.0"
+    "codemirror": "5.28.0",
+    "csslint": "1.0.5",
+    "htmlhint": "github:xwp/HTMLHint",
+    "jshint": "2.9.5"
   }
 }

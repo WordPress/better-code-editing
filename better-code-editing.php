@@ -78,6 +78,22 @@ class Better_Code_Editing_Plugin {
 				),
 			),
 		),
+		'htmlhint' => array(
+			'rules' => array(
+				'tagname-lowercase' => true,
+				'attr-lowercase' => true,
+				'attr-value-double-quotes' => true,
+				'doctype-first' => false,
+				'tag-pair' => true,
+				'spec-char-escape' => true,
+				'id-unique' => true,
+				'src-not-empty' => true,
+				'attr-no-duplication' => true,
+				'alt-require' => true,
+				'space-tab-mixed-disabled' => 'tab',
+				'attr-unsafe-chars' => true,
+			),
+		),
 	);
 
 	/**
@@ -113,16 +129,18 @@ class Better_Code_Editing_Plugin {
 		$scripts->add( 'codemirror-addon-hint-xml',        plugins_url( 'wp-includes/js/codemirror/addon/hint/xml-hint.js', __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-xml' ), self::CODEMIRROR_VERSION );
 
 		// The linting engines for the lint addons...
-		$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', __FILE__ ), array(), self::VERSION ); // @todo Version like '1.0.3'.
-		$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), self::VERSION ); // @todo Version like '0.9.13'.
-		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', __FILE__ ), array(), self::VERSION );
-		$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', __FILE__ ), array(), self::VERSION );
+		$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', __FILE__ ), array(), '1.0.5' );
+		$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), '0.9.14-xwp' );
+		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', __FILE__ ), array(), '2.9.5' );
+		$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', __FILE__ ), array(), self::VERSION ); // @todo Remove.
+
+		$scripts->add( 'htmlhint-kses', plugins_url( 'wp-includes/js/htmlhint-kses.js', __FILE__ ), array( 'htmlhint' ), self::VERSION );
 
 		$scripts->add( 'codemirror-addon-lint',            plugins_url( 'wp-includes/js/codemirror/addon/lint/lint.js',      __FILE__ ),       array( 'codemirror' ),            self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-css',        plugins_url( 'wp-includes/js/codemirror/addon/lint/css-lint.js',  __FILE__ ),       array( 'codemirror-addon-lint', 'csslint' ), self::CODEMIRROR_VERSION );
-		$scripts->add( 'codemirror-addon-lint-html',       plugins_url( 'wp-includes/js/codemirror/addon/lint/html-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint' ), self::CODEMIRROR_VERSION );
+		$scripts->add( 'codemirror-addon-lint-html',       plugins_url( 'wp-includes/js/codemirror/addon/lint/html-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'htmlhint', 'csslint', 'jshint' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-lint-javascript', plugins_url( 'wp-includes/js/codemirror/addon/lint/javascript-lint.js', __FILE__ ), array( 'codemirror-addon-lint', 'jshint' ), self::CODEMIRROR_VERSION );
-		$scripts->add( 'codemirror-addon-lint-json',       plugins_url( 'wp-includes/js/codemirror/addon/lint/json-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), self::CODEMIRROR_VERSION );
+		$scripts->add( 'codemirror-addon-lint-json',       plugins_url( 'wp-includes/js/codemirror/addon/lint/json-lint.js', __FILE__ ),       array( 'codemirror-addon-lint', 'jsonlint' ), self::CODEMIRROR_VERSION ); // @todo Remove.
 
 		$scripts->add( 'codemirror-addon-comment',                 plugins_url( 'wp-includes/js/codemirror/addon/comment/comment.js', __FILE__ ),         array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-comment-continuecomment', plugins_url( 'wp-includes/js/codemirror/addon/comment/continuecomment.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
@@ -152,8 +170,6 @@ class Better_Code_Editing_Plugin {
 
 		$scripts->add( 'code-editor', plugins_url( 'wp-admin/js/code-editor.js', __FILE__ ), array( 'jquery', 'codemirror' ), self::VERSION );
 		$scripts->add_inline_script( 'code-editor', sprintf( 'jQuery.extend( wp.codeEditor.defaultSettings, %s );', wp_json_encode( self::$default_settings ) ) );
-
-		$scripts->add( 'file-editor', plugins_url( 'wp-admin/js/file-editor.js', __FILE__ ), array( 'jquery', 'codemirror', 'jquery-ui-core' ), self::VERSION );
 
 		$scripts->add( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', __FILE__ ), array( 'code-editor', 'jquery', 'backbone', 'wp-util' ), self::VERSION );
 	}
@@ -230,6 +246,10 @@ class Better_Code_Editing_Plugin {
 				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
+
+			if ( ! current_user_can( 'unfiltered_html' ) ) {
+				$settings['htmlhint']['rules']['kses'] = wp_kses_allowed_html( 'post' );
+			}
 		} elseif ( false !== strpos( $type, 'xml' ) || in_array( $extension, array( 'xml', 'svg' ), true ) ) {
 			$settings['codemirror']['mode'] = 'application/xml';
 		} else {
@@ -283,6 +303,9 @@ class Better_Code_Editing_Plugin {
 					wp_enqueue_script( 'codemirror-mode-html' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
+						if ( ! current_user_can( 'unfiltered_html' ) ) {
+							wp_enqueue_script( 'htmlhint-kses' );
+						}
 						wp_enqueue_script( 'codemirror-addon-lint-html' );
 					}
 					break;
@@ -290,7 +313,6 @@ class Better_Code_Editing_Plugin {
 					wp_enqueue_script( 'codemirror-mode-javascript' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
-						wp_enqueue_script( 'jshint' );
 						wp_enqueue_script( 'codemirror-addon-lint-javascript' );
 					}
 					break;

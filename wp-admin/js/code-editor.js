@@ -18,6 +18,8 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 	wp.codeEditor.defaultSettings = {
 		codemirror: {},
 		csslint: {},
+		htmlhint: {},
+		jshint: {},
 		handleTabNext: function() {},
 		handleTabPrev: function() {}
 	};
@@ -55,7 +57,7 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 	 * @param {object} [settings] Settings to override defaults.
 	 * @returns {CodeMirror} CodeMirror instance.
 	 */
-	wp.codeEditor.initialize = function initialize( textarea, settings ) {
+	wp.codeEditor.initialize = function initialize( textarea, settings ) { // eslint-disable-line complexity
 		var $textarea, editor, instanceSettings;
 		if ( 'string' === typeof textarea ) {
 			$textarea = $( '#' + textarea );
@@ -71,6 +73,18 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 			// Configure JSHint.
 			if ( 'text/javascript' === instanceSettings.codemirror.mode && true === instanceSettings.codemirror.lint && instanceSettings.jshint && instanceSettings.jshint.rules ) {
 				instanceSettings.codemirror.lint = instanceSettings.jshint.rules;
+			}
+
+			// Configure HTMLHint.
+			if ( ( 'text/html' === instanceSettings.codemirror.mode || 'htmlmixed' === instanceSettings.codemirror.mode ) && true === instanceSettings.codemirror.lint && instanceSettings.htmlhint && instanceSettings.htmlhint.rules ) {
+				instanceSettings.codemirror.lint = $.extend( {}, instanceSettings.htmlhint );
+
+				if ( instanceSettings.jshint && instanceSettings.jshint.rules ) {
+					instanceSettings.codemirror.lint.rules.jshint = instanceSettings.jshint.rules;
+				}
+				if ( instanceSettings.csslint && instanceSettings.csslint.rules ) {
+					instanceSettings.codemirror.lint.rules.csslint = instanceSettings.csslint.rules;
+				}
 			}
 
 			// Configure CSSLint.
