@@ -18,11 +18,7 @@
 	<!-- Allow invoking just `phpcs` on command line without assuming STDIN for file input. -->
 	<file>.</file>
 
-	<!-- TODO: Eliminate the need for these -->
-	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
-		<severity>0</severity>
-	</rule>
-	<rule ref="Generic.PHP.NoSilencedErrors.Discouraged">
+	<rule ref="WordPress.Files.FileName.InvalidTemplateTagFileName">
 		<severity>0</severity>
 	</rule>
 

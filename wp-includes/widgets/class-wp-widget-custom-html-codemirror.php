@@ -52,7 +52,7 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 	 * @since 4.9.0
 	 */
 	public function enqueue_admin_scripts() {
-		$settings = Better_Code_Editing_Plugin::get_settings( array(
+		$settings = wp_code_editor_settings( array(
 			'file' => 'custom_html_widget.html', // @todo This faux filename is not really the best.
 		) );
 
@@ -62,7 +62,7 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 				'disabled' => true,
 			);
 		} else {
-			Better_Code_Editing_Plugin::enqueue_assets( $settings );
+			wp_enqueue_code_editor( $settings );
 		}
 		wp_add_inline_script( 'custom-html-widgets', sprintf( 'wp.customHtmlWidgets.init( %s );', wp_json_encode( $settings ) ), 'after' );
 	}
