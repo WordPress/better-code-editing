@@ -1,6 +1,7 @@
 .customize-section-description-container + #customize-control-custom_css:last-child .CodeMirror {
 	height: calc( 100vh - 185px );
 }
-.CodeMirror-lint-tooltip {
+.CodeMirror-lint-tooltip,
+.CodeMirror-hints {
 	z-index: 500000 !important;
 }

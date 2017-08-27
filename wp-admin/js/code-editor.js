@@ -98,6 +98,14 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		// Keep track of the instances that have been created.
 		wp.codeEditor.instances.push( editor );
 
+		if ( editor.showHint ) {
+			editor.on( 'keyup', function( _editor, event ) {
+				if ( ! editor.state.completionActive && ( event.keyCode >= 'A'.charCodeAt( 0 ) && event.keyCode <= 'z'.charCodeAt( 0 ) ) ) {
+					CodeMirror.commands.autocomplete( editor, null, { completeSingle: false } );
+				}
+			});
+		}
+
 		// Make sure the editor gets updated if the content was updated on the server (sanitization) but not updated in the editor since it was focused.
 		editor.on( 'blur', function() {
 			$textarea.data( 'next-tab-blurs', false );

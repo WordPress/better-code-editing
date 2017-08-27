@@ -37,6 +37,9 @@ class Better_Code_Editing_Plugin {
 			'inputStyle' => 'contenteditable',
 			'lineNumbers' => true,
 			'lineWrapping' => true,
+			'extraKeys' => array(
+				'Ctrl-Space' => 'autocomplete',
+			),
 		),
 		'csslint' => array(
 			'rules' => array(
@@ -321,6 +324,7 @@ class Better_Code_Editing_Plugin {
 					break;
 				case 'text/css':
 					wp_enqueue_script( 'codemirror-mode-css' );
+					wp_enqueue_script( 'codemirror-addon-hint-css' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
 						wp_enqueue_script( 'codemirror-addon-lint-css' );
