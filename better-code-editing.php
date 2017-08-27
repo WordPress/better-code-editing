@@ -314,6 +314,7 @@ class Better_Code_Editing_Plugin {
 					break;
 				case 'text/javascript':
 					wp_enqueue_script( 'codemirror-mode-javascript' );
+					wp_enqueue_script( 'codemirror-addon-hint-javascript' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
 						wp_enqueue_script( 'codemirror-addon-lint-javascript' );
