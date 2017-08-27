@@ -106,7 +106,9 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 				}
 				shouldAutocomplete = isAlphaKey;
 				if ( ! shouldAutocomplete && 'htmlmixed' === instanceSettings.codemirror.mode ) {
-					shouldAutocomplete = '/' ===   event.key || '<' === event.key;
+					shouldAutocomplete =
+						'<' === event.key ||
+						'/' === event.key && /<\/$/.test( editor.doc.getLine( editor.doc.getCursor().line ).substr( 0, editor.doc.getCursor().ch ) );
 				} else if ( ! shouldAutocomplete && 'text/css' === instanceSettings.codemirror.mode ) {
 					shouldAutocomplete =
 						':' === event.key ||
