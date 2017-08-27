@@ -23,7 +23,7 @@
   "dependencies": {
     "codemirror": "5.28.0",
     "csslint": "1.0.5",
-    "htmlhint": "0.9.13",
+    "htmlhint": "github:xwp/HTMLHint",
     "jshint": "2.9.5"
   }
 }
