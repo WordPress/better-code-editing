@@ -130,7 +130,7 @@ class Better_Code_Editing_Plugin {
 
 		// The linting engines for the lint addons...
 		$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', __FILE__ ), array(), '1.0.5' );
-		$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), '0.9.13' );
+		$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', __FILE__ ), array(), '0.9.14-xwp' );
 		$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', __FILE__ ), array(), '2.9.5' );
 		$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', __FILE__ ), array(), self::VERSION ); // @todo Remove.
 
