@@ -271,5 +271,8 @@ function wp_enqueue_code_editor( $settings ) {
 			wp_enqueue_style( 'codemirror-addon-lint' );
 		}
 	}
+
+	wp_add_inline_script( 'code-editor', sprintf( 'jQuery.extend( wp.codeEditor.defaultSettings, %s );', wp_json_encode( $settings ) ) );
+
 	return true;
 }

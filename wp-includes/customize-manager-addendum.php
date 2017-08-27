@@ -9,7 +9,6 @@ add_action( 'customize_register', '_better_code_editing_amend_custom_css_help_te
 add_action( 'customize_controls_enqueue_scripts', '_better_code_editing_customize_controls_enqueue_scripts' );
 add_action( 'customize_controls_print_footer_scripts', '_better_code_editing_amend_customize_pane_settings', 1001 );
 
-
 /**
  * Set up code editor for Custom CSS.
  *
