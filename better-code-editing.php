@@ -37,8 +37,13 @@ class Better_Code_Editing_Plugin {
 			'inputStyle' => 'contenteditable',
 			'lineNumbers' => true,
 			'lineWrapping' => true,
+			'showTrailingSpace' => true,
+			'styleActiveLine' => true,
+			'continueComments' => true,
 			'extraKeys' => array(
 				'Ctrl-Space' => 'autocomplete',
+				'Ctrl-/' => 'toggleComment',
+				'Cmd-/' => 'toggleComment',
 			),
 		),
 		'csslint' => array(
@@ -147,12 +152,13 @@ class Better_Code_Editing_Plugin {
 
 		$scripts->add( 'codemirror-addon-comment',                 plugins_url( 'wp-includes/js/codemirror/addon/comment/comment.js', __FILE__ ),         array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-comment-continuecomment', plugins_url( 'wp-includes/js/codemirror/addon/comment/continuecomment.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		$scripts->add( 'codemirror-addon-fold-xml-fold',           plugins_url( 'wp-includes/js/codemirror/addon/fold/xml-fold.js', __FILE__ ),           array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
 		$scripts->add( 'codemirror-addon-edit-closebrackets', plugins_url( 'wp-includes/js/codemirror/addon/edit/closebrackets.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-edit-closetag',      plugins_url( 'wp-includes/js/codemirror/addon/edit/closetag.js', __FILE__ ),      array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-edit-continuelist',  plugins_url( 'wp-includes/js/codemirror/addon/edit/continuelist.js', __FILE__ ),  array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-edit-matchbrackets', plugins_url( 'wp-includes/js/codemirror/addon/edit/matchbrackets.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
-		$scripts->add( 'codemirror-addon-edit-matchtags',     plugins_url( 'wp-includes/js/codemirror/addon/edit/matchtags.js', __FILE__ ),     array( 'codemirror' ), self::CODEMIRROR_VERSION );
+		$scripts->add( 'codemirror-addon-edit-matchtags',     plugins_url( 'wp-includes/js/codemirror/addon/edit/matchtags.js', __FILE__ ),     array( 'codemirror', 'codemirror-addon-fold-xml-fold' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-edit-trailingspace', plugins_url( 'wp-includes/js/codemirror/addon/edit/trailingspace.js', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
 		$scripts->add( 'codemirror-addon-selection-active-line',    plugins_url( 'wp-includes/js/codemirror/addon/selection/active-line.js', __FILE__ ),       array( 'codemirror' ), self::CODEMIRROR_VERSION );
@@ -193,6 +199,8 @@ class Better_Code_Editing_Plugin {
 		$styles->add( 'codemirror-addon-show-hint', plugins_url( 'wp-includes/js/codemirror/addon/hint/show-hint.css', __FILE__ ), array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$styles->add( 'codemirror-addon-lint',      plugins_url( 'wp-includes/js/codemirror/addon/lint/lint.css', __FILE__ ),      array( 'codemirror' ), self::CODEMIRROR_VERSION );
 
+		$styles->add( 'code-editor', plugins_url( 'wp-admin/css/code-editor.css', __FILE__ ), array( 'codemirror' ), self::VERSION );
+
 		// Patch the stylesheets.
 		$styles->add_inline_style( 'widgets', file_get_contents( dirname( __FILE__ ) . '/wp-admin/css/widgets-addendum.css' ) );
 		$styles->add_inline_style( 'customize-controls', file_get_contents( dirname( __FILE__ ) . '/wp-admin/css/customize-controls-addendum.css' ) );
@@ -229,28 +237,50 @@ class Better_Code_Editing_Plugin {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'text/css',
 				'lint' => true,
+				'autoCloseBrackets' => true,
+				'matchBrackets' => true,
 			) );
 		} elseif ( in_array( $extension, array( 'php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'phps' ), true ) ) {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'application/x-httpd-php',
 				'lint' => true,
+				'autoCloseBrackets' => true,
+				'autoCloseTags' => true,
+				'matchBrackets' => true,
+				'matchTags' => array(
+					'bothTags' => true,
+				),
 			) );
 		} elseif ( 'application/javascript' === $type ) {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'text/javascript',
 				'lint' => true,
+				'autoCloseBrackets' => true,
+				'matchBrackets' => true,
 			) );
 		} elseif ( 'text/html' === $type ) {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'htmlmixed',
 				'lint' => true,
+				'autoCloseBrackets' => true,
+				'autoCloseTags' => true,
+				'matchTags' => array(
+					'bothTags' => true,
+				),
 			) );
 
 			if ( ! current_user_can( 'unfiltered_html' ) ) {
 				$settings['htmlhint']['rules']['kses'] = wp_kses_allowed_html( 'post' );
 			}
 		} elseif ( false !== strpos( $type, 'xml' ) || in_array( $extension, array( 'xml', 'svg' ), true ) ) {
-			$settings['codemirror']['mode'] = 'application/xml';
+			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+				'mode' => 'application/xml',
+				'autoCloseBrackets' => true,
+				'autoCloseTags' => true,
+				'matchTags' => array(
+					'bothTags' => true,
+				),
+			) );
 		} else {
 			$settings['codemirror']['mode'] = 'text/plain';
 		}
@@ -292,8 +322,33 @@ class Better_Code_Editing_Plugin {
 			return false;
 		}
 
+		wp_enqueue_script( 'code-editor' );
+		wp_enqueue_style( 'code-editor' );
 		wp_enqueue_script( 'codemirror' );
 		wp_enqueue_style( 'codemirror' );
+		if ( ! empty( $settings['codemirror']['showTrailingSpace'] ) ) {
+			wp_enqueue_script( 'codemirror-addon-edit-trailingspace' );
+		}
+		if ( ! empty( $settings['codemirror']['styleActiveLine'] ) ) {
+			wp_enqueue_script( 'codemirror-addon-selection-active-line' );
+		}
+		if ( ! empty( $settings['codemirror']['autoCloseBrackets'] ) ) {
+			wp_enqueue_script( 'codemirror-addon-edit-closebrackets' );
+		}
+		if ( ! empty( $settings['codemirror']['matchBrackets'] ) ) {
+			wp_enqueue_script( 'codemirror-addon-edit-matchbrackets' );
+		}
+		if ( ! empty( $settings['codemirror']['autoCloseTags'] ) ) {
+			wp_enqueue_script( 'codemirror-addon-edit-closetag' );
+		}
+		if ( ! empty( $settings['codemirror']['matchtags'] ) ) {
+			wp_enqueue_script( 'codemirror-addon-edit-matchtags' );
+		}
+		if ( ! empty( $settings['codemirror']['continueComments'] ) ) {
+			wp_enqueue_script( 'codemirror-addon-comment-continuecomment' );
+		}
+		wp_enqueue_script( 'codemirror-addon-comment' );
+
 		if ( isset( $settings['codemirror']['mode'] ) ) {
 			switch ( $settings['codemirror']['mode'] ) {
 				case 'application/x-httpd-php':
@@ -392,7 +447,6 @@ class Better_Code_Editing_Plugin {
 
 		wp_enqueue_script( 'jquery-ui-core' ); // For :tabbable pseudo-selector.
 		self::enqueue_assets( $settings );
-		wp_enqueue_script( 'code-editor' );
 
 		ob_start();
 		?>
