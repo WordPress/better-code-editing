@@ -7,3 +7,6 @@
 	padding-top: 1px;
 	padding-bottom: 1px;
 }
+ul.CodeMirror-hints {
+	z-index: 101; /* Due to z-index 100 set on .widget.open */
+}

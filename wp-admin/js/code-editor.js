@@ -76,7 +76,7 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 			}
 
 			// Configure HTMLHint.
-			if ( ( 'text/html' === instanceSettings.codemirror.mode || 'htmlmixed' === instanceSettings.codemirror.mode ) && true === instanceSettings.codemirror.lint && instanceSettings.htmlhint && instanceSettings.htmlhint.rules ) {
+			if ( 'htmlmixed' === instanceSettings.codemirror.mode && true === instanceSettings.codemirror.lint && instanceSettings.htmlhint && instanceSettings.htmlhint.rules ) {
 				instanceSettings.codemirror.lint = $.extend( {}, instanceSettings.htmlhint );
 
 				if ( instanceSettings.jshint && instanceSettings.jshint.rules ) {
@@ -97,6 +97,30 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 
 		// Keep track of the instances that have been created.
 		wp.codeEditor.instances.push( editor );
+
+		if ( editor.showHint ) {
+			editor.on( 'keyup', function( _editor, event ) {
+				var shouldAutocomplete, isAlphaKey = /^[a-zA-Z]$/.test( event.key );
+				if ( editor.state.completionActive && isAlphaKey ) {
+					return;
+				}
+				shouldAutocomplete = isAlphaKey;
+				if ( ! shouldAutocomplete && 'htmlmixed' === instanceSettings.codemirror.mode ) {
+					shouldAutocomplete =
+						'<' === event.key ||
+						'/' === event.key && /<\/$/.test( editor.doc.getLine( editor.doc.getCursor().line ).substr( 0, editor.doc.getCursor().ch ) );
+				} else if ( ! shouldAutocomplete && 'text/css' === instanceSettings.codemirror.mode ) {
+					shouldAutocomplete =
+						':' === event.key ||
+						' ' === event.key && /:\s+$/.test( editor.doc.getLine( editor.doc.getCursor().line ).substr( 0, editor.doc.getCursor().ch ) );
+				} else if ( ! shouldAutocomplete && 'text/javascript' === instanceSettings.codemirror.mode ) {
+					shouldAutocomplete = '.' === event.key;
+				}
+				if ( shouldAutocomplete ) {
+					CodeMirror.commands.autocomplete( editor, null, { completeSingle: false } );
+				}
+			});
+		}
 
 		// Make sure the editor gets updated if the content was updated on the server (sanitization) but not updated in the editor since it was focused.
 		editor.on( 'blur', function() {

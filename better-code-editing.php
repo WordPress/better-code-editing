@@ -37,6 +37,9 @@ class Better_Code_Editing_Plugin {
 			'inputStyle' => 'contenteditable',
 			'lineNumbers' => true,
 			'lineWrapping' => true,
+			'extraKeys' => array(
+				'Ctrl-Space' => 'autocomplete',
+			),
 		),
 		'csslint' => array(
 			'rules' => array(
@@ -123,7 +126,7 @@ class Better_Code_Editing_Plugin {
 
 		$scripts->add( 'codemirror-addon-hint-show',       plugins_url( 'wp-includes/js/codemirror/addon/hint/show-hint.js', __FILE__ ),       array( 'codemirror' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-hint-css',        plugins_url( 'wp-includes/js/codemirror/addon/hint/css-hint.js', __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-css' ), self::CODEMIRROR_VERSION );
-		$scripts->add( 'codemirror-addon-hint-html',       plugins_url( 'wp-includes/js/codemirror/addon/hint/html-hint.js', __FILE__ ),       array( 'codemirror-addon-hint-show', 'codemirror-mode-html' ), self::CODEMIRROR_VERSION );
+		$scripts->add( 'codemirror-addon-hint-html',       plugins_url( 'wp-includes/js/codemirror/addon/hint/html-hint.js', __FILE__ ),       array( 'codemirror-addon-hint-show', 'codemirror-addon-hint-xml', 'codemirror-mode-html' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-hint-javascript', plugins_url( 'wp-includes/js/codemirror/addon/hint/javascript-hint.js', __FILE__ ), array( 'codemirror-addon-hint-show', 'codemirror-mode-javascript' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-hint-sql',        plugins_url( 'wp-includes/js/codemirror/addon/hint/sql-hint.js', __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-sql' ), self::CODEMIRROR_VERSION );
 		$scripts->add( 'codemirror-addon-hint-xml',        plugins_url( 'wp-includes/js/codemirror/addon/hint/xml-hint.js', __FILE__ ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-xml' ), self::CODEMIRROR_VERSION );
@@ -225,25 +228,21 @@ class Better_Code_Editing_Plugin {
 		if ( 'text/css' === $type || in_array( $extension, array( 'sass', 'scss', 'less' ), true ) ) {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'text/css',
-				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
 		} elseif ( in_array( $extension, array( 'php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'phps' ), true ) ) {
-			$settings['codemirror']['mode'] = 'application/x-httpd-php';
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
-				'gutters' => array( 'CodeMirror-lint-markers' ),
+				'mode' => 'application/x-httpd-php',
 				'lint' => true,
 			) );
 		} elseif ( 'application/javascript' === $type ) {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'text/javascript',
-				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
 		} elseif ( 'text/html' === $type ) {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'htmlmixed',
-				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
 
@@ -254,6 +253,10 @@ class Better_Code_Editing_Plugin {
 			$settings['codemirror']['mode'] = 'application/xml';
 		} else {
 			$settings['codemirror']['mode'] = 'text/plain';
+		}
+
+		if ( ! empty( $settings['codemirror'] ) ) {
+			$settings['codemirror']['gutters'][] = 'CodeMirror-lint-markers';
 		}
 
 		/**
@@ -301,6 +304,7 @@ class Better_Code_Editing_Plugin {
 					break;
 				case 'htmlmixed':
 					wp_enqueue_script( 'codemirror-mode-html' );
+					wp_enqueue_script( 'codemirror-addon-hint-html' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
 						if ( ! current_user_can( 'unfiltered_html' ) ) {
@@ -311,6 +315,7 @@ class Better_Code_Editing_Plugin {
 					break;
 				case 'text/javascript':
 					wp_enqueue_script( 'codemirror-mode-javascript' );
+					wp_enqueue_script( 'codemirror-addon-hint-javascript' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
 						wp_enqueue_script( 'codemirror-addon-lint-javascript' );
@@ -321,6 +326,7 @@ class Better_Code_Editing_Plugin {
 					break;
 				case 'text/css':
 					wp_enqueue_script( 'codemirror-mode-css' );
+					wp_enqueue_script( 'codemirror-addon-hint-css' );
 
 					if ( ! empty( $settings['codemirror']['lint'] ) ) {
 						wp_enqueue_script( 'codemirror-addon-lint-css' );
