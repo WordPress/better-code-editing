@@ -429,7 +429,7 @@ class Better_Code_Editing_Plugin {
 				$file_paths = array_keys( get_plugins() );
 				$context['plugin'] = $context['file'] ? $context['file'] : array_shift( $file_paths );
 			} elseif ( 0 !== validate_file( $context['plugin'] ) ) {
-				wp_die( __( 'Sorry, that file cannot be edited.' ) );
+				wp_die( __( 'Sorry, that file cannot be edited.', 'better-code-editing' ) );
 			}
 
 			$plugin_files = get_plugin_files( $context['plugin'] );
@@ -496,13 +496,13 @@ class Better_Code_Editing_Plugin {
 		$section->description = sprintf( '%s<br /><a href="%s" class="external-link" target="_blank">%s<span class="screen-reader-text">%s</span></a>',
 			sprintf(
 				/* translators: placeholder is profile URL */
-				__( 'CSS allows you to customize the appearance and layout of your site with code. Separate CSS is saved for each of your themes. In the editing area the Tab key enters a tab character. To move keyboard focus to another element, press the Esc key followed by the Tab key for the next element or Shift+Tab key for the previous element. You can disable the code syntax highlighter in your <a href="%s" target="blank" class="external-link">user profile</a>. This will allow you to work in plain text mode.' ),
+				__( 'CSS allows you to customize the appearance and layout of your site with code. Separate CSS is saved for each of your themes. In the editing area the Tab key enters a tab character. To move keyboard focus to another element, press the Esc key followed by the Tab key for the next element or Shift+Tab key for the previous element. You can disable the code syntax highlighter in your <a href="%s" target="blank" class="external-link">user profile</a>. This will allow you to work in plain text mode.', 'better-code-editing' ),
 				esc_url( get_edit_profile_url() . '#syntax_highlighting' )
 			),
-			esc_url( __( 'https://codex.wordpress.org/CSS' ) ),
-			__( 'Learn more about CSS' ),
+			esc_url( __( 'https://codex.wordpress.org/CSS', 'default' ) ),
+			__( 'Learn more about CSS', 'default' ),
 			/* translators: accessibility text */
-			__( '(opens in a new window)' )
+			__( '(opens in a new window)', 'default' )
 		);
 	}
 
@@ -560,9 +560,9 @@ class Better_Code_Editing_Plugin {
 
 		?>
 		<tr class="user-syntax-highlighting-wrap">
-			<th scope="row"><?php _e( 'Syntax Highlighting' ); ?></th>
+			<th scope="row"><?php _e( 'Syntax Highlighting', 'better-code-editing' ); ?></th>
 			<td>
-				<label for="syntax_highlighting"><input name="syntax_highlighting" type="checkbox" id="syntax_highlighting" value="false" <?php checked( 'false', $profileuser->syntax_highlighting ); ?> /> <?php _e( 'Disable syntax highlighting when editing code' ); ?></label>
+				<label for="syntax_highlighting"><input name="syntax_highlighting" type="checkbox" id="syntax_highlighting" value="false" <?php checked( 'false', $profileuser->syntax_highlighting ); ?> /> <?php _e( 'Disable syntax highlighting when editing code', 'better-code-editing' ); ?></label>
 				<script>
 					// Move the option right after the Visual Editor.
 					jQuery( function( $ ) {
