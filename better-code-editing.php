@@ -225,25 +225,21 @@ class Better_Code_Editing_Plugin {
 		if ( 'text/css' === $type || in_array( $extension, array( 'sass', 'scss', 'less' ), true ) ) {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'text/css',
-				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
 		} elseif ( in_array( $extension, array( 'php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'phps' ), true ) ) {
-			$settings['codemirror']['mode'] = 'application/x-httpd-php';
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
-				'gutters' => array( 'CodeMirror-lint-markers' ),
+				'mode' => 'application/x-httpd-php',
 				'lint' => true,
 			) );
 		} elseif ( 'application/javascript' === $type ) {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'text/javascript',
-				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
 		} elseif ( 'text/html' === $type ) {
 			$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 				'mode' => 'htmlmixed',
-				'gutters' => array( 'CodeMirror-lint-markers' ),
 				'lint' => true,
 			) );
 
@@ -254,6 +250,10 @@ class Better_Code_Editing_Plugin {
 			$settings['codemirror']['mode'] = 'application/xml';
 		} else {
 			$settings['codemirror']['mode'] = 'text/plain';
+		}
+
+		if ( ! empty( $settings['codemirror'] ) ) {
+			$settings['codemirror']['gutters'][] = 'CodeMirror-lint-markers';
 		}
 
 		/**
