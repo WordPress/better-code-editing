@@ -121,7 +121,6 @@ function wp_code_editor_settings( $context ) {
 	} elseif ( in_array( $extension, array( 'php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'phps' ), true ) ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 			'mode' => 'application/x-httpd-php',
-			'lint' => true,
 			'autoCloseBrackets' => true,
 			'autoCloseTags' => true,
 			'matchBrackets' => true,
