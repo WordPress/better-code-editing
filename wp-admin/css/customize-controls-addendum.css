@@ -5,3 +5,10 @@
 .CodeMirror-hints {
 	z-index: 500000 !important;
 }
+
+.customize-section-description ul {
+	margin-left: 1em;
+}
+.customize-section-description ul > li {
+	list-style: disc;
+}
