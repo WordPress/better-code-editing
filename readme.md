@@ -7,7 +7,7 @@ Adding CodeMirror functionality to the Plugin and Theme file editors, as well as
 **Tags:** [codemirror](https://wordpress.org/plugins/tags/codemirror), [syntax-highlighter](https://wordpress.org/plugins/tags/syntax-highlighter), [linting](https://wordpress.org/plugins/tags/linting)  
 **Requires at least:** 4.7  
 **Tested up to:** 4.9-alpha  
-**Stable tag:** 0.3.0  
+**Stable tag:** 0.4.0  
 
 [![Build Status](https://travis-ci.org/WordPress/better-code-editing.svg?branch=master)](https://travis-ci.org/WordPress/better-code-editing) 
 
@@ -19,38 +19,27 @@ This is currently a Work In Progress playground for experimenting with bringing 
 
 We're working around discussion on a Core ticket, [#12423](https://core.trac.wordpress.org/ticket/12423)
 
-## Getting Started ##
-
-You can locate a ZIP for this plugin on the [releases page](https://github.com/WordPress/better-code-editing/releases) on GitHub. To install, simply go to your WP Admin and Plugins > Add New. Then click "Upload Plugin" and select the `better-code-editing.zip` you downloaded from the releases page. Then click "Install Now" and on the next screen click "Activate Plugin". _Note on upgrading:_ If you want to update the plugin from a previous version, you must first deactivate it and uninstall it completely and then re-install and re-activate the new version (see [#9757](https://core.trac.wordpress.org/ticket/9757) for fixing this).
-
-Otherwise, to set up the plugin for development: clone this repository and run `npm install` to download CodeMirror and other assets.
-
-```bash
-cd wp-content/plugins/
-git clone --recursive https://github.com/WordPress/better-code-editing.git
-cd better-code-editing
-npm install
-```
-
-Also install the pre-commit hook via:
-
-```bash
-cd .git/hooks && ln -s ../../dev-lib/pre-commit pre-commit && cd -
-```
-
-Any questions, reach out to #core-customize on WordPress.org Slack or better open an issue on GitHub!
+Any questions, reach out to #core-customize on WordPress.org Slack or better open an issue on GitHub! See [contributing](https://github.com/WordPress/better-code-editing/blob/master/contributing.md).
 
 **Development of this plugin is done [on GitHub](https://github.com/WordPress/better-code-editing). Pull requests welcome. Please see [issues](https://github.com/WordPress/better-code-editing/issues) reported there.**
 
-## Creating a Release ##
-
-Contributors who want to make a new release, follow these steps:
-
-1. Bump plugin versions in `package.json` (×1), `package-lock.json` (×1, just do `npm install` first), `readme.txt` (×1 in `Stable Tag`), and in `better-code-editing.php` (×2: the metadata block in the header and also the `CodeMirror_WP::VERSION` constant).
-2. Run `npm run build-release-zip` to create a `better-code-editing.zip` in the plugin's root directory.
-3. [Create new release](https://github.com/WordPress/better-code-editing/releases/new) on GitHub targeting `master`, with the new plugin version as the tag and release title, and upload the `better-code-editing.zip` as the associated binary. Publish the release.
-
 ## Changelog ##
+
+### 0.4.0 - 2017-08-28 ###
+* Enable addon many goodies to improve UX and reduce accidental errors. See [#52](https://github.com/WordPress/better-code-editing/pull/52).
+* Add autocomplete hinting. See [#51](https://github.com/WordPress/better-code-editing/pull/51) and [#50](https://github.com/WordPress/better-code-editing/issues/50).
+* Improve mixed-mode autocomplete hints, including PHP. See [#58](https://github.com/WordPress/better-code-editing/issues/58).
+* Configure HTMLHint including KSES rule. See [#47](https://github.com/WordPress/better-code-editing/pull/47).
+* Configure JSHint with same rules as core. See [#46](https://github.com/WordPress/better-code-editing/pull/46).
+* Limit CSSLint rules. See [#38](https://github.com/WordPress/better-code-editing/pull/38) and [#26](https://github.com/WordPress/better-code-editing/issues/26).
+* Add tab trap escaping for CodeMirror in Custom HTML widget and theme/plugin editors. See [#43](https://github.com/WordPress/better-code-editing/pull/43) and [#37](https://github.com/WordPress/better-code-editing/issues/37).
+* Rename codemirror-wp to better-code-editing. See [#42](https://github.com/WordPress/better-code-editing/pull/42).
+* Add plugin icon. See [#40](https://github.com/WordPress/better-code-editing/pull/40).
+* Fix errors on small screens. See [#39](https://github.com/WordPress/better-code-editing/pull/39) and [#11](https://github.com/WordPress/better-code-editing/issues/11).
+* Refactor plugin class into include files to facilitate core patch creation. See [#54](https://github.com/WordPress/better-code-editing/pull/54).
+* Add admin notice when plugin is obsolete. See [#57](https://github.com/WordPress/better-code-editing/pull/57).
+* Upgrade CodeMirror to 5.29.0.
+* See full commit log and diff: [0.3.0...0.4.0](https://github.com/WordPress/better-code-editing/compare/0.3.0...0.4.0)
 
 ### 0.3.0 - 2017-08-18 ###
 * Enable line-wrapping and constrain width for file editor to match `textarea`. See [#33](https://github.com/WordPress/better-code-editing/pull/33), [#5](https://github.com/WordPress/better-code-editing/issues/5), [#32](https://github.com/WordPress/better-code-editing/issues/32).
