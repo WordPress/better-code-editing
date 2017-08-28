@@ -28,17 +28,36 @@ function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $
 		return;
 	}
 
-	$section->description = sprintf( '%s<br /><a href="%s" class="external-link" target="_blank">%s<span class="screen-reader-text">%s</span></a>',
-		sprintf(
-			/* translators: placeholder is profile URL */
-			__( 'CSS allows you to customize the appearance and layout of your site with code. Separate CSS is saved for each of your themes. In the editing area the Tab key enters a tab character. To move keyboard focus to another element, press the Esc key followed by the Tab key for the next element or Shift+Tab key for the previous element. You can disable the code syntax highlighter in your <a href="%s" target="blank" class="external-link">user profile</a>. This will allow you to work in plain text mode.', 'better-code-editing' ),
-			esc_url( get_edit_profile_url() . '#syntax_highlighting' )
-		),
+	$section->description = '<p>';
+	$section->description .= __( 'Add your own CSS code here to customize the appearance and layout of your site.', 'better-code-editing' );
+	$section->description .= sprintf(
+		' <a href="%1$s" class="external-link" target="_blank">%2$s<span class="screen-reader-text">%3$s</span></a>',
 		esc_url( __( 'https://codex.wordpress.org/CSS', 'default' ) ),
 		__( 'Learn more about CSS', 'default' ),
 		/* translators: accessibility text */
 		__( '(opens in a new window)', 'default' )
 	);
+	$section->description .= '</p>';
+
+	$section->description .= '<p>' . __( 'When using a keyboard:', 'better-code-editing' ) . '</p>';
+	$section->description .= '<ul>';
+	$section->description .= '<li>' . __( 'In the CSS edit field, Tab enters a tab character.', 'better-code-editing' ) . '</li>';
+	$section->description .= '<li>' . __( 'To move keyboard focus, press Esc then Tab for the next element, or Esc then Shift+Tab for the previous element.', 'better-code-editing' ) . '</li>';
+	$section->description .= '</ul>';
+
+	$section->description .= '<p>';
+	$section->description .= sprintf(
+		/* translators: placeholder is link to user profile */
+		__( 'The edit field automatically highlights code syntax. You can disable this in your %s to work in plan text mode.', 'better-code-editing' ),
+		sprintf(
+			' <a href="%1$s" class="external-link" target="_blank">%2$s<span class="screen-reader-text">%3$s</span></a>',
+			esc_url( get_edit_profile_url() . '#syntax_highlighting' ),
+			__( 'user profile', 'better-code-editing' ),
+			/* translators: accessibility text */
+			__( '(opens in a new window)', 'default' )
+		)
+	);
+	$section->description .= '</p>';
 }
 
 /**
