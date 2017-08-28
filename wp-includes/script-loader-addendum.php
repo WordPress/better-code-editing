@@ -14,7 +14,7 @@ add_action( 'wp_default_styles', '_better_code_editing_register_styles' );
  * @param WP_Scripts $scripts Scripts.
  */
 function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
-	$codemirror_version = '5.28.0';
+	$codemirror_version = '5.29.0';
 
 	$scripts->add( 'codemirror', plugins_url( 'wp-includes/js/codemirror/lib/codemirror.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), $codemirror_version );
 
@@ -77,7 +77,7 @@ function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
  * @param WP_Styles $styles Styles.
  */
 function _better_code_editing_register_styles( WP_Styles $styles ) {
-	$codemirror_version = '5.28.0';
+	$codemirror_version = '5.29.0';
 
 	/*
 	 * Override common.css with patched version that has proper styling for CodeMirror and textarea.
