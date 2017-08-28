@@ -233,6 +233,7 @@ function wp_enqueue_code_editor( $settings ) {
 		switch ( $settings['codemirror']['mode'] ) {
 			case 'application/x-httpd-php':
 				wp_enqueue_script( 'codemirror-mode-php' );
+				wp_enqueue_script( 'codemirror-addon-hint-show' );
 				/* falls through */
 			case 'htmlmixed':
 				wp_enqueue_script( 'codemirror-mode-html' );
