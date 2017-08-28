@@ -232,14 +232,14 @@ function wp_enqueue_code_editor( $settings ) {
 	if ( isset( $settings['codemirror']['mode'] ) ) {
 		switch ( $settings['codemirror']['mode'] ) {
 			case 'application/x-httpd-php':
-				wp_enqueue_script( 'codemirror-mode-html' );
 				wp_enqueue_script( 'codemirror-mode-php' );
-				wp_enqueue_script( 'codemirror-mode-javascript' );
-				wp_enqueue_script( 'codemirror-mode-css' );
-				break;
+				/* falls through */
 			case 'htmlmixed':
 				wp_enqueue_script( 'codemirror-mode-html' );
 				wp_enqueue_script( 'codemirror-addon-hint-html' );
+				wp_enqueue_script( 'codemirror-addon-hint-javascript' );
+				wp_enqueue_script( 'codemirror-addon-hint-css' );
+				wp_enqueue_style( 'codemirror-addon-show-hint' );
 
 				if ( ! empty( $settings['codemirror']['lint'] ) ) {
 					if ( ! current_user_can( 'unfiltered_html' ) ) {
@@ -251,6 +251,7 @@ function wp_enqueue_code_editor( $settings ) {
 			case 'text/javascript':
 				wp_enqueue_script( 'codemirror-mode-javascript' );
 				wp_enqueue_script( 'codemirror-addon-hint-javascript' );
+				wp_enqueue_style( 'codemirror-addon-show-hint' );
 
 				if ( ! empty( $settings['codemirror']['lint'] ) ) {
 					wp_enqueue_script( 'codemirror-addon-lint-javascript' );
@@ -262,6 +263,7 @@ function wp_enqueue_code_editor( $settings ) {
 			case 'text/css':
 				wp_enqueue_script( 'codemirror-mode-css' );
 				wp_enqueue_script( 'codemirror-addon-hint-css' );
+				wp_enqueue_style( 'codemirror-addon-show-hint' );
 
 				if ( ! empty( $settings['codemirror']['lint'] ) ) {
 					wp_enqueue_script( 'codemirror-addon-lint-css' );
@@ -270,7 +272,6 @@ function wp_enqueue_code_editor( $settings ) {
 		}
 
 		if ( ! empty( $settings['codemirror']['lint'] ) ) {
-			wp_enqueue_style( 'codemirror-addon-show-hint' );
 			wp_enqueue_style( 'codemirror-addon-lint' );
 		}
 	}
