@@ -1,7 +1,7 @@
 === Better Code Editing ===
 Contributors: georgestephanis, westonruter, obenland, melchoyce, wordpressdotorg
 Tags: codemirror, syntax-highlighter, linting
-Stable tag: 0.4.0
+Stable tag: trunk
 Requires at least: 4.7
 Tested up to: 4.9-alpha
 

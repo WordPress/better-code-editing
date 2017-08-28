@@ -7,7 +7,7 @@ Adding CodeMirror functionality to the Plugin and Theme file editors, as well as
 **Tags:** [codemirror](https://wordpress.org/plugins/tags/codemirror), [syntax-highlighter](https://wordpress.org/plugins/tags/syntax-highlighter), [linting](https://wordpress.org/plugins/tags/linting)  
 **Requires at least:** 4.7  
 **Tested up to:** 4.9-alpha  
-**Stable tag:** 0.4.0  
+**Stable tag:** trunk (master)  
 
 [![Build Status](https://travis-ci.org/WordPress/better-code-editing.svg?branch=master)](https://travis-ci.org/WordPress/better-code-editing) 
 
