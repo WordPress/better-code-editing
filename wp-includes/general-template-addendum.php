@@ -221,7 +221,7 @@ function wp_enqueue_code_editor( $settings ) {
 	if ( ! empty( $settings['codemirror']['autoCloseTags'] ) ) {
 		wp_enqueue_script( 'codemirror-addon-edit-closetag' );
 	}
-	if ( ! empty( $settings['codemirror']['matchtags'] ) ) {
+	if ( ! empty( $settings['codemirror']['matchTags'] ) ) {
 		wp_enqueue_script( 'codemirror-addon-edit-matchtags' );
 	}
 	if ( ! empty( $settings['codemirror']['continueComments'] ) ) {
