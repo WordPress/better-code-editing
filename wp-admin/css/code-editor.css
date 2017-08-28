@@ -3,3 +3,8 @@
 	background-position: bottom left;
 	background-repeat: repeat-x;
 }
+
+.wrap .CodeMirror .CodeMirror-matchingbracket {
+	background: rgba(255, 150, 0, .3);
+	color: inherit;
+}
