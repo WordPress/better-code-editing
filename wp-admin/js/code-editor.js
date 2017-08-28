@@ -70,26 +70,28 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 
 		if ( true === instanceSettings.codemirror.lint ) {
 
+			instanceSettings.codemirror.lint = {};
+
 			// Configure JSHint.
-			if ( 'text/javascript' === instanceSettings.codemirror.mode && true === instanceSettings.codemirror.lint && instanceSettings.jshint && instanceSettings.jshint.rules ) {
-				instanceSettings.codemirror.lint = instanceSettings.jshint.rules;
+			if ( 'text/javascript' === instanceSettings.codemirror.mode && instanceSettings.jshint ) {
+				$.extend( instanceSettings.codemirror.lint, instanceSettings.jshint );
 			}
 
 			// Configure HTMLHint.
-			if ( 'htmlmixed' === instanceSettings.codemirror.mode && true === instanceSettings.codemirror.lint && instanceSettings.htmlhint && instanceSettings.htmlhint.rules ) {
-				instanceSettings.codemirror.lint = $.extend( {}, instanceSettings.htmlhint );
+			if ( 'htmlmixed' === instanceSettings.codemirror.mode && instanceSettings.htmlhint ) {
+				instanceSettings.codemirror.lint.rules = $.extend( {}, instanceSettings.htmlhint );
 
-				if ( instanceSettings.jshint && instanceSettings.jshint.rules ) {
-					instanceSettings.codemirror.lint.rules.jshint = instanceSettings.jshint.rules;
+				if ( instanceSettings.jshint ) {
+					instanceSettings.codemirror.lint.rules.jshint = instanceSettings.jshint;
 				}
-				if ( instanceSettings.csslint && instanceSettings.csslint.rules ) {
-					instanceSettings.codemirror.lint.rules.csslint = instanceSettings.csslint.rules;
+				if ( instanceSettings.csslint ) {
+					instanceSettings.codemirror.lint.rules.csslint = instanceSettings.csslint;
 				}
 			}
 
 			// Configure CSSLint.
-			if ( 'undefined' !== typeof CSSLint && instanceSettings.csslint && instanceSettings.csslint.rules ) {
-				updateCSSLintRules( instanceSettings.csslint.rules );
+			if ( 'undefined' !== typeof CSSLint && instanceSettings.csslint ) {
+				updateCSSLintRules( instanceSettings.csslint );
 			}
 		}
 
