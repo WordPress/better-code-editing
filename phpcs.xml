@@ -4,6 +4,11 @@
 
 	<rule ref="WordPress-Core" />
 	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" value="better-code-editing,default" />
+		</properties>
+	</rule>
 
 	<arg name="extensions" value="php"/>
 
@@ -13,11 +18,7 @@
 	<!-- Allow invoking just `phpcs` on command line without assuming STDIN for file input. -->
 	<file>.</file>
 
-	<!-- TODO: Eliminate the need for these -->
-	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
-		<severity>0</severity>
-	</rule>
-	<rule ref="Generic.PHP.NoSilencedErrors.Discouraged">
+	<rule ref="WordPress.Files.FileName.InvalidTemplateTagFileName">
 		<severity>0</severity>
 	</rule>
 

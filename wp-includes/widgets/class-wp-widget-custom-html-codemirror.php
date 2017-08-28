@@ -52,7 +52,7 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 	 * @since 4.9.0
 	 */
 	public function enqueue_admin_scripts() {
-		$settings = Better_Code_Editing_Plugin::get_settings( array(
+		$settings = wp_code_editor_settings( array(
 			'file' => 'custom_html_widget.html', // @todo This faux filename is not really the best.
 		) );
 
@@ -62,7 +62,7 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 				'disabled' => true,
 			);
 		} else {
-			Better_Code_Editing_Plugin::enqueue_assets( $settings );
+			wp_enqueue_code_editor( $settings );
 		}
 		wp_add_inline_script( 'custom-html-widgets', sprintf( 'wp.customHtmlWidgets.init( %s );', wp_json_encode( $settings ) ), 'after' );
 	}
@@ -93,12 +93,12 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 		<script type="text/html" id="tmpl-widget-custom-html-control-fields">
 			<# var elementIdPrefix = 'el' + String( Math.random() ).replace( /\D/g, '' ) + '_' #>
 			<p>
-				<label for="{{ elementIdPrefix }}title"><?php esc_html_e( 'Title:' ); ?></label>
+				<label for="{{ elementIdPrefix }}title"><?php esc_html_e( 'Title:', 'default' ); ?></label>
 				<input id="{{ elementIdPrefix }}title" type="text" class="widefat title">
 			</p>
 
 			<p>
-				<label for="{{ elementIdPrefix }}content" class="screen-reader-text"><?php esc_html_e( 'Content:' ); ?></label>
+				<label for="{{ elementIdPrefix }}content" class="screen-reader-text"><?php esc_html_e( 'Content:', 'default' ); ?></label>
 				<textarea id="{{ elementIdPrefix }}content" class="widefat code content" rows="16" cols="20"></textarea>
 			</p>
 
@@ -111,7 +111,7 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 				<?php if ( ! empty( $disallowed_html ) ) : ?>
 					<# if ( data.codeEditorDisabled ) { #>
 						<p>
-							<?php _e( 'Some HTML tags are not permitted, including:' ); ?>
+							<?php _e( 'Some HTML tags are not permitted, including:', 'default' ); ?>
 							<code><?php echo join( '</code>, <code>', $disallowed_html ); ?></code>
 						</p>
 					<# } #>
