@@ -18,10 +18,10 @@
   },
   "homepage": "https://github.com/WordPress/better-code-editing#readme",
   "devDependencies": {
-    "eslint": "^4.4.0"
+    "eslint": "^4.5.0"
   },
   "dependencies": {
-    "codemirror": "5.28.0",
+    "codemirror": "5.29.0",
     "csslint": "1.0.5",
     "htmlhint": "github:xwp/HTMLHint",
     "jshint": "2.9.5"
