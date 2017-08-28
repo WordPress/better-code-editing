@@ -21,3 +21,5 @@ phpcs.xml
 readme.md
 *.zip
 build
+contributing.md
+~*
