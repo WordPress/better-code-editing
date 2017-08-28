@@ -1,4 +1,4 @@
-/* global CodeMirror, CSSLint */
+/* global CodeMirror */
 if ( 'undefined' === typeof window.wp ) {
 	window.wp = {};
 }
@@ -33,22 +33,6 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 	wp.codeEditor.instances = [];
 
 	/**
-	 * Override which CSSLint rules are added.
-	 *
-	 * @param {Array} rules - Subset or rules.
-	 * @returns {void}
-	 */
-	function updateCSSLintRules( rules ) {
-		var allRules = CSSLint.getRules(), i;
-		CSSLint.clearRules();
-		for ( i = 0; i < allRules.length; i++ ) {
-			if ( rules[ allRules[ i ].id ] ) {
-				CSSLint.addRule( allRules[ i ] );
-			}
-		}
-	}
-
-	/**
 	 * Initialize Code Editor (CodeMirror) for an existing textarea.
 	 *
 	 * @since 4.9.0
@@ -77,6 +61,11 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 				$.extend( instanceSettings.codemirror.lint, instanceSettings.jshint );
 			}
 
+			// Configure CSSLint.
+			if ( 'text/css' === instanceSettings.codemirror.mode && instanceSettings.csslint ) {
+				$.extend( instanceSettings.codemirror.lint, instanceSettings.csslint );
+			}
+
 			// Configure HTMLHint.
 			if ( 'htmlmixed' === instanceSettings.codemirror.mode && instanceSettings.htmlhint ) {
 				instanceSettings.codemirror.lint.rules = $.extend( {}, instanceSettings.htmlhint );
@@ -87,11 +76,6 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 				if ( instanceSettings.csslint ) {
 					instanceSettings.codemirror.lint.rules.csslint = instanceSettings.csslint;
 				}
-			}
-
-			// Configure CSSLint.
-			if ( 'undefined' !== typeof CSSLint && instanceSettings.csslint ) {
-				updateCSSLintRules( instanceSettings.csslint );
 			}
 		}
 
