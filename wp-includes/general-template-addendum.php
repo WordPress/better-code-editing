@@ -107,6 +107,9 @@ function wp_code_editor_settings( $context ) {
 			}
 		}
 	}
+	if ( empty( $extension ) ) {
+		_doing_it_wrong( __FUNCTION__, __( 'Missing valid "file" name in supplied context array.', 'better-code-editing' ), '4.9.0' );
+	}
 
 	if ( 'text/css' === $type || in_array( $extension, array( 'sass', 'scss', 'less' ), true ) ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
@@ -160,7 +163,7 @@ function wp_code_editor_settings( $context ) {
 		$settings['codemirror']['mode'] = 'text/plain';
 	}
 
-	if ( ! empty( $settings['codemirror'] ) ) {
+	if ( ! empty( $settings['codemirror']['lint'] ) ) {
 		$settings['codemirror']['gutters'][] = 'CodeMirror-lint-markers';
 	}
 
@@ -172,7 +175,7 @@ function wp_code_editor_settings( $context ) {
 	 * @since 4.9.0
 	 *
 	 * @param array $settings The array of settings passed to the code editor. A falsey value disables the editor.
-	 * @param array $context  {
+	 * @param array $context {
 	 *     Context for where the editor will appear.
 	 *
 	 *     @type string    $file   File being edited.
@@ -218,7 +221,7 @@ function wp_enqueue_code_editor( $settings ) {
 	if ( ! empty( $settings['codemirror']['autoCloseTags'] ) ) {
 		wp_enqueue_script( 'codemirror-addon-edit-closetag' );
 	}
-	if ( ! empty( $settings['codemirror']['matchtags'] ) ) {
+	if ( ! empty( $settings['codemirror']['matchTags'] ) ) {
 		wp_enqueue_script( 'codemirror-addon-edit-matchtags' );
 	}
 	if ( ! empty( $settings['codemirror']['continueComments'] ) ) {

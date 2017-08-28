@@ -13,8 +13,23 @@
 define( 'BETTER_CODE_EDITING_PLUGIN_VERSION', '0.3.0' );
 define( 'BETTER_CODE_EDITING_PLUGIN_FILE', __FILE__ );
 
+/**
+ * Show admin notice on plugins screen when plugin is obsolete.
+ */
+function _better_code_editing_plugin_obsolete_admin_notice() {
+	if ( 'plugins' !== get_current_screen()->base ) {
+		return;
+	}
+	?>
+	<div class="notice notice-info">
+		<p><?php esc_html_e( 'The Better Code Editing plugin\'s functionality has been merged into core. This plugin can be deactivated and uninstalled.', 'better-code-editing' ); ?></p>
+	</div>
+	<?php
+}
+
 // Short-circuit when the functionality is already merged into core.
-if ( file_exists( 'wp_code_editor_settings' ) ) {
+if ( function_exists( 'wp_code_editor_settings' ) ) {
+	add_action( 'admin_notices', '_better_code_editing_plugin_obsolete_admin_notice' );
 	return;
 }
 
