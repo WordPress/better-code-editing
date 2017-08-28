@@ -99,22 +99,34 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		wp.codeEditor.instances.push( editor );
 
 		if ( editor.showHint ) {
-			editor.on( 'keyup', function( _editor, event ) {
-				var shouldAutocomplete, isAlphaKey = /^[a-zA-Z]$/.test( event.key );
+			editor.on( 'keyup', function( _editor, event ) { // eslint-disable-line complexity
+				var shouldAutocomplete, isAlphaKey = /^[a-zA-Z]$/.test( event.key ), lineBeforeCursor, innerMode, token;
 				if ( editor.state.completionActive && isAlphaKey ) {
 					return;
 				}
-				shouldAutocomplete = isAlphaKey;
-				if ( ! shouldAutocomplete && 'htmlmixed' === instanceSettings.codemirror.mode ) {
+
+				// Prevent autocompletion in string literals or comments.
+				token = editor.getTokenAt( editor.getCursor() );
+				if ( 'string' === token.type || 'comment' === token.type ) {
+					return;
+				}
+
+				innerMode = CodeMirror.innerMode( editor.getMode(), token.state ).mode.name;
+				lineBeforeCursor = editor.doc.getLine( editor.doc.getCursor().line ).substr( 0, editor.doc.getCursor().ch );
+				if ( 'html' === innerMode || 'xml' === innerMode ) {
 					shouldAutocomplete =
 						'<' === event.key ||
-						'/' === event.key && /<\/$/.test( editor.doc.getLine( editor.doc.getCursor().line ).substr( 0, editor.doc.getCursor().ch ) );
-				} else if ( ! shouldAutocomplete && 'text/css' === instanceSettings.codemirror.mode ) {
+						'/' === event.key && 'tag' === token.type ||
+						isAlphaKey && 'tag' === token.type ||
+						isAlphaKey && 'attribute' === token.type ||
+						'=' === token.string && token.state.htmlState && token.state.htmlState.tagName;
+				} else if ( 'css' === innerMode ) {
 					shouldAutocomplete =
+						isAlphaKey ||
 						':' === event.key ||
-						' ' === event.key && /:\s+$/.test( editor.doc.getLine( editor.doc.getCursor().line ).substr( 0, editor.doc.getCursor().ch ) );
-				} else if ( ! shouldAutocomplete && 'text/javascript' === instanceSettings.codemirror.mode ) {
-					shouldAutocomplete = '.' === event.key;
+						' ' === event.key && /:\s+$/.test( lineBeforeCursor );
+				} else if ( 'javascript' === innerMode ) {
+					shouldAutocomplete = isAlphaKey || '.' === event.key;
 				}
 				if ( shouldAutocomplete ) {
 					CodeMirror.commands.autocomplete( editor, null, { completeSingle: false } );
