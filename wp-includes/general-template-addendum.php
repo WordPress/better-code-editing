@@ -183,6 +183,7 @@ function wp_code_editor_settings( $context ) {
 				case 'yaml':
 					$type = 'text/x-yaml';
 					break;
+				case 'txt':
 				default:
 					$type = 'text/plain';
 					break;
