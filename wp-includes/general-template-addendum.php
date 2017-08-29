@@ -342,27 +342,23 @@ function wp_enqueue_code_editor( $settings ) {
 	wp_enqueue_script( 'codemirror' );
 	wp_enqueue_style( 'codemirror' );
 
-	// @todo Add recognition for all of the addon configs.
-	if ( ! empty( $settings['codemirror']['showTrailingSpace'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-trailingspace' );
-	}
-	if ( ! empty( $settings['codemirror']['styleActiveLine'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-selection-active-line' );
-	}
-	if ( ! empty( $settings['codemirror']['autoCloseBrackets'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-closebrackets' );
-	}
-	if ( ! empty( $settings['codemirror']['matchBrackets'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-matchbrackets' );
-	}
-	if ( ! empty( $settings['codemirror']['autoCloseTags'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-closetag' );
-	}
-	if ( ! empty( $settings['codemirror']['matchTags'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-matchtags' );
-	}
-	if ( ! empty( $settings['codemirror']['continueComments'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-comment-continuecomment' );
+	// Enqueue addons.
+	$option_asset_mappings = array(
+		'showTrailingSpace' => array( 'codemirror-addon-edit-trailingspace' ),
+		'styleActiveLine'   => array( 'codemirror-addon-selection-active-line' ),
+		'autoCloseBrackets' => array( 'codemirror-addon-edit-closebrackets' ),
+		'matchBrackets'     => array( 'codemirror-addon-edit-matchbrackets' ),
+		'autoCloseTags'     => array( 'codemirror-addon-edit-closetag' ),
+		'matchTags'         => array( 'codemirror-addon-edit-matchtags' ),
+		'continueComments'  => array( 'codemirror-addon-comment-continuecomment' ),
+		// @todo Add recognition for all of the addon configs.
+	);
+	foreach ( $option_asset_mappings as $option => $handles ) {
+		if ( ! empty( $settings['codemirror'][ $option ] ) ) {
+			foreach ( $handles as $handle ) {
+				wp_enqueue_script( $handle );
+			}
+		}
 	}
 	wp_enqueue_script( 'codemirror-addon-comment' );
 
