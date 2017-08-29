@@ -75,16 +75,36 @@ function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
 
 	$scripts->add( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'code-editor', 'jquery', 'backbone', 'wp-util' ), BETTER_CODE_EDITING_PLUGIN_VERSION );
 
-	// Make sure all CodeMirror assets are present as files. This will not be included in core merge.
+	// Make sure all CodeMirror assets present are registered. This will not be included in core merge.
 	if ( defined( 'SCRIPT_DEBUG' ) ) {
 		$plugin_dir_url = plugins_url( '', BETTER_CODE_EDITING_PLUGIN_FILE );
+		$codemirror_path = 'wp-includes/js/codemirror';
+		$codemirror_registered_paths = array();
+		$plugin_dir_path = plugin_dir_path( BETTER_CODE_EDITING_PLUGIN_FILE );
+
 		foreach ( $scripts->registered as $handle => $script ) {
 			if ( 0 === strpos( $script->src, $plugin_dir_url ) ) {
-				$path = substr( $script->src, strlen( $plugin_dir_url ) );
-				if ( ! file_exists( untrailingslashit( plugin_dir_path( BETTER_CODE_EDITING_PLUGIN_FILE ) ) . $path ) ) {
+				$path = substr( $script->src, strlen( $plugin_dir_url ) + 1 );
+				if ( ! file_exists( $plugin_dir_path . $path ) ) {
 					trigger_error( "Missing '$handle' script src: $path'", E_USER_WARNING );
 				}
+				if ( 0 === strpos( $path, $codemirror_path ) ) {
+					$codemirror_registered_paths[] = $path;
+				}
 			}
+		}
+
+		$directory = new RecursiveDirectoryIterator( $plugin_dir_path . $codemirror_path );
+		$iterator = new RecursiveIteratorIterator( $directory );
+		$js_iterator = new RegexIterator( $iterator, '#\.js$#' );
+
+		$codemirror_existing_paths = array();
+		foreach ( $js_iterator as $js_file ) {
+			$codemirror_existing_paths[] = substr( $js_file->getPathname(), strlen( $plugin_dir_path ) );
+		}
+		$unregistered_script_assets = array_diff( $codemirror_existing_paths, $codemirror_registered_paths );
+		if ( ! empty( $unregistered_script_assets ) ) {
+			trigger_error( sprintf( 'There are %d script assets from CodeMirror that are not registered: %s', count( $unregistered_script_assets ), join( ', ', $unregistered_script_assets ) ), E_USER_WARNING );
 		}
 	}
 }
@@ -113,16 +133,40 @@ function _better_code_editing_register_styles( WP_Styles $styles ) {
 	$styles->add_inline_style( 'widgets', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/css/widgets-addendum.css' ) );
 	$styles->add_inline_style( 'customize-controls', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/css/customize-controls-addendum.css' ) );
 
-	// Make sure all CodeMirror assets are present as files. This will not be included in core merge.
+	// Make sure all CodeMirror assets present are registered. This will not be included in core merge.
 	if ( defined( 'SCRIPT_DEBUG' ) ) {
 		$plugin_dir_url = plugins_url( '', BETTER_CODE_EDITING_PLUGIN_FILE );
-		foreach ( $styles->registered as $handle => $script ) {
-			if ( 0 === strpos( $script->src, $plugin_dir_url ) ) {
-				$path = substr( $script->src, strlen( $plugin_dir_url ) );
-				if ( ! file_exists( untrailingslashit( plugin_dir_path( BETTER_CODE_EDITING_PLUGIN_FILE ) ) . $path ) ) {
+		$codemirror_path = 'wp-includes/js/codemirror';
+		$codemirror_registered_paths = array();
+		$plugin_dir_path = plugin_dir_path( BETTER_CODE_EDITING_PLUGIN_FILE );
+
+		foreach ( $styles->registered as $handle => $style ) {
+			if ( 'common' === $handle ) {
+				continue;
+			}
+
+			if ( 0 === strpos( $style->src, $plugin_dir_url ) ) {
+				$path = substr( $style->src, strlen( $plugin_dir_url ) + 1 );
+				if ( ! file_exists( $plugin_dir_path . $path ) ) {
 					trigger_error( "Missing '$handle' style src: $path'", E_USER_WARNING );
 				}
+				if ( 0 === strpos( $path, $codemirror_path ) ) {
+					$codemirror_registered_paths[] = $path;
+				}
 			}
+		}
+
+		$directory = new RecursiveDirectoryIterator( $plugin_dir_path . $codemirror_path );
+		$iterator = new RecursiveIteratorIterator( $directory );
+		$css_iterator = new RegexIterator( $iterator, '#\.css$#' );
+
+		$codemirror_existing_paths = array();
+		foreach ( $css_iterator as $js_file ) {
+			$codemirror_existing_paths[] = substr( $js_file->getPathname(), strlen( $plugin_dir_path ) );
+		}
+		$unregistered_assets = array_diff( $codemirror_existing_paths, $codemirror_registered_paths );
+		if ( ! empty( $unregistered_assets ) ) {
+			trigger_error( sprintf( 'There are %d style assets from CodeMirror that are not registered: %s', count( $unregistered_assets ), join( ', ', $unregistered_assets ) ), E_USER_WARNING );
 		}
 	}
 }
