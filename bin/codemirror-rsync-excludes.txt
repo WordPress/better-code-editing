@@ -7,6 +7,9 @@ package.json
 rollup.config.js
 src
 addon/lint/yaml-lint.js
+addon/lint/coffeescript-lint.js
+addon/mode/multiplex_test.js
+addon/runmode/runmode.node.js
 theme
 mode/apl
 mode/asciiarmor
@@ -36,7 +39,6 @@ mode/fcl
 mode/forth
 mode/fortran
 mode/gas
-mode/gfm
 mode/gherkin
 mode/go
 mode/groovy
