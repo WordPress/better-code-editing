@@ -74,6 +74,19 @@ function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
 	$scripts->add( 'code-editor', plugins_url( 'wp-admin/js/code-editor.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'jquery', 'codemirror' ), BETTER_CODE_EDITING_PLUGIN_VERSION );
 
 	$scripts->add( 'custom-html-widgets', plugins_url( 'wp-admin/js/widgets/custom-html-widgets.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'code-editor', 'jquery', 'backbone', 'wp-util' ), BETTER_CODE_EDITING_PLUGIN_VERSION );
+
+	// Make sure all CodeMirror assets are present as files. This will not be included in core merge.
+	if ( defined( 'SCRIPT_DEBUG' ) ) {
+		$plugin_dir_url = plugins_url( '', BETTER_CODE_EDITING_PLUGIN_FILE );
+		foreach ( $scripts->registered as $handle => $script ) {
+			if ( 0 === strpos( $script->src, $plugin_dir_url ) ) {
+				$path = substr( $script->src, strlen( $plugin_dir_url ) );
+				if ( ! file_exists( untrailingslashit( plugin_dir_path( BETTER_CODE_EDITING_PLUGIN_FILE ) ) . $path ) ) {
+					trigger_error( "Missing '$handle' script src: $path'", E_USER_WARNING );
+				}
+			}
+		}
+	}
 }
 
 /**
@@ -99,4 +112,17 @@ function _better_code_editing_register_styles( WP_Styles $styles ) {
 	// Patch the stylesheets.
 	$styles->add_inline_style( 'widgets', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/css/widgets-addendum.css' ) );
 	$styles->add_inline_style( 'customize-controls', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/css/customize-controls-addendum.css' ) );
+
+	// Make sure all CodeMirror assets are present as files. This will not be included in core merge.
+	if ( defined( 'SCRIPT_DEBUG' ) ) {
+		$plugin_dir_url = plugins_url( '', BETTER_CODE_EDITING_PLUGIN_FILE );
+		foreach ( $styles->registered as $handle => $script ) {
+			if ( 0 === strpos( $script->src, $plugin_dir_url ) ) {
+				$path = substr( $script->src, strlen( $plugin_dir_url ) );
+				if ( ! file_exists( untrailingslashit( plugin_dir_path( BETTER_CODE_EDITING_PLUGIN_FILE ) ) . $path ) ) {
+					trigger_error( "Missing '$handle' style src: $path'", E_USER_WARNING );
+				}
+			}
+		}
+	}
 }
