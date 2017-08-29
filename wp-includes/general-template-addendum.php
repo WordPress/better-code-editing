@@ -128,6 +128,13 @@ function wp_code_editor_settings( $context ) {
 				'bothTags' => true,
 			),
 		) );
+	} elseif ( 'application/json' === $type || 'json' === $extension ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => 'application/json',
+			'lint' => true,
+			'autoCloseBrackets' => true,
+			'matchBrackets' => true,
+		) );
 	} elseif ( 'application/javascript' === $type ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 			'mode' => 'text/javascript',
@@ -246,6 +253,12 @@ function wp_enqueue_code_editor( $settings ) {
 						wp_enqueue_script( 'htmlhint-kses' );
 					}
 					wp_enqueue_script( 'codemirror-addon-lint-html' );
+				}
+				break;
+			case 'application/json':
+				wp_enqueue_script( 'codemirror-mode-javascript' );
+				if ( ! empty( $settings['codemirror']['lint'] ) ) {
+					wp_enqueue_script( 'codemirror-addon-lint-json' );
 				}
 				break;
 			case 'text/javascript':
