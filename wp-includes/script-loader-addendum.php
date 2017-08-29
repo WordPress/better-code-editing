@@ -29,7 +29,7 @@ function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
 	$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '1.0.5' );
 	$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '0.9.14-xwp' );
 	$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '2.9.5' );
-	$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), BETTER_CODE_EDITING_PLUGIN_VERSION ); // @todo Remove.
+	$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '1.6.2' );
 
 	$scripts->add( 'htmlhint-kses', plugins_url( 'wp-includes/js/htmlhint-kses.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'htmlhint' ), BETTER_CODE_EDITING_PLUGIN_VERSION );
 

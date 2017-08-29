@@ -12,5 +12,4 @@ rsync -az --exclude-from bin/codemirror-rsync-excludes.txt node_modules/codemirr
 cp node_modules/csslint/dist/csslint.js wp-includes/js/csslint.js
 cp node_modules/htmlhint/lib/htmlhint.js wp-includes/js/htmlhint.js
 cp node_modules/jshint/dist/jshint.js wp-includes/js/jshint.js
-
-wget -O wp-includes/js/jsonlint.js https://raw.githubusercontent.com/zaach/jsonlint/master/lib/jsonlint.js
+cp node_modules/jsonlint/lib/jsonlint.js wp-includes/js/jsonlint.js
