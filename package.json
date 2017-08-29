@@ -24,6 +24,7 @@
     "codemirror": "5.29.0",
     "csslint": "1.0.5",
     "htmlhint": "github:xwp/HTMLHint",
-    "jshint": "2.9.5"
+    "jshint": "2.9.5",
+    "jsonlint": "1.6.2"
   }
 }

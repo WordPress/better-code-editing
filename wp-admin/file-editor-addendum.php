@@ -6,7 +6,49 @@
  * @subpackage Administration
  */
 
+add_filter( 'editable_extensions', '_better_code_editing_filter_editable_extensions' );
+add_filter( 'wp_theme_editor_filetypes', '_better_code_editing_filter_editable_extensions' );
 add_action( 'admin_enqueue_scripts', '_better_code_editing_admin_enqueue_scripts_for_file_editor' );
+
+/**
+ * Add extensions that are editable.
+ *
+ * @param array $extensions Extensions.
+ * @return array Merged extensions.
+ */
+function _better_code_editing_filter_editable_extensions( $extensions ) {
+	return array_merge( $extensions, array(
+		'conf',
+		'css',
+		'diff',
+		'patch',
+		'html',
+		'htm',
+		'http',
+		'js',
+		'json',
+		'jsx',
+		'less',
+		'md',
+		'php',
+		'phtml',
+		'php3',
+		'php4',
+		'php5',
+		'php7',
+		'phps',
+		'scss',
+		'sass',
+		'sh',
+		'bash',
+		'sql',
+		'svg',
+		'xml',
+		'yml',
+		'yaml',
+		'txt',
+	) );
+}
 
 /**
  * Enqueue scripts for theme and plugin editors.

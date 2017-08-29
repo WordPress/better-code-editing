@@ -11,7 +11,12 @@
  *
  * @since 4.9.0
  *
- * @param array $context Context.
+ * @param array $context {
+ *     Context.
+ *
+ *     @type string $type The MIME type of the file to be edited.
+ *     @type string $file Filename to be edited. Extension is used to sniff the type. Can be supplied as alternative to `$type` param.
+ * }
  * @return array|false Settings for code editor or false if disabled.
  */
 function wp_code_editor_settings( $context ) {
@@ -95,45 +100,113 @@ function wp_code_editor_settings( $context ) {
 	);
 
 	$type = '';
-	$extension = '';
-	if ( isset( $context['file'] ) && false !== strpos( basename( $context['file'] ), '.' ) ) {
+	if ( isset( $context['type'] ) ) {
+		$type = $context['type'];
+
+		// Remap MIME types to ones that CodeMirror modes will recognize.
+		if ( 'application/x-patch' === $type || 'text/x-patch' === $type ) {
+			$type = 'text/x-diff';
+		}
+	} elseif ( isset( $context['file'] ) && false !== strpos( basename( $context['file'] ), '.' ) ) {
 		$extension = strtolower( pathinfo( $context['file'], PATHINFO_EXTENSION ) );
-		if ( ! empty( $extension ) ) {
-			foreach ( wp_get_mime_types() as $exts => $mime ) {
-				if ( preg_match( '!^(' . $exts . ')$!i', $extension ) ) {
-					$type = $mime;
+		foreach ( wp_get_mime_types() as $exts => $mime ) {
+			if ( preg_match( '!^(' . $exts . ')$!i', $extension ) ) {
+				$type = $mime;
+				break;
+			}
+		}
+
+		// Supply any types that are not matched by wp_get_mime_types().
+		if ( empty( $type ) ) {
+			switch ( $extension ) {
+				case 'conf':
+					$type = 'text/nginx';
 					break;
-				}
+				case 'css':
+					$type = 'text/css';
+					break;
+				case 'diff':
+				case 'patch':
+					$type = 'text/x-diff';
+					break;
+				case 'html':
+				case 'htm':
+					$type = 'text/html';
+					break;
+				case 'http':
+					$type = 'message/http';
+					break;
+				case 'js':
+					$type = 'text/javascript';
+					break;
+				case 'json':
+					$type = 'application/json';
+					break;
+				case 'jsx':
+					$type = 'text/jsx';
+					break;
+				case 'less':
+					$type = 'text/x-less';
+					break;
+				case 'md':
+					$type = 'text/x-gfm';
+					break;
+				case 'php':
+				case 'phtml':
+				case 'php3':
+				case 'php4':
+				case 'php5':
+				case 'php7':
+				case 'phps':
+					$type = 'application/x-httpd-php';
+					break;
+				case 'scss':
+					$type = 'text/x-scss';
+					break;
+				case 'sass':
+					$type = 'text/x-sass';
+					break;
+				case 'sh':
+				case 'bash':
+					$type = 'text/x-sh';
+					break;
+				case 'sql':
+					$type = 'text/x-sql';
+					break;
+				case 'svg':
+					$type = 'application/svg+xml';
+					break;
+				case 'xml':
+					$type = 'text/xml';
+					break;
+				case 'yml':
+				case 'yaml':
+					$type = 'text/x-yaml';
+					break;
+				case 'txt':
+				default:
+					$type = 'text/plain';
+					break;
 			}
 		}
 	}
-	if ( empty( $extension ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Missing valid "file" name in supplied context array.', 'better-code-editing' ), '4.9.0' );
-	}
 
-	if ( 'text/css' === $type || in_array( $extension, array( 'sass', 'scss', 'less' ), true ) ) {
+	if ( 'text/css' === $type ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
-			'mode' => 'text/css',
+			'mode' => 'css',
 			'lint' => true,
 			'autoCloseBrackets' => true,
 			'matchBrackets' => true,
 		) );
-	} elseif ( in_array( $extension, array( 'php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'phps' ), true ) ) {
+	} elseif ( 'text/x-scss' === $type || 'text/x-less' === $type || 'text/x-sass' === $type ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
-			'mode' => 'application/x-httpd-php',
+			'mode' => $type,
 			'autoCloseBrackets' => true,
-			'autoCloseTags' => true,
 			'matchBrackets' => true,
-			'matchTags' => array(
-				'bothTags' => true,
-			),
 		) );
-	} elseif ( 'application/javascript' === $type ) {
+	} elseif ( 'text/x-diff' === $type ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
-			'mode' => 'text/javascript',
-			'lint' => true,
-			'autoCloseBrackets' => true,
-			'matchBrackets' => true,
+			'mode' => 'diff',
 		) );
 	} elseif ( 'text/html' === $type ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
@@ -149,17 +222,79 @@ function wp_code_editor_settings( $context ) {
 		if ( ! current_user_can( 'unfiltered_html' ) ) {
 			$settings['htmlhint']['rules']['kses'] = wp_kses_allowed_html( 'post' );
 		}
-	} elseif ( false !== strpos( $type, 'xml' ) || in_array( $extension, array( 'xml', 'svg' ), true ) ) {
+	} elseif ( 'text/x-gfm' === $type ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
-			'mode' => 'application/xml',
+			'mode' => 'gfm',
+			'highlightFormatting' => true,
+			'showTrailingSpace' => false, // GitHub-flavored markdown uses trailing spaces as a feature.
+		) );
+	} elseif ( 'application/javascript' === $type || 'text/javascript' === $type ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => 'javascript',
+			'lint' => true,
+			'autoCloseBrackets' => true,
+			'matchBrackets' => true,
+		) );
+	} elseif ( false !== strpos( $type, 'json' ) ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => array(
+				'name' => 'javascript',
+			),
+			'lint' => true,
+			'autoCloseBrackets' => true,
+			'matchBrackets' => true,
+		) );
+		if ( 'application/ld+json' === $type ) {
+			$settings['codemirror']['mode']['jsonld'] = true;
+		} else {
+			$settings['codemirror']['mode']['json'] = true;
+		}
+	} elseif ( false !== strpos( $type, 'jsx' ) ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => 'jsx',
+			'autoCloseBrackets' => true,
+			'matchBrackets' => true,
+		) );
+	} elseif ( 'text/x-markdown' === $type ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => 'markdown',
+			'highlightFormatting' => true,
+		) );
+	} elseif ( 'text/nginx' === $type ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => 'nginx',
+		) );
+	} elseif ( 'application/x-httpd-php' === $type ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => 'php',
+			'autoCloseBrackets' => true,
+			'autoCloseTags' => true,
+			'matchBrackets' => true,
+			'matchTags' => array(
+				'bothTags' => true,
+			),
+		) );
+	} elseif ( 'text/x-sql' === $type || 'text/x-mysql' === $type ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => 'sql',
+			'autoCloseBrackets' => true,
+			'matchBrackets' => true,
+		) );
+	} elseif ( false !== strpos( $type, 'xml' ) ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => 'xml',
 			'autoCloseBrackets' => true,
 			'autoCloseTags' => true,
 			'matchTags' => array(
 				'bothTags' => true,
 			),
 		) );
+	} elseif ( 'text/x-yaml' === $type ) {
+		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
+			'mode' => 'yaml',
+		) );
 	} else {
-		$settings['codemirror']['mode'] = 'text/plain';
+		$settings['codemirror']['mode'] = $type;
 	}
 
 	if ( ! empty( $settings['codemirror']['lint'] ) ) {
@@ -203,39 +338,70 @@ function wp_enqueue_code_editor( $settings ) {
 
 	wp_enqueue_script( 'code-editor' );
 	wp_enqueue_style( 'code-editor' );
+
+	// @todo All of the following could be done in JS instead, similar to the post Editor?
 	wp_enqueue_script( 'codemirror' );
 	wp_enqueue_style( 'codemirror' );
-	if ( ! empty( $settings['codemirror']['showTrailingSpace'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-trailingspace' );
-	}
-	if ( ! empty( $settings['codemirror']['styleActiveLine'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-selection-active-line' );
-	}
-	if ( ! empty( $settings['codemirror']['autoCloseBrackets'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-closebrackets' );
-	}
-	if ( ! empty( $settings['codemirror']['matchBrackets'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-matchbrackets' );
-	}
-	if ( ! empty( $settings['codemirror']['autoCloseTags'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-closetag' );
-	}
-	if ( ! empty( $settings['codemirror']['matchTags'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-edit-matchtags' );
-	}
-	if ( ! empty( $settings['codemirror']['continueComments'] ) ) {
-		wp_enqueue_script( 'codemirror-addon-comment-continuecomment' );
+
+	// Enqueue addons.
+	$option_asset_mappings = array(
+		'showTrailingSpace' => array( 'codemirror-addon-edit-trailingspace' ),
+		'styleActiveLine'   => array( 'codemirror-addon-selection-active-line' ),
+		'autoCloseBrackets' => array( 'codemirror-addon-edit-closebrackets' ),
+		'matchBrackets'     => array( 'codemirror-addon-edit-matchbrackets' ),
+		'autoCloseTags'     => array( 'codemirror-addon-edit-closetag' ),
+		'matchTags'         => array( 'codemirror-addon-edit-matchtags' ),
+		'continueComments'  => array( 'codemirror-addon-comment-continuecomment' ),
+		// @todo Add recognition for all of the addon configs.
+	);
+	foreach ( $option_asset_mappings as $option => $handles ) {
+		if ( ! empty( $settings['codemirror'][ $option ] ) ) {
+			foreach ( $handles as $handle ) {
+				wp_enqueue_script( $handle );
+			}
+		}
 	}
 	wp_enqueue_script( 'codemirror-addon-comment' );
 
 	if ( isset( $settings['codemirror']['mode'] ) ) {
-		switch ( $settings['codemirror']['mode'] ) {
-			case 'application/x-httpd-php':
-				wp_enqueue_script( 'codemirror-mode-php' );
-				wp_enqueue_script( 'codemirror-addon-hint-show' );
-				/* falls through */
+		$mode = $settings['codemirror']['mode'];
+		if ( is_string( $mode ) ) {
+			$mode = array(
+				'name' => $mode,
+			);
+		}
+
+		switch ( $mode['name'] ) {
+			case 'css':
+			case 'text/css':
+			case 'text/x-scss':
+			case 'text/x-less':
+				wp_enqueue_script( 'codemirror-mode-css' );
+				wp_enqueue_script( 'codemirror-addon-hint-css' );
+				wp_enqueue_style( 'codemirror-addon-show-hint' );
+
+				if ( ! empty( $settings['codemirror']['lint'] ) ) {
+					wp_enqueue_script( 'codemirror-addon-lint-css' );
+				}
+				break;
+			case 'diff':
+			case 'text/x-diff':
+				wp_enqueue_script( 'codemirror-mode-diff' );
+				break;
+			case 'gfm':
+			case 'text/x-gfm':
+				wp_enqueue_script( 'codemirror-mode-gfm' );
+				break;
 			case 'htmlmixed':
-				wp_enqueue_script( 'codemirror-mode-html' );
+			case 'text/html':
+			case 'php':
+			case 'application/x-httpd-php':
+			case 'text/x-php':
+				if ( false !== strpos( $mode['name'], 'php' ) ) {
+					wp_enqueue_script( 'codemirror-mode-php' );
+				}
+
+				wp_enqueue_script( 'codemirror-mode-htmlmixed' );
 				wp_enqueue_script( 'codemirror-addon-hint-html' );
 				wp_enqueue_script( 'codemirror-addon-hint-javascript' );
 				wp_enqueue_script( 'codemirror-addon-hint-css' );
@@ -248,26 +414,72 @@ function wp_enqueue_code_editor( $settings ) {
 					wp_enqueue_script( 'codemirror-addon-lint-html' );
 				}
 				break;
-			case 'text/javascript':
+			case 'http':
+			case 'message/http':
+				wp_enqueue_script( 'codemirror-mode-http' );
+				break;
+			case 'javascript':
+			case 'application/ecmascript':
+			case 'application/json':
+			case 'application/javascript':
+			case 'application/ld+json':
+			case 'text/typescript':
+			case 'application/typescript':
 				wp_enqueue_script( 'codemirror-mode-javascript' );
 				wp_enqueue_script( 'codemirror-addon-hint-javascript' );
 				wp_enqueue_style( 'codemirror-addon-show-hint' );
 
 				if ( ! empty( $settings['codemirror']['lint'] ) ) {
-					wp_enqueue_script( 'codemirror-addon-lint-javascript' );
+					if ( ! empty( $mode['json'] ) || ! empty( $mode['jsonld'] ) ) {
+							wp_enqueue_script( 'codemirror-addon-lint-json' );
+					} else {
+						wp_enqueue_script( 'codemirror-addon-lint-javascript' );
+					}
 				}
 				break;
+			case 'jsx':
+			case 'text/jsx':
+			case 'text/typescript-jsx':
+				wp_enqueue_script( 'codemirror-mode-jsx' );
+				break;
+			case 'markdown':
+			case 'text/x-markdown':
+				wp_enqueue_script( 'codemirror-mode-markdown' );
+				break;
+			case 'nginx':
+			case 'text/nginx':
+				wp_enqueue_script( 'codemirror-mode-nginx' );
+				break;
+			case 'sass':
+			case 'text/x-sass':
+				wp_enqueue_script( 'codemirror-mode-sass' );
+				break;
+			case 'sh':
+			case 'text/x-sh':
+			case 'application/x-sh':
+				wp_enqueue_script( 'codemirror-mode-shell' );
+				break;
+			case 'sql':
+			case 'text/x-sql':
+			case 'text/x-mysql':
+			case 'text/x-mariadb':
+			case 'text/x-cassandra':
+			case 'text/x-plsql':
+			case 'text/x-mssql':
+			case 'text/x-hive':
+			case 'text/x-pgsql':
+			case 'text/x-gql':
+			case 'text/x-gpsql':
+				wp_enqueue_script( 'codemirror-mode-sql' );
+				break;
+			case 'xml':
 			case 'application/xml':
+			case 'application/svg+xml':
 				wp_enqueue_script( 'codemirror-mode-xml' );
 				break;
-			case 'text/css':
-				wp_enqueue_script( 'codemirror-mode-css' );
-				wp_enqueue_script( 'codemirror-addon-hint-css' );
-				wp_enqueue_style( 'codemirror-addon-show-hint' );
-
-				if ( ! empty( $settings['codemirror']['lint'] ) ) {
-					wp_enqueue_script( 'codemirror-addon-lint-css' );
-				}
+			case 'yaml':
+			case 'codemirror-mode-yaml':
+				wp_enqueue_script( 'codemirror-mode-yaml' );
 				break;
 		}
 
