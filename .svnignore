@@ -22,4 +22,5 @@ readme.md
 *.zip
 build
 contributing.md
+wp-includes/js/codemirror/theme
 ~*

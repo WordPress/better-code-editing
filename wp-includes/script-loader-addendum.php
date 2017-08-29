@@ -19,6 +19,7 @@ function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
 	$scripts->add( 'codemirror', plugins_url( 'wp-includes/js/codemirror/lib/codemirror.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), $codemirror_version );
 
 	$scripts->add( 'codemirror-addon-hint-show',       plugins_url( 'wp-includes/js/codemirror/addon/hint/show-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),       array( 'codemirror' ), $codemirror_version );
+	$scripts->add( 'codemirror-addon-hint-anyword',    plugins_url( 'wp-includes/js/codemirror/addon/hint/anyword-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),    array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-hint-css',        plugins_url( 'wp-includes/js/codemirror/addon/hint/css-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-css' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-hint-html',       plugins_url( 'wp-includes/js/codemirror/addon/hint/html-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),       array( 'codemirror-addon-hint-show', 'codemirror-addon-hint-xml', 'codemirror-mode-html' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-hint-javascript', plugins_url( 'wp-includes/js/codemirror/addon/hint/javascript-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'codemirror-addon-hint-show', 'codemirror-mode-javascript' ), $codemirror_version );
