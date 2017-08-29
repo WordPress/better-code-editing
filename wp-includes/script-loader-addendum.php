@@ -21,7 +21,7 @@ function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
 	$scripts->add( 'codemirror-addon-hint-show',       plugins_url( 'wp-includes/js/codemirror/addon/hint/show-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),       array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-hint-anyword',    plugins_url( 'wp-includes/js/codemirror/addon/hint/anyword-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),    array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-hint-css',        plugins_url( 'wp-includes/js/codemirror/addon/hint/css-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-css' ), $codemirror_version );
-	$scripts->add( 'codemirror-addon-hint-html',       plugins_url( 'wp-includes/js/codemirror/addon/hint/html-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),       array( 'codemirror-addon-hint-show', 'codemirror-addon-hint-xml', 'codemirror-mode-html' ), $codemirror_version );
+	$scripts->add( 'codemirror-addon-hint-html',       plugins_url( 'wp-includes/js/codemirror/addon/hint/html-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),       array( 'codemirror-addon-hint-show', 'codemirror-addon-hint-xml', 'codemirror-mode-htmlmixed' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-hint-javascript', plugins_url( 'wp-includes/js/codemirror/addon/hint/javascript-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'codemirror-addon-hint-show', 'codemirror-mode-javascript' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-hint-sql',        plugins_url( 'wp-includes/js/codemirror/addon/hint/sql-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-sql' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-hint-xml',        plugins_url( 'wp-includes/js/codemirror/addon/hint/xml-hint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),        array( 'codemirror-addon-hint-show', 'codemirror-mode-xml' ), $codemirror_version );
@@ -38,7 +38,7 @@ function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
 	$scripts->add( 'codemirror-addon-lint-css',        plugins_url( 'wp-includes/js/codemirror/addon/lint/css-lint.js',  BETTER_CODE_EDITING_PLUGIN_FILE ),       array( 'codemirror-addon-lint', 'csslint' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-lint-html',       plugins_url( 'wp-includes/js/codemirror/addon/lint/html-lint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),       array( 'codemirror-addon-lint', 'htmlhint', 'csslint', 'jshint' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-lint-javascript', plugins_url( 'wp-includes/js/codemirror/addon/lint/javascript-lint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'codemirror-addon-lint', 'jshint' ), $codemirror_version );
-	$scripts->add( 'codemirror-addon-lint-json',       plugins_url( 'wp-includes/js/codemirror/addon/lint/json-lint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),       array( 'codemirror-addon-lint', 'jsonlint' ), $codemirror_version ); // @todo Remove.
+	$scripts->add( 'codemirror-addon-lint-json',       plugins_url( 'wp-includes/js/codemirror/addon/lint/json-lint.js', BETTER_CODE_EDITING_PLUGIN_FILE ),       array( 'codemirror-addon-lint', 'jsonlint' ), $codemirror_version );
 
 	$scripts->add( 'codemirror-addon-comment',                 plugins_url( 'wp-includes/js/codemirror/addon/comment/comment.js', BETTER_CODE_EDITING_PLUGIN_FILE ),         array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-addon-comment-continuecomment', plugins_url( 'wp-includes/js/codemirror/addon/comment/continuecomment.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'codemirror' ), $codemirror_version );
@@ -58,14 +58,18 @@ function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
 	$scripts->add( 'codemirror-mode-clike',      plugins_url( 'wp-includes/js/codemirror/mode/clike/clike.js', BETTER_CODE_EDITING_PLUGIN_FILE ),           array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-mode-css',        plugins_url( 'wp-includes/js/codemirror/mode/css/css.js', BETTER_CODE_EDITING_PLUGIN_FILE ),               array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-mode-diff',       plugins_url( 'wp-includes/js/codemirror/mode/diff/diff.js', BETTER_CODE_EDITING_PLUGIN_FILE ),             array( 'codemirror' ), $codemirror_version );
-	$scripts->add( 'codemirror-mode-html',       plugins_url( 'wp-includes/js/codemirror/mode/htmlmixed/htmlmixed.js', BETTER_CODE_EDITING_PLUGIN_FILE ),   array( 'codemirror', 'codemirror-mode-css', 'codemirror-mode-javascript', 'codemirror-mode-xml' ), $codemirror_version );
+	$scripts->add( 'codemirror-mode-htmlmixed',  plugins_url( 'wp-includes/js/codemirror/mode/htmlmixed/htmlmixed.js', BETTER_CODE_EDITING_PLUGIN_FILE ),   array( 'codemirror', 'codemirror-mode-css', 'codemirror-mode-javascript', 'codemirror-mode-xml' ), $codemirror_version );
 	$scripts->add( 'codemirror-mode-http',       plugins_url( 'wp-includes/js/codemirror/mode/http/http.js', BETTER_CODE_EDITING_PLUGIN_FILE ),             array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-mode-javascript', plugins_url( 'wp-includes/js/codemirror/mode/javascript/javascript.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'codemirror' ), $codemirror_version );
+	$scripts->add( 'codemirror-mode-jsx',        plugins_url( 'wp-includes/js/codemirror/mode/jsx/jsx.js', BETTER_CODE_EDITING_PLUGIN_FILE ),               array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-mode-markdown',   plugins_url( 'wp-includes/js/codemirror/mode/markdown/markdown.js', BETTER_CODE_EDITING_PLUGIN_FILE ),     array( 'codemirror' ), $codemirror_version );
-	$scripts->add( 'codemirror-mode-php',        plugins_url( 'wp-includes/js/codemirror/mode/php/php.js', BETTER_CODE_EDITING_PLUGIN_FILE ),               array( 'codemirror-mode-clike' ), $codemirror_version );
+	$scripts->add( 'codemirror-mode-nginx',      plugins_url( 'wp-includes/js/codemirror/mode/nginx/nginx.js', BETTER_CODE_EDITING_PLUGIN_FILE ),        array( 'codemirror' ), $codemirror_version );
+	$scripts->add( 'codemirror-mode-php',        plugins_url( 'wp-includes/js/codemirror/mode/php/php.js', BETTER_CODE_EDITING_PLUGIN_FILE ),               array( 'codemirror-mode-clike', 'codemirror-mode-xml', 'codemirror-mode-javascript', 'codemirror-mode-css', 'codemirror-mode-htmlmixed' ), $codemirror_version );
+	$scripts->add( 'codemirror-mode-sass',       plugins_url( 'wp-includes/js/codemirror/mode/sass/sass.js', BETTER_CODE_EDITING_PLUGIN_FILE ),             array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-mode-shell',      plugins_url( 'wp-includes/js/codemirror/mode/shell/shell.js', BETTER_CODE_EDITING_PLUGIN_FILE ),           array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-mode-sql',        plugins_url( 'wp-includes/js/codemirror/mode/sql/sql.js', BETTER_CODE_EDITING_PLUGIN_FILE ),               array( 'codemirror' ), $codemirror_version );
 	$scripts->add( 'codemirror-mode-xml',        plugins_url( 'wp-includes/js/codemirror/mode/xml/xml.js', BETTER_CODE_EDITING_PLUGIN_FILE ),               array( 'codemirror' ), $codemirror_version );
+	$scripts->add( 'codemirror-mode-yaml',       plugins_url( 'wp-includes/js/codemirror/mode/yaml/yaml.js', BETTER_CODE_EDITING_PLUGIN_FILE ),               array( 'codemirror' ), $codemirror_version );
 
 	$scripts->add( 'code-editor', plugins_url( 'wp-admin/js/code-editor.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'jquery', 'codemirror' ), BETTER_CODE_EDITING_PLUGIN_VERSION );
 

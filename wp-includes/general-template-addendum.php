@@ -111,7 +111,8 @@ function wp_code_editor_settings( $context ) {
 		_doing_it_wrong( __FUNCTION__, __( 'Missing valid "file" name in supplied context array.', 'better-code-editing' ), '4.9.0' );
 	}
 
-	if ( 'text/css' === $type || in_array( $extension, array( 'sass', 'scss', 'less' ), true ) ) {
+	// @todo Add support for all of the other modes that have scripts registered.
+	if ( 'text/css' === $type || in_array( $extension, array( 'css', 'scss', 'less' ), true ) ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 			'mode' => 'text/css',
 			'lint' => true,
@@ -235,6 +236,8 @@ function wp_enqueue_code_editor( $settings ) {
 	}
 	wp_enqueue_script( 'codemirror-addon-comment' );
 
+	// @todo Add support for all of the other modes that have scripts registered.
+	// @todo Support all the mime types each mode recognizes.
 	if ( isset( $settings['codemirror']['mode'] ) ) {
 		switch ( $settings['codemirror']['mode'] ) {
 			case 'application/x-httpd-php':
@@ -242,7 +245,7 @@ function wp_enqueue_code_editor( $settings ) {
 				wp_enqueue_script( 'codemirror-addon-hint-show' );
 				/* falls through */
 			case 'htmlmixed':
-				wp_enqueue_script( 'codemirror-mode-html' );
+				wp_enqueue_script( 'codemirror-mode-htmlmixed' );
 				wp_enqueue_script( 'codemirror-addon-hint-html' );
 				wp_enqueue_script( 'codemirror-addon-hint-javascript' );
 				wp_enqueue_script( 'codemirror-addon-hint-css' );
