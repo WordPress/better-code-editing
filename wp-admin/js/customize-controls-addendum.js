@@ -11,17 +11,16 @@
 				return;
 			}
 
-			// Workaround for disabling server-sent syntax checking notifications.
-			// @todo Listen for errors in CodeMirror and opt-to add invalidity notifications for them? The presence of such notification error allows saving to be blocked.
+			// Workaround for disabling server-sent syntax checking notifications. This can be removed from core in the merge.
 			control.setting.notifications.add = (function( originalAdd ) { // eslint-disable-line max-nested-callbacks
 				return function( id, notification ) { // eslint-disable-line max-nested-callbacks
 					if ( 'imbalanced_curly_brackets' === id && notification.fromServer ) {
 						return null;
 					} else {
-						return originalAdd( id, notification );
+						return originalAdd.call( this, id, notification );
 					}
 				};
-			})( control.setting.notifications );
+			})( control.setting.notifications.add );
 
 			onceExpanded = function() {
 				var $textarea = control.container.find( 'textarea' );
