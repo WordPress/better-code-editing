@@ -74,13 +74,13 @@
 					if ( 1 === currentErrorAnnotations.length ) {
 						control.setting.notifications.remove( 'csslint_errors' );
 						control.setting.notifications.add( 'csslint_error', new api.Notification( 'csslint_error', {
-							message: 'There is 1 error in the CSS that must be fixed.', // @todo l10n
+							message: api.l10n.customCssErrorNotice.singular.replace( '%d', '1' ),
 							type: 'error'
 						} ) );
 					} else if ( currentErrorAnnotations.length > 1 ) {
 						control.setting.notifications.remove( 'csslint_error' );
 						control.setting.notifications.add( 'csslint_errors', new api.Notification( 'csslint_errors', {
-							message: 'There is ' + String( currentErrorAnnotations.length ) + ' error in the CSS that must be fixed.', // @todo l10n
+							message: api.l10n.customCssErrorNotice.plural.replace( '%d', String( currentErrorAnnotations.length ) ),
 							type: 'error'
 						} ) );
 					} else {
