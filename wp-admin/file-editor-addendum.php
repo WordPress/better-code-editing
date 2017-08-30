@@ -100,6 +100,7 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 
 	wp_enqueue_script( 'jquery-ui-core' ); // For :tabbable pseudo-selector.
 	wp_enqueue_script( 'underscore' );
+	wp_enqueue_script( 'wp-a11y' );
 	wp_enqueue_code_editor( $settings );
 
 	/* translators: placeholder is error count */
@@ -109,7 +110,7 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 	?>
 	<script>
 		jQuery( function( $ ) {
-			var settings = {}, noticeContainer, errorNotice, l10n, updateNotice, currentErrorAnnotations = [], editor, previousErrorCount;
+			var settings = {}, noticeContainer, errorNotice, l10n, updateNotice, currentErrorAnnotations = [], editor, previousErrorCount = 0;
 			settings = <?php echo wp_json_encode( $settings ); ?>;
 			l10n = <?php echo wp_json_encode( $l10n ); ?>;
 			settings.handleTabPrev = function() {
@@ -120,13 +121,28 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 			};
 
 			updateNotice = function() {
+				var message;
+
+				// Short-circuit if there is no update for the message.
+				if ( currentErrorAnnotations.length === previousErrorCount ) {
+					return;
+				}
+
+				previousErrorCount = currentErrorAnnotations.length;
+
 				$( '#submit' ).prop( 'disabled', 0 !== currentErrorAnnotations.length );
 				if ( 0 !== currentErrorAnnotations.length ) {
 					errorNotice.empty();
+					if ( 1 === currentErrorAnnotations.length ) {
+						message = l10n.singular.replace( '%d', '1' );
+					} else {
+						message = l10n.plural.replace( '%d', String( currentErrorAnnotations.length ) );
+					}
 					errorNotice.append( $( '<p></p>', {
-						text: 1 === currentErrorAnnotations.length ? l10n.singular.replace( '%d', '1' ) : l10n.plural.replace( '%d', currentErrorAnnotations.length ),
+						text: message,
 					} ) );
 					noticeContainer.slideDown( 'fast' );
+					wp.a11y.speak( message );
 				} else {
 					noticeContainer.slideUp( 'fast' );
 				}
@@ -141,22 +157,23 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 				noticeContainer.append( errorNotice );
 				noticeContainer.hide();
 				$( 'p.submit' ).before( noticeContainer );
-				settings.codemirror.lint.onUpdateLinting = function ( annotations, annotationsSorted, editor ) {
-					currentErrorAnnotations = _.filter( annotations, function( annotation ) {
-						return 'error' === annotation.severity;
-					} );
+				settings.codemirror.lint = _.extend( {}, settings.codemirror.lint, {
+					onUpdateLinting: function( annotations, annotationsSorted, editor ) {
+						currentErrorAnnotations = _.filter( annotations, function( annotation ) {
+							return 'error' === annotation.severity;
+						} );
 
-					/*
-					 * Update notifications when the editor is not focused to prevent error message
-					 * from overwhelming the user during input, unless there are no annotations
-					 * or there are previous notifications already being displayed, and in that
-					 * case update immediately so they can know that they fixed the errors.
-					 */
-					if ( ! editor.state.focused || 0 === currentErrorAnnotations.length || previousErrorCount > 0 && currentErrorAnnotations.length !== previousErrorCount ) {
-						updateNotice();
+						/*
+						 * Update notifications when the editor is not focused to prevent error message
+						 * from overwhelming the user during input, unless there are no annotations
+						 * or there are previous notifications already being displayed, and in that
+						 * case update immediately so they can know that they fixed the errors.
+						 */
+						if ( ! editor.state.focused || 0 === currentErrorAnnotations.length || previousErrorCount > 0 ) {
+							updateNotice();
+						}
 					}
-					previousErrorCount = currentErrorAnnotations.length;
-				};
+				} );
 			}
 			editor = wp.codeEditor.initialize( $( '#newcontent' ), settings );
 
@@ -168,7 +185,7 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 					updateNotice();
 				});
 			}
-		} );
+		});
 		</script>
 	<?php
 	wp_add_inline_script( 'code-editor', str_replace( array( '<script>', '</script>' ), '', ob_get_clean() ) );

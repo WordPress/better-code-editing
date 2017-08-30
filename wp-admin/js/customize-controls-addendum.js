@@ -71,21 +71,26 @@
 				 * @returns {void}
 				 */
 				function updateNotifications() {
-					if ( 1 === currentErrorAnnotations.length ) {
-						control.setting.notifications.remove( 'csslint_errors' );
+					var message;
+
+					// Short-circuit if there are no changes to the error.
+					if ( previousErrorCount === currentErrorAnnotations.length ) {
+						return;
+					}
+					previousErrorCount = currentErrorAnnotations.length;
+
+					control.setting.notifications.remove( 'csslint_error' );
+
+					if ( 0 !== currentErrorAnnotations.length ) {
+						if ( 1 === currentErrorAnnotations.length ) {
+							message = api.l10n.customCssErrorNotice.singular.replace( '%d', '1' );
+						} else {
+							message = api.l10n.customCssErrorNotice.plural.replace( '%d', String( currentErrorAnnotations.length ) );
+						}
 						control.setting.notifications.add( 'csslint_error', new api.Notification( 'csslint_error', {
-							message: api.l10n.customCssErrorNotice.singular.replace( '%d', '1' ),
+							message: message,
 							type: 'error'
 						} ) );
-					} else if ( currentErrorAnnotations.length > 1 ) {
-						control.setting.notifications.remove( 'csslint_error' );
-						control.setting.notifications.add( 'csslint_errors', new api.Notification( 'csslint_errors', {
-							message: api.l10n.customCssErrorNotice.plural.replace( '%d', String( currentErrorAnnotations.length ) ),
-							type: 'error'
-						} ) );
-					} else {
-						control.setting.notifications.remove( 'csslint_error' );
-						control.setting.notifications.remove( 'csslint_errors' );
 					}
 				}
 
@@ -105,10 +110,9 @@
 							 * or there are previous notifications already being displayed, and in that
 							 * case update immediately so they can know that they fixed the errors.
 							 */
-							if ( ! editor.state.focused || 0 === currentErrorAnnotations.length || previousErrorCount > 0 && currentErrorAnnotations.length !== previousErrorCount ) {
+							if ( ! editor.state.focused || 0 === currentErrorAnnotations.length || previousErrorCount > 0 ) {
 								updateNotifications();
 							}
-							previousErrorCount = currentErrorAnnotations.length;
 						}
 					} );
 				}
