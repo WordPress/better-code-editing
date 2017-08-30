@@ -490,5 +490,14 @@ function wp_enqueue_code_editor( $settings ) {
 
 	wp_add_inline_script( 'code-editor', sprintf( 'jQuery.extend( wp.codeEditor.defaultSettings, %s );', wp_json_encode( $settings ) ) );
 
+	/**
+	 * Fires when scripts and styles are enqueued for the code editor.
+	 *
+	 * @since 4.9.0
+	 *
+	 * @param array $settings Settings for the enqueued code editor.
+	 */
+	do_action( 'wp_enqueue_code_editor', $settings );
+
 	return true;
 }
