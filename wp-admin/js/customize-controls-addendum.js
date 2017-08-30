@@ -40,7 +40,7 @@
 			})( control.focus );
 
 			onceExpanded = function() {
-				var $textarea = control.container.find( 'textarea' ), settings, currentAnnotations = [];
+				var $textarea = control.container.find( 'textarea' ), settings, currentErrorAnnotations = [];
 
 				settings = _.extend( {}, api.settings.codeEditor, {
 					handleTabNext: function() {
@@ -71,16 +71,16 @@
 				 * @returns {void}
 				 */
 				function updateNotifications() {
-					if ( 1 === currentAnnotations.length ) {
+					if ( 1 === currentErrorAnnotations.length ) {
 						control.setting.notifications.remove( 'csslint_errors' );
 						control.setting.notifications.add( 'csslint_error', new api.Notification( 'csslint_error', {
 							message: 'There is 1 error in the CSS that must be fixed.', // @todo l10n
 							type: 'error'
 						} ) );
-					} else if ( currentAnnotations.length > 1 ) {
+					} else if ( currentErrorAnnotations.length > 1 ) {
 						control.setting.notifications.remove( 'csslint_error' );
 						control.setting.notifications.add( 'csslint_errors', new api.Notification( 'csslint_errors', {
-							message: 'There is ' + String( currentAnnotations.length ) + ' error in the CSS that must be fixed.', // @todo l10n
+							message: 'There is ' + String( currentErrorAnnotations.length ) + ' error in the CSS that must be fixed.', // @todo l10n
 							type: 'error'
 						} ) );
 					} else {
@@ -94,8 +94,10 @@
 						settings.codemirror.lint = {};
 					}
 					settings.codemirror.lint = _.extend( {}, settings.codemirror.lint, {
-						onUpdateLinting: function( annotations, unsortedAnnotations, editor ) {
-							currentAnnotations = annotations;
+						onUpdateLinting: function( annotations, sortedAnnotations, editor ) {
+							currentErrorAnnotations = _.filter( annotations, function( annotation ) {
+								return 'error' === annotation.severity;
+							} );
 
 							/*
 							 * Update notifications when the editor is not focused to prevent error message
@@ -103,7 +105,7 @@
 							 * and in that case update immediately so they can know that they fixed the
 							 * errors.
 							 */
-							if ( ! editor.state.focused || 0 === currentAnnotations.length ) {
+							if ( ! editor.state.focused || 0 === currentErrorAnnotations.length ) {
 								updateNotifications();
 							}
 						}
@@ -119,6 +121,9 @@
 
 				// Update notifications when blurring the field to prevent user from being inundated with errors during input.
 				control.editor.on( 'blur', function() {
+					updateNotifications();
+				});
+				$( control.editor.display.wrapper ).on( 'mouseout', function() {
 					updateNotifications();
 				});
 

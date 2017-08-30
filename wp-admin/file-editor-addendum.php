@@ -99,6 +99,7 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 	}
 
 	wp_enqueue_script( 'jquery-ui-core' ); // For :tabbable pseudo-selector.
+	wp_enqueue_script( 'underscore' );
 	wp_enqueue_code_editor( $settings );
 
 	/* translators: placeholder is error count */
@@ -108,7 +109,7 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 	?>
 	<script>
 		jQuery( function( $ ) {
-			var settings = {}, noticeContainer, errorNotice, l10n;
+			var settings = {}, noticeContainer, errorNotice, l10n, updateNotice, currentErrorAnnotations = [], editor;
 			settings = <?php echo wp_json_encode( $settings ); ?>;
 			l10n = <?php echo wp_json_encode( $l10n ); ?>;
 			settings.handleTabPrev = function() {
@@ -116,6 +117,19 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 			};
 			settings.handleTabNext = function() {
 				$( '#template' ).find( ':tabbable:not(.CodeMirror-code)' ).first().focus();
+			};
+
+			updateNotice = function() {
+				$( '#submit' ).prop( 'disabled', 0 !== currentErrorAnnotations.length );
+				if ( 0 !== currentErrorAnnotations.length ) {
+					errorNotice.empty();
+					errorNotice.append( $( '<p></p>', {
+						text: 1 === currentErrorAnnotations.length ? l10n.singular.replace( '%d', '1' ) : l10n.plural.replace( '%d', currentErrorAnnotations.length ),
+					} ) );
+					noticeContainer.slideDown( 'fast' );
+				} else {
+					noticeContainer.slideUp( 'fast' );
+				}
 			};
 
 			if ( settings.codemirror.lint ) {
@@ -127,26 +141,32 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 				noticeContainer.append( errorNotice );
 				noticeContainer.hide();
 				$( 'p.submit' ).before( noticeContainer );
-				settings.codemirror.lint.onUpdateLinting = function ( annotationsNotSorted ) {
-					var errors = [];
-					$.each( annotationsNotSorted, function() {
-						if ( 'error' === this.severity ) {
-							errors.push( this );
-						}
+				settings.codemirror.lint.onUpdateLinting = function ( annotations, annotationsSorted, editor ) {
+					currentErrorAnnotations = _.filter( annotations, function( annotation ) {
+						return 'error' === annotation.severity;
 					} );
-					$( '#submit' ).prop( 'disabled', 0 !== errors.length );
-					if ( 0 !== errors.length ) {
-						errorNotice.empty();
-						errorNotice.append( $( '<p></p>', {
-							text: 1 === errors.length ? l10n.singular.replace( '%d', '1' ) : l10n.plural.replace( '%d', errors.length ),
-						} ) );
-						noticeContainer.slideDown( 'fast' );
-					} else {
-						noticeContainer.slideUp( 'fast' );
+
+					/*
+					 * Update notifications when the editor is not focused to prevent error message
+					 * from overwhelming the user during input, unless there are no annotations
+					 * and in that case update immediately so they can know that they fixed the
+					 * errors.
+					 */
+					if ( ! editor.state.focused || 0 === currentErrorAnnotations.length ) {
+						updateNotice();
 					}
 				};
 			}
-			wp.codeEditor.initialize( $( '#newcontent' ), settings );
+			editor = wp.codeEditor.initialize( $( '#newcontent' ), settings );
+
+			if ( settings.codemirror.lint ) {
+				editor.on( 'blur', function() {
+					updateNotice();
+				});
+				$( editor.display.wrapper ).on( 'mouseout', function() {
+					updateNotice();
+				});
+			}
 		} );
 		</script>
 	<?php
