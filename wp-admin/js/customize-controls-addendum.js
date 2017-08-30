@@ -23,9 +23,9 @@
 			})( control.setting.notifications.add );
 
 			onceExpanded = function() {
-				var $textarea = control.container.find( 'textarea' );
+				var $textarea = control.container.find( 'textarea' ), settings, currentAnnotations = [];
 
-				control.editor = wp.codeEditor.initialize( $textarea, _.extend( {}, api.settings.codeEditor, {
+				settings = _.extend( {}, api.settings.codeEditor, {
 					handleTabNext: function() {
 						var controls, controlIndex;
 						controls = section.controls();
@@ -46,11 +46,63 @@
 							controls[ controlIndex - 1 ].container.find( ':focusable:first' ).focus();
 						}
 					}
-				} ) );
+				} );
+
+				/**
+				 * Update notifications on the setting based on the current CSSLint annotations.
+				 *
+				 * @returns {void}
+				 */
+				function updateNotifications() {
+					if ( 1 === currentAnnotations.length ) {
+						control.setting.notifications.remove( 'csslint_errors' );
+						control.setting.notifications.add( 'csslint_error', new api.Notification( 'csslint_error', {
+							message: 'There is 1 error in the CSS that must be fixed.', // @todo l10n
+							type: 'error'
+						} ) );
+					} else if ( currentAnnotations.length > 1 ) {
+						control.setting.notifications.remove( 'csslint_error' );
+						control.setting.notifications.add( 'csslint_errors', new api.Notification( 'csslint_errors', {
+							message: 'There is ' + String( currentAnnotations.length ) + ' error in the CSS that must be fixed.', // @todo l10n
+							type: 'error'
+						} ) );
+					} else {
+						control.setting.notifications.remove( 'csslint_error' );
+						control.setting.notifications.remove( 'csslint_errors' );
+					}
+				}
+
+				if ( settings.codemirror.lint ) {
+					if ( true === settings.codemirror.lint ) {
+						settings.codemirror.lint = {};
+					}
+					settings.codemirror.lint = _.extend( {}, settings.codemirror.lint, {
+						onUpdateLinting: function( annotations, unsortedAnnotations, editor ) {
+							currentAnnotations = annotations;
+
+							/*
+							 * Update notifications when the editor is not focused to prevent error message
+							 * from overwhelming the user during input, unless there are no annotations
+							 * and in that case update immediately so they can know that they fixed the
+							 * errors.
+							 */
+							if ( ! editor.state.focused || 0 === currentAnnotations.length ) {
+								updateNotifications();
+							}
+						}
+					} );
+				}
+
+				control.editor = wp.codeEditor.initialize( $textarea, settings );
 
 				// Refresh when receiving focus.
 				control.editor.on( 'focus', function( editor ) {
 					editor.refresh();
+				});
+
+				// Update notifications when blurring the field to prevent user from being inundated with errors during input.
+				control.editor.on( 'blur', function() {
+					updateNotifications();
 				});
 
 				/*
