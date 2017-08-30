@@ -68,22 +68,31 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		instanceSettings = $.extend( {}, wp.codeEditor.defaultSettings, settings );
 		instanceSettings.codemirror = $.extend( {}, instanceSettings.codemirror );
 
-		if ( true === instanceSettings.codemirror.lint ) {
+		// @todo This can be moved to PHP.
+		if ( instanceSettings.codemirror.lint ) {
+			if ( true === instanceSettings.codemirror.lint ) {
+				instanceSettings.codemirror.lint = {};
+			}
+
+			// Note that rules must be sent in the "deprecated" lint.options property to prevent linter from complaining about unrecognized options.
+			if ( ! instanceSettings.codemirror.lint.options ) {
+				instanceSettings.codemirror.lint.options = {};
+			}
 
 			// Configure JSHint.
-			if ( 'text/javascript' === instanceSettings.codemirror.mode && true === instanceSettings.codemirror.lint && instanceSettings.jshint && instanceSettings.jshint.rules ) {
-				instanceSettings.codemirror.lint = instanceSettings.jshint.rules;
+			if ( 'javascript' === instanceSettings.codemirror.mode && instanceSettings.jshint && instanceSettings.jshint.rules ) {
+				instanceSettings.codemirror.lint.options = $.extend( {}, instanceSettings.jshint.rules, instanceSettings.codemirror.lint.options );
 			}
 
 			// Configure HTMLHint.
-			if ( 'htmlmixed' === instanceSettings.codemirror.mode && true === instanceSettings.codemirror.lint && instanceSettings.htmlhint && instanceSettings.htmlhint.rules ) {
-				instanceSettings.codemirror.lint = $.extend( {}, instanceSettings.htmlhint );
+			if ( 'htmlmixed' === instanceSettings.codemirror.mode && instanceSettings.htmlhint && instanceSettings.htmlhint.rules ) {
+				instanceSettings.codemirror.lint.options = $.extend( {}, instanceSettings.htmlhint, instanceSettings.codemirror.lint.options );
 
 				if ( instanceSettings.jshint && instanceSettings.jshint.rules ) {
-					instanceSettings.codemirror.lint.rules.jshint = instanceSettings.jshint.rules;
+					instanceSettings.codemirror.lint.options.rules.jshint = $.extend( {}, instanceSettings.jshint.rules, instanceSettings.codemirror.lint.options.rules.jshint );
 				}
 				if ( instanceSettings.csslint && instanceSettings.csslint.rules ) {
-					instanceSettings.codemirror.lint.rules.csslint = instanceSettings.csslint.rules;
+					instanceSettings.codemirror.lint.options.rules.csslint = $.extend( {}, instanceSettings.csslint.rules, instanceSettings.codemirror.lint.options.rules.csslint );
 				}
 			}
 
