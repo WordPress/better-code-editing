@@ -101,18 +101,51 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 	wp_enqueue_script( 'jquery-ui-core' ); // For :tabbable pseudo-selector.
 	wp_enqueue_code_editor( $settings );
 
+	/* translators: placeholder is error count */
+	$l10n = _n_noop( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 'better-code-editing' );
+
 	ob_start();
 	?>
 	<script>
 		jQuery( function( $ ) {
-			var settings = {};
+			var settings = {}, noticeContainer, errorNotice, l10n;
 			settings = <?php echo wp_json_encode( $settings ); ?>;
+			l10n = <?php echo wp_json_encode( $l10n ); ?>;
 			settings.handleTabPrev = function() {
 				$( '#templateside' ).find( ':tabbable' ).last().focus();
 			};
 			settings.handleTabNext = function() {
 				$( '#template' ).find( ':tabbable:not(.CodeMirror-code)' ).first().focus();
 			};
+
+			if ( settings.codemirror.lint ) {
+				if ( true === settings.codemirror.lint ) {
+					settings.codemirror.lint = {};
+				}
+				noticeContainer = $( '<div id="file-editor-linting-error"></div>' );
+				errorNotice = $( '<div class="inline notice notice-error"></div>' );
+				noticeContainer.append( errorNotice );
+				noticeContainer.hide();
+				$( 'p.submit' ).before( noticeContainer );
+				settings.codemirror.lint.onUpdateLinting = function ( annotationsNotSorted ) {
+					var errors = [];
+					$.each( annotationsNotSorted, function() {
+						if ( 'error' === this.severity ) {
+							errors.push( this );
+						}
+					} );
+					$( '#submit' ).prop( 'disabled', 0 !== errors.length );
+					if ( 0 !== errors.length ) {
+						errorNotice.empty();
+						errorNotice.append( $( '<p></p>', {
+							text: 1 === errors.length ? l10n.singular.replace( '%d', '1' ) : l10n.plural.replace( '%d', errors.length ),
+						} ) );
+						noticeContainer.slideDown( 'fast' );
+					} else {
+						noticeContainer.slideUp( 'fast' );
+					}
+				};
+			}
 			wp.codeEditor.initialize( $( '#newcontent' ), settings );
 		} );
 		</script>
