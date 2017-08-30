@@ -22,6 +22,23 @@
 				};
 			})( control.setting.notifications.add );
 
+			// Make sure editor gets focused when control is focused.
+			control.focus = (function( originalFocus ) { // eslint-disable-line max-nested-callbacks
+				return function( params ) { // eslint-disable-line max-nested-callbacks
+					var extendedParams = _.extend( {}, params ), originalCompleteCallback;
+					originalCompleteCallback = extendedParams.completeCallback;
+					extendedParams.completeCallback = function() {
+						if ( originalCompleteCallback ) {
+							originalCompleteCallback();
+						}
+						if ( control.editor ) {
+							control.editor.focus();
+						}
+					};
+					originalFocus.call( this, extendedParams );
+				};
+			})( control.focus );
+
 			onceExpanded = function() {
 				var $textarea = control.container.find( 'textarea' ), settings, currentAnnotations = [];
 
