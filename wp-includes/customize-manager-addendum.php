@@ -39,7 +39,7 @@ function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $
 	);
 	$section->description .= '</p>';
 
-	$section->description .= '<p>' . __( 'When using a keyboard:', 'better-code-editing' ) . '</p>';
+	$section->description .= '<p>' . __( 'When using a keyboard to navigate:', 'better-code-editing' ) . '</p>';
 	$section->description .= '<ul>';
 	$section->description .= '<li>' . __( 'In the CSS edit field, Tab enters a tab character.', 'better-code-editing' ) . '</li>';
 	$section->description .= '<li>' . __( 'To move keyboard focus, press Esc then Tab for the next element, or Esc then Shift+Tab for the previous element.', 'better-code-editing' ) . '</li>';

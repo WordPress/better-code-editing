@@ -147,7 +147,7 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 		$content .= __( 'Use the Custom HTML widget to add arbitrary HTML code to your widget areas.', 'better-code-editing' );
 		$content .= '</p>';
 
-		$content .= '<p>' . __( 'When using a keyboard:', 'better-code-editing' ) . '</p>';
+		$content .= '<p>' . __( 'When using a keyboard to navigate:', 'better-code-editing' ) . '</p>';
 		$content .= '<ul>';
 		$content .= '<li>' . __( 'In the HTML edit field, Tab enters a tab character.', 'better-code-editing' ) . '</li>';
 		$content .= '<li>' . __( 'To move keyboard focus, press Esc then Tab for the next element, or Esc then Shift+Tab for the previous element.', 'better-code-editing' ) . '</li>';
