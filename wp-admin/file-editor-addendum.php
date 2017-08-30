@@ -109,7 +109,7 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 	?>
 	<script>
 		jQuery( function( $ ) {
-			var settings = {}, noticeContainer, errorNotice, l10n, updateNotice, currentErrorAnnotations = [], editor;
+			var settings = {}, noticeContainer, errorNotice, l10n, updateNotice, currentErrorAnnotations = [], editor, previousErrorCount;
 			settings = <?php echo wp_json_encode( $settings ); ?>;
 			l10n = <?php echo wp_json_encode( $l10n ); ?>;
 			settings.handleTabPrev = function() {
@@ -149,12 +149,13 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 					/*
 					 * Update notifications when the editor is not focused to prevent error message
 					 * from overwhelming the user during input, unless there are no annotations
-					 * and in that case update immediately so they can know that they fixed the
-					 * errors.
+					 * or there are previous notifications already being displayed, and in that
+					 * case update immediately so they can know that they fixed the errors.
 					 */
-					if ( ! editor.state.focused || 0 === currentErrorAnnotations.length ) {
+					if ( ! editor.state.focused || 0 === currentErrorAnnotations.length || previousErrorCount > 0 && currentErrorAnnotations.length !== previousErrorCount ) {
 						updateNotice();
 					}
+					previousErrorCount = currentErrorAnnotations.length;
 				};
 			}
 			editor = wp.codeEditor.initialize( $( '#newcontent' ), settings );

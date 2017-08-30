@@ -40,7 +40,7 @@
 			})( control.focus );
 
 			onceExpanded = function() {
-				var $textarea = control.container.find( 'textarea' ), settings, currentErrorAnnotations = [];
+				var $textarea = control.container.find( 'textarea' ), settings, previousErrorCount = 0, currentErrorAnnotations = [];
 
 				settings = _.extend( {}, api.settings.codeEditor, {
 					handleTabNext: function() {
@@ -102,12 +102,13 @@
 							/*
 							 * Update notifications when the editor is not focused to prevent error message
 							 * from overwhelming the user during input, unless there are no annotations
-							 * and in that case update immediately so they can know that they fixed the
-							 * errors.
+							 * or there are previous notifications already being displayed, and in that
+							 * case update immediately so they can know that they fixed the errors.
 							 */
-							if ( ! editor.state.focused || 0 === currentErrorAnnotations.length ) {
+							if ( ! editor.state.focused || 0 === currentErrorAnnotations.length || previousErrorCount > 0 && currentErrorAnnotations.length !== previousErrorCount ) {
 								updateNotifications();
 							}
+							previousErrorCount = currentErrorAnnotations.length;
 						}
 					} );
 				}
