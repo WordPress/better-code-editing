@@ -12,3 +12,8 @@
 .customize-section-description ul > li {
 	list-style: disc;
 }
+
+.customize-section-description-container + #customize-control-custom_css:last-child .customize-control-notifications-container {
+	margin-left: 12px;
+	margin-right: 12px;
+}

@@ -81,7 +81,12 @@ function _better_code_editing_customize_controls_enqueue_scripts() {
  */
 function _better_code_editing_amend_customize_pane_settings() {
 	global $wp_customize;
-	if ( ! empty( $wp_customize->custom_css_code_editor_settings ) ) {
-		printf( '<script>window._wpCustomizeSettings.codeEditor = %s</script>;', wp_json_encode( $wp_customize->custom_css_code_editor_settings ) );
+	if ( empty( $wp_customize->custom_css_code_editor_settings ) ) {
+		return;
 	}
+	printf( '<script>window._wpCustomizeSettings.codeEditor = %s</script>;', wp_json_encode( $wp_customize->custom_css_code_editor_settings ) );
+
+	/* translators: placeholder is error count */
+	$l10n = _n_noop( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 'better-code-editing' );
+	printf( '<script>window._wpCustomizeControlsL10n.customCssErrorNotice = %s</script>;', wp_json_encode( wp_array_slice_assoc( $l10n, array( 'singular', 'plural' ) ) ) );
 }

@@ -68,6 +68,15 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 			wp_enqueue_code_editor( $settings );
 		}
 		wp_add_inline_script( 'custom-html-widgets', sprintf( 'wp.customHtmlWidgets.init( %s );', wp_json_encode( $settings ) ), 'after' );
+
+		$l10n = array(
+			'errorNotice' => wp_array_slice_assoc(
+				/* translators: placeholder is error count */
+				_n_noop( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 'better-code-editing' ),
+				array( 'singular', 'plural' )
+			),
+		);
+		wp_add_inline_script( 'custom-html-widgets', sprintf( 'jQuery.extend( wp.customHtmlWidgets.l10n, %s );', wp_json_encode( $l10n ) ), 'after' );
 	}
 
 	/**
@@ -120,6 +129,8 @@ class WP_Widget_Custom_HTML_CodeMirror extends WP_Widget_Custom_HTML {
 					<# } #>
 				<?php endif; ?>
 			<?php endif; ?>
+
+			<div class="code-editor-error-container"></div>
 		</script>
 		<?php
 	}

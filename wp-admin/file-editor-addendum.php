@@ -98,24 +98,14 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 		return;
 	}
 
-	wp_enqueue_script( 'jquery-ui-core' ); // For :tabbable pseudo-selector.
 	wp_enqueue_code_editor( $settings );
+	wp_enqueue_script( 'wp-theme-plugin-editor' );
 
-	ob_start();
-	?>
-	<script>
-		jQuery( function( $ ) {
-			var settings = {};
-			settings = <?php echo wp_json_encode( $settings ); ?>;
-			settings.handleTabPrev = function() {
-				$( '#templateside' ).find( ':tabbable' ).last().focus();
-			};
-			settings.handleTabNext = function() {
-				$( '#template' ).find( ':tabbable:not(.CodeMirror-code)' ).first().focus();
-			};
-			wp.codeEditor.initialize( $( '#newcontent' ), settings );
-		} );
-		</script>
-	<?php
-	wp_add_inline_script( 'code-editor', str_replace( array( '<script>', '</script>' ), '', ob_get_clean() ) );
+	$l10n = wp_array_slice_assoc(
+		/* translators: placeholder is error count */
+		_n_noop( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 'better-code-editing' ),
+		array( 'singular', 'plural' )
+	);
+	wp_add_inline_script( 'wp-theme-plugin-editor', sprintf( 'wp.themePluginEditor.l10n = %s;', wp_json_encode( $l10n ) ) );
+	wp_add_inline_script( 'wp-theme-plugin-editor', sprintf( 'jQuery( function() { wp.themePluginEditor.init( %s ); } )', wp_json_encode( $settings ) ) );
 }
