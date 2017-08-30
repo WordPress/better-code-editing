@@ -98,95 +98,14 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 		return;
 	}
 
-	wp_enqueue_script( 'jquery-ui-core' ); // For :tabbable pseudo-selector.
-	wp_enqueue_script( 'underscore' );
-	wp_enqueue_script( 'wp-a11y' );
 	wp_enqueue_code_editor( $settings );
+	wp_enqueue_script( 'wp-theme-plugin-editor' );
 
-	/* translators: placeholder is error count */
-	$l10n = _n_noop( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 'better-code-editing' );
-
-	ob_start();
-	?>
-	<script>
-		jQuery( function( $ ) {
-			var settings = {}, noticeContainer, errorNotice, l10n, updateNotice, currentErrorAnnotations = [], editor, previousErrorCount = 0;
-			settings = <?php echo wp_json_encode( $settings ); ?>;
-			l10n = <?php echo wp_json_encode( $l10n ); ?>;
-			settings.handleTabPrev = function() {
-				$( '#templateside' ).find( ':tabbable' ).last().focus();
-			};
-			settings.handleTabNext = function() {
-				$( '#template' ).find( ':tabbable:not(.CodeMirror-code)' ).first().focus();
-			};
-
-			updateNotice = function() {
-				var message;
-
-				// Short-circuit if there is no update for the message.
-				if ( currentErrorAnnotations.length === previousErrorCount ) {
-					return;
-				}
-
-				previousErrorCount = currentErrorAnnotations.length;
-
-				$( '#submit' ).prop( 'disabled', 0 !== currentErrorAnnotations.length );
-				if ( 0 !== currentErrorAnnotations.length ) {
-					errorNotice.empty();
-					if ( 1 === currentErrorAnnotations.length ) {
-						message = l10n.singular.replace( '%d', '1' );
-					} else {
-						message = l10n.plural.replace( '%d', String( currentErrorAnnotations.length ) );
-					}
-					errorNotice.append( $( '<p></p>', {
-						text: message,
-					} ) );
-					noticeContainer.slideDown( 'fast' );
-					wp.a11y.speak( message );
-				} else {
-					noticeContainer.slideUp( 'fast' );
-				}
-			};
-
-			if ( settings.codemirror.lint ) {
-				if ( true === settings.codemirror.lint ) {
-					settings.codemirror.lint = {};
-				}
-				noticeContainer = $( '<div id="file-editor-linting-error"></div>' );
-				errorNotice = $( '<div class="inline notice notice-error"></div>' );
-				noticeContainer.append( errorNotice );
-				noticeContainer.hide();
-				$( 'p.submit' ).before( noticeContainer );
-				settings.codemirror.lint = _.extend( {}, settings.codemirror.lint, {
-					onUpdateLinting: function( annotations, annotationsSorted, editor ) {
-						currentErrorAnnotations = _.filter( annotations, function( annotation ) {
-							return 'error' === annotation.severity;
-						} );
-
-						/*
-						 * Update notifications when the editor is not focused to prevent error message
-						 * from overwhelming the user during input, unless there are no annotations
-						 * or there are previous notifications already being displayed, and in that
-						 * case update immediately so they can know that they fixed the errors.
-						 */
-						if ( ! editor.state.focused || 0 === currentErrorAnnotations.length || previousErrorCount > 0 ) {
-							updateNotice();
-						}
-					}
-				} );
-			}
-			editor = wp.codeEditor.initialize( $( '#newcontent' ), settings );
-
-			if ( settings.codemirror.lint ) {
-				editor.on( 'blur', function() {
-					updateNotice();
-				});
-				$( editor.display.wrapper ).on( 'mouseout', function() {
-					updateNotice();
-				});
-			}
-		});
-		</script>
-	<?php
-	wp_add_inline_script( 'code-editor', str_replace( array( '<script>', '</script>' ), '', ob_get_clean() ) );
+	$l10n = wp_array_slice_assoc(
+		/* translators: placeholder is error count */
+		_n_noop( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 'better-code-editing' ),
+		array( 'singular', 'plural' )
+	);
+	wp_add_inline_script( 'wp-theme-plugin-editor', sprintf( 'wp.themePluginEditor.l10n = %s;', wp_json_encode( $l10n ) ) );
+	wp_add_inline_script( 'wp-theme-plugin-editor', sprintf( 'jQuery( function() { wp.themePluginEditor.init( %s ); } )', wp_json_encode( $settings ) ) );
 }
