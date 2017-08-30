@@ -25,6 +25,15 @@ Any questions, reach out to #core-customize on WordPress.org Slack or better ope
 
 ## Changelog ##
 
+### 0.5.0 - 2017-08-30 ###
+* Prevent saving when lint errors present. See [#69](https://github.com/WordPress/better-code-editing/pull/69). Fixes [#69](https://github.com/WordPress/better-code-editing/issues/69).
+* Remove unused assets; register likely-used assets; allow recognized file types to be edited; allow passing type when getting settings in addition to file. See [#66](https://github.com/WordPress/better-code-editing/pull/66). Fixes [#4](https://github.com/WordPress/better-code-editing/issues/4).
+* Add recognition for JSON mode.
+* Align styling matchbracket with matchtag. See [#63](https://github.com/WordPress/better-code-editing/pull/63). Fixes [#56](https://github.com/WordPress/better-code-editing/issues/56).
+* Redesign warning/error messages. See [#62](https://github.com/WordPress/better-code-editing/pull/62). Fixes [#44](https://github.com/WordPress/better-code-editing/issues/44), [#45](https://github.com/WordPress/better-code-editing/issues/45).
+* Improve help text in widgets admin screen and Additional CSS in Customizer. See [#65](https://github.com/WordPress/better-code-editing/pull/65). Fixes [#36](https://github.com/WordPress/better-code-editing/issues/36).
+* Add `wp_enqueue_code_editor` action. See [#68](https://github.com/WordPress/better-code-editing/pull/68).
+
 ### 0.4.0 - 2017-08-28 ###
 * Enable addon many goodies to improve UX and reduce accidental errors. See [#52](https://github.com/WordPress/better-code-editing/pull/52).
 * Add autocomplete hinting. See [#51](https://github.com/WordPress/better-code-editing/pull/51) and [#50](https://github.com/WordPress/better-code-editing/issues/50).
