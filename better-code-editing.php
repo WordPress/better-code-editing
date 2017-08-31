@@ -27,9 +27,25 @@ function _better_code_editing_plugin_obsolete_admin_notice() {
 	<?php
 }
 
+/**
+ * Show admin notice when npm install has not been run.
+ */
+function _better_code_editing_plugin_npm_install_required() {
+	?>
+	<div class="notice notice-error">
+		<p><?php _e( 'The Better Code Editing plugin\'s has been installed from source. In order complete installation, you must run <code>npm install</code> from the command line. Otherwise, please install the plugin from WordPress.org or via a ZIP from the GitHub releases page..', 'better-code-editing' ); ?></p>
+	</div>
+	<?php
+}
+
 // Short-circuit when the functionality is already merged into core.
 if ( function_exists( 'wp_code_editor_settings' ) ) {
 	add_action( 'admin_notices', '_better_code_editing_plugin_obsolete_admin_notice' );
+	return;
+}
+
+if ( ! file_exists( dirname( __FILE__ ) . '/wp-includes/js/codemirror/lib/codemirror.js' ) ) {
+	add_action( 'admin_notices', '_better_code_editing_plugin_npm_install_required' );
 	return;
 }
 

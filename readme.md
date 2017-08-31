@@ -33,6 +33,7 @@ Any questions, reach out to #core-customize on WordPress.org Slack or better ope
 * Redesign warning/error messages. See [#62](https://github.com/WordPress/better-code-editing/pull/62). Fixes [#44](https://github.com/WordPress/better-code-editing/issues/44), [#45](https://github.com/WordPress/better-code-editing/issues/45).
 * Improve help text in widgets admin screen and Additional CSS in Customizer. See [#65](https://github.com/WordPress/better-code-editing/pull/65). Fixes [#36](https://github.com/WordPress/better-code-editing/issues/36).
 * Add `wp_enqueue_code_editor` action. See [#68](https://github.com/WordPress/better-code-editing/pull/68).
+* See full commit log and diff: [0.4.0...0.5.0](https://github.com/WordPress/better-code-editing/compare/0.4.0...0.5.0)
 
 ### 0.4.0 - 2017-08-28 ###
 * Enable addon many goodies to improve UX and reduce accidental errors. See [#52](https://github.com/WordPress/better-code-editing/pull/52).
