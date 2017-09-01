@@ -48,7 +48,7 @@ function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $
 	$section->description .= '<p>';
 	$section->description .= sprintf(
 		/* translators: placeholder is link to user profile */
-		__( 'The edit field automatically highlights code syntax. You can disable this in your %s to work in plan text mode.', 'better-code-editing' ),
+		__( 'The edit field automatically highlights code syntax. You can disable this in your %s to work in plain text mode.', 'better-code-editing' ),
 		sprintf(
 			' <a href="%1$s" class="external-link" target="_blank">%2$s<span class="screen-reader-text">%3$s</span></a>',
 			esc_url( get_edit_profile_url() . '#syntax_highlighting' ),
