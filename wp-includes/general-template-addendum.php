@@ -39,6 +39,7 @@ function wp_code_editor_settings( $context ) {
 				'Ctrl-Space' => 'autocomplete',
 				'Ctrl-/' => 'toggleComment',
 				'Cmd-/' => 'toggleComment',
+				'Alt-F' => 'findPersistent',
 			),
 		),
 		'csslint' => array(
@@ -361,7 +362,15 @@ function wp_enqueue_code_editor( $settings ) {
 			}
 		}
 	}
+
 	wp_enqueue_script( 'codemirror-addon-comment' );
+	wp_enqueue_script( 'codemirror-addon-dialog' );
+	wp_enqueue_style( 'codemirror-addon-dialog' );
+	wp_enqueue_script( 'codemirror-addon-search-searchcursor' );
+	wp_enqueue_script( 'codemirror-addon-search' );
+	wp_enqueue_script( 'codemirror-addon-scroll-annotatescrollbar' );
+	wp_enqueue_script( 'codemirror-addon-search-matchesonscrollbar' );
+	wp_enqueue_script( 'codemirror-addon-search-jump-to-line' );
 
 	if ( isset( $settings['codemirror']['mode'] ) ) {
 		$mode = $settings['codemirror']['mode'];
