@@ -5,6 +5,8 @@ wp-includes/js
 
 build
 *.zip
+*-rtl.css
+~*
 
 # Windows image file caches
 Thumbs.db

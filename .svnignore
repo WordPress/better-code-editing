@@ -23,3 +23,6 @@ readme.md
 build
 contributing.md
 ~*
+Gruntfile.js
+.DS_Store
+wp-assets

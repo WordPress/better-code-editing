@@ -22,5 +22,5 @@ cd .git/hooks && ln -s ../../dev-lib/pre-commit pre-commit && cd -
 Contributors who want to make a new release, follow these steps:
 
 1. Bump plugin versions in `package.json` (×1), `package-lock.json` (×1, just do `npm install` first), and in `better-code-editing.php` (×2: the metadata block in the header and also the `BETTER_CODE_EDITING_PLUGIN_VERSION` constant).
-2. Run `npm run build-release-zip` to create a `better-code-editing.zip` in the plugin's root directory.
+2. Run `grunt deploy` to create a `better-code-editing.zip` in the plugin's root directory and to commit the plugin to WordPress.org.
 3. [Create new release](https://github.com/WordPress/better-code-editing/releases/new) on GitHub targeting `master`, with the new plugin version as the tag and release title, and upload the `better-code-editing.zip` as the associated binary. Publish the release.

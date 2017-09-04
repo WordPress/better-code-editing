@@ -141,6 +141,7 @@ function _better_code_editing_register_styles( WP_Styles $styles ) {
 	 */
 	$styles->registered['common']->src = plugins_url( 'wp-admin/css/common.css', BETTER_CODE_EDITING_PLUGIN_FILE );
 	$styles->registered['common']->ver = BETTER_CODE_EDITING_PLUGIN_VERSION;
+	unset( $styles->registered['common']->extra['suffix'] ); // Prevent minified version from being attempted.
 
 	$styles->add( 'codemirror',                                 plugins_url( 'wp-includes/js/codemirror/lib/codemirror.css', BETTER_CODE_EDITING_PLUGIN_FILE ),                  array(),               $codemirror_version );
 	$styles->add( 'codemirror-addon-show-hint',                 plugins_url( 'wp-includes/js/codemirror/addon/hint/show-hint.css', BETTER_CODE_EDITING_PLUGIN_FILE ),            array( 'codemirror' ), $codemirror_version );
@@ -155,9 +156,22 @@ function _better_code_editing_register_styles( WP_Styles $styles ) {
 
 	$styles->add( 'code-editor', plugins_url( 'wp-admin/css/code-editor.css', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'codemirror' ), BETTER_CODE_EDITING_PLUGIN_VERSION );
 
+	// RTL CSS.
+	$rtl_styles = array(
+		'code-editor',
+	);
+	foreach ( $rtl_styles as $rtl_style ) {
+		$styles->add_data( $rtl_style, 'rtl', 'replace' );
+	}
+
 	// Patch the stylesheets.
-	$styles->add_inline_style( 'widgets', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/css/widgets-addendum.css' ) );
-	$styles->add_inline_style( 'customize-controls', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/css/customize-controls-addendum.css' ) );
+	if ( function_exists( 'is_rtl' ) && is_rtl() && file_exists( plugin_dir_path( BETTER_CODE_EDITING_PLUGIN_FILE ) . 'wp-admin/css/common-rtl.css' ) ) {
+		$suffix = '-rtl.css';
+	} else {
+		$suffix = '.css';
+	}
+	$styles->add_inline_style( 'widgets', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/css/widgets-addendum' . $suffix ) );
+	$styles->add_inline_style( 'customize-controls', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/css/customize-controls-addendum' . $suffix ) );
 
 	if ( defined( 'SCRIPT_DEBUG' ) ) {
 		_better_code_editing_report_asset_errors( $styles );

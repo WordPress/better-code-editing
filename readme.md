@@ -9,7 +9,7 @@ Adding CodeMirror functionality to the Plugin and Theme file editors, as well as
 **Tested up to:** 4.9-alpha  
 **Stable tag:** trunk (master)  
 
-[![Build Status](https://travis-ci.org/WordPress/better-code-editing.svg?branch=master)](https://travis-ci.org/WordPress/better-code-editing) 
+[![Build Status](https://travis-ci.org/WordPress/better-code-editing.svg?branch=master)](https://travis-ci.org/WordPress/better-code-editing) [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com) 
 
 ## Description ##
 

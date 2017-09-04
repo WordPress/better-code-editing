@@ -41,6 +41,7 @@ function wp_code_editor_settings( $context ) {
 				'Cmd-/' => 'toggleComment',
 				'Alt-F' => 'findPersistent',
 			),
+			'direction' => 'ltr', // Code is shown in LTR even in RTL languages.
 		),
 		'csslint' => array(
 			'rules' => array(
