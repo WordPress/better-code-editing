@@ -61,7 +61,7 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 		return;
 	}
 
-	$context = array();
+	$args = array();
 
 	if ( 'theme-editor.php' === $hook ) {
 		$theme = wp_get_theme( isset( $_REQUEST['theme'] ) ? wp_unslash( $_REQUEST['theme'] ) : get_stylesheet() );
@@ -70,35 +70,34 @@ function _better_code_editing_admin_enqueue_scripts_for_file_editor( $hook ) {
 		}
 
 		if ( isset( $_REQUEST['file'] ) ) {
-			$context['file'] = sanitize_text_field( wp_unslash( $_REQUEST['file'] ) );
+			$args['file'] = sanitize_text_field( wp_unslash( $_REQUEST['file'] ) );
 		} else {
-			$context['file'] = 'style.css';
+			$args['file'] = 'style.css';
 		}
 	} elseif ( 'plugin-editor.php' === $hook ) {
-		$context['plugin'] = isset( $_REQUEST['plugin'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) : '';
-		$context['file'] = isset( $_REQUEST['file'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['file'] ) ) : '';
+		$args['plugin'] = isset( $_REQUEST['plugin'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['plugin'] ) ) : '';
+		$args['file'] = isset( $_REQUEST['file'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['file'] ) ) : '';
 
-		if ( empty( $context['plugin'] ) ) {
+		if ( empty( $args['plugin'] ) ) {
 			$file_paths = array_keys( get_plugins() );
-			$context['plugin'] = $context['file'] ? $context['file'] : array_shift( $file_paths );
-		} elseif ( 0 !== validate_file( $context['plugin'] ) ) {
+			$args['plugin'] = $args['file'] ? $args['file'] : array_shift( $file_paths );
+		} elseif ( 0 !== validate_file( $args['plugin'] ) ) {
 			wp_die( __( 'Sorry, that file cannot be edited.', 'better-code-editing' ) );
 		}
 
-		$plugin_files = get_plugin_files( $context['plugin'] );
-		if ( empty( $context['file'] ) ) {
-			$context['file'] = $plugin_files[0];
+		$plugin_files = get_plugin_files( $args['plugin'] );
+		if ( empty( $args['file'] ) ) {
+			$args['file'] = $plugin_files[0];
 		}
 
-		$context['file'] = validate_file_to_edit( $context['file'], $plugin_files );
+		$args['file'] = validate_file_to_edit( $args['file'], $plugin_files );
 	}
 
-	$settings = wp_code_editor_settings( $context );
+	$settings = wp_enqueue_code_editor( $args );
 	if ( empty( $settings ) ) {
 		return;
 	}
 
-	wp_enqueue_code_editor( $settings );
 	wp_enqueue_script( 'wp-theme-plugin-editor' );
 
 	$l10n = wp_array_slice_assoc(
