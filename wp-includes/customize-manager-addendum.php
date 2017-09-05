@@ -15,11 +15,7 @@ add_action( 'customize_controls_print_footer_scripts', '_better_code_editing_ame
  * @param WP_Customize_Manager $wp_customize Manager.
  */
 function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $wp_customize ) {
-	$wp_customize->custom_css_code_editor_settings = wp_code_editor_settings( array(
-		'file' => 'custom.css',
-	) );
-
-	if ( empty( $wp_customize->custom_css_code_editor_settings ) ) {
+	if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
 		return;
 	}
 
@@ -67,9 +63,9 @@ function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $
  */
 function _better_code_editing_customize_controls_enqueue_scripts() {
 	global $wp_customize;
-	if ( ! empty( $wp_customize->custom_css_code_editor_settings ) ) {
-		wp_enqueue_code_editor( $wp_customize->custom_css_code_editor_settings );
-	}
+	$wp_customize->custom_css_code_editor_settings = wp_enqueue_code_editor( array(
+		'type' => 'text/css',
+	) );
 	wp_add_inline_script( 'customize-controls', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/js/customize-controls-addendum.js' ) );
 }
 

@@ -7,20 +7,24 @@
  */
 
 /**
- * Gets settings for initializing the code editor.
+ * Enqueue assets needed by the code editor for the given settings.
  *
  * @since 4.9.0
  *
- * @param array $context {
- *     Context.
+ * @see wp_enqueue_editor()
+ * @see _WP_Editors::parse_settings()
+ * @param array $args {
+ *     Args.
  *
- *     @type string $type The MIME type of the file to be edited.
- *     @type string $file Filename to be edited. Extension is used to sniff the type. Can be supplied as alternative to `$type` param.
+ *     @type string   $type     The MIME type of the file to be edited.
+ *     @type string   $file     Filename to be edited. Extension is used to sniff the type. Can be supplied as alternative to `$type` param.
+ *     @type array    $settings Settings to merge on top of defaults which derive from `$type` or `$file` args.
+ *     @type WP_Theme $theme    Theme being edited when on theme editor.
+ *     @type string   $plugin   Plugin being edited when on plugin editor.
  * }
- * @return array|false Settings for code editor or false if disabled.
+ * @returns array|false Settings for the enqueued code editor, or false if the editor was not enqueued .
  */
-function wp_code_editor_settings( $context ) {
-
+function wp_enqueue_code_editor( $args ) {
 	if ( is_user_logged_in() && 'false' === wp_get_current_user()->syntax_highlighting ) {
 		return false;
 	}
@@ -102,15 +106,15 @@ function wp_code_editor_settings( $context ) {
 	);
 
 	$type = '';
-	if ( isset( $context['type'] ) ) {
-		$type = $context['type'];
+	if ( isset( $args['type'] ) ) {
+		$type = $args['type'];
 
 		// Remap MIME types to ones that CodeMirror modes will recognize.
 		if ( 'application/x-patch' === $type || 'text/x-patch' === $type ) {
 			$type = 'text/x-diff';
 		}
-	} elseif ( isset( $context['file'] ) && false !== strpos( basename( $context['file'] ), '.' ) ) {
-		$extension = strtolower( pathinfo( $context['file'], PATHINFO_EXTENSION ) );
+	} elseif ( isset( $args['file'] ) && false !== strpos( basename( $args['file'] ), '.' ) ) {
+		$extension = strtolower( pathinfo( $args['file'], PATHINFO_EXTENSION ) );
 		foreach ( wp_get_mime_types() as $exts => $mime ) {
 			if ( preg_match( '!^(' . $exts . ')$!i', $extension ) ) {
 				$type = $mime;
@@ -303,6 +307,16 @@ function wp_code_editor_settings( $context ) {
 		$settings['codemirror']['gutters'][] = 'CodeMirror-lint-markers';
 	}
 
+	// Let settings supplied via args override any defaults.
+	if ( isset( $args['settings'] ) ) {
+		foreach ( $args['settings'] as $key => $value ) {
+			$settings[ $key ] = array_merge(
+				$settings[ $key ],
+				$value
+			);
+		}
+	}
+
 	/**
 	 * Filters settings that are passed into the code editor.
 	 *
@@ -311,29 +325,18 @@ function wp_code_editor_settings( $context ) {
 	 * @since 4.9.0
 	 *
 	 * @param array $settings The array of settings passed to the code editor. A falsey value disables the editor.
-	 * @param array $context {
-	 *     Context for where the editor will appear.
+	 * @param array $args {
+	 *     Args passed when calling `wp_enqueue_code_editor()`.
 	 *
-	 *     @type string    $file   File being edited.
-	 *     @type WP_Theme  $theme  Theme being edited when on theme editor.
-	 *     @type string    $plugin Plugin being edited when on plugin editor.
+	 *     @type string   $type     The MIME type of the file to be edited.
+	 *     @type string   $file     Filename being edited.
+	 *     @type array    $settings Settings to merge on top of defaults which derive from `$type` or `$file` args.
+	 *     @type WP_Theme $theme    Theme being edited when on theme editor.
+	 *     @type string   $plugin   Plugin being edited when on plugin editor.
 	 * }
 	 */
-	$settings = apply_filters( 'wp_code_editor_settings', $settings, $context );
+	$settings = apply_filters( 'wp_code_editor_settings', $settings, $args );
 
-	return $settings;
-}
-
-/**
- * Enqueue assets needed by the code editor for the given settings.
- *
- * @since 4.9.0
- *
- * @see wp_code_editor_settings()
- * @param array|false $settings Code editor settings.
- * @returns boolean Whether assets were enqueued.
- */
-function wp_enqueue_code_editor( $settings ) {
 	if ( empty( $settings ) || empty( $settings['codemirror'] ) ) {
 		return false;
 	}
@@ -509,5 +512,5 @@ function wp_enqueue_code_editor( $settings ) {
 	 */
 	do_action( 'wp_enqueue_code_editor', $settings );
 
-	return true;
+	return $settings;
 }

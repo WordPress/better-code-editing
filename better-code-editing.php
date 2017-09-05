@@ -39,7 +39,7 @@ function _better_code_editing_plugin_npm_install_required() {
 }
 
 // Short-circuit when the functionality is already merged into core.
-if ( function_exists( 'wp_code_editor_settings' ) ) {
+if ( function_exists( 'wp_enqueue_code_editor' ) ) {
 	add_action( 'admin_notices', '_better_code_editing_plugin_obsolete_admin_notice' );
 	return;
 }
