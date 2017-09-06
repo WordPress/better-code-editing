@@ -3,11 +3,23 @@
 	'use strict';
 
 	api.section( 'custom_css', function( section ) {
+		if ( ! api.settings.customCss ) {
+			return;
+		}
+
+		// Close the section description when clicking the close button.
+		section.container.find( '.section-description-buttons .section-description-close' ).on( 'click', function() {
+			section.container.find( '.section-meta .customize-section-description:first' )
+				.removeClass( 'open' )
+				.slideUp()
+				.attr( 'aria-expanded', 'false' );
+		});
+
 		api.control( 'custom_css', function( control ) {
 			var onceExpanded, onExpandedChange;
 
 			// Abort if CodeMirror disabled via customizer_custom_css_codemirror_opts filter.
-			if ( ! api.settings.codeEditor ) {
+			if ( ! api.settings.customCss.codeEditor ) {
 				return;
 			}
 
@@ -42,7 +54,14 @@
 			onceExpanded = function() {
 				var $textarea = control.container.find( 'textarea' ), settings, previousErrorCount = 0, currentErrorAnnotations = [];
 
-				settings = _.extend( {}, api.settings.codeEditor, {
+				if ( api.settings.customCss.isDefault ) {
+					section.container.find( '.section-meta .customize-section-description:first' )
+						.addClass( 'open' )
+						.show()
+						.attr( 'aria-expanded', 'true' );
+				}
+
+				settings = _.extend( {}, api.settings.customCss.codeEditor, {
 					handleTabNext: function() {
 						var controls, controlIndex;
 						controls = section.controls();

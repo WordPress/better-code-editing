@@ -17,3 +17,12 @@
 	margin-left: 12px;
 	margin-right: 12px;
 }
+
+.section-description-buttons {
+	text-align: right;
+}
+
+.section-description-buttons button.button-link {
+	color: #0073aa; /* @todo Color scheme? */
+	text-decoration: underline;
+}
