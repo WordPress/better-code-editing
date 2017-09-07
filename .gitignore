@@ -5,6 +5,8 @@ wp-includes/js
 
 build
 *.zip
+*-rtl.css
+~*
 
 # Windows image file caches
 Thumbs.db
@@ -54,3 +56,5 @@ Network Trash Folder
 Temporary Items
 .apdisk
 node_modules
+
+/vendor/

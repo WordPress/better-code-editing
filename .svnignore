@@ -21,3 +21,8 @@ phpcs.xml
 readme.md
 *.zip
 build
+contributing.md
+~*
+Gruntfile.js
+.DS_Store
+wp-assets

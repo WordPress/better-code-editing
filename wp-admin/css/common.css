@@ -3105,6 +3105,25 @@ img {
 	width: 97%;
 }
 
+#file-editor-linting-error {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+#file-editor-linting-error > .notice {
+	margin: 0;
+	display: inline-block;
+}
+#file-editor-linting-error > .notice > p {
+	width: auto;
+}
+#template .submit {
+	margin-top: 1em;
+	padding: 0;
+}
+
+#template .submit input[type=submit][disabled] {
+	cursor: not-allowed;
+}
 #templateside {
 	float: right;
 	width: 190px;

@@ -15,11 +15,7 @@ add_action( 'customize_controls_print_footer_scripts', '_better_code_editing_ame
  * @param WP_Customize_Manager $wp_customize Manager.
  */
 function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $wp_customize ) {
-	$wp_customize->custom_css_code_editor_settings = wp_code_editor_settings( array(
-		'file' => 'custom.css',
-	) );
-
-	if ( empty( $wp_customize->custom_css_code_editor_settings ) ) {
+	if ( 'false' === wp_get_current_user()->syntax_highlighting ) {
 		return;
 	}
 
@@ -28,17 +24,36 @@ function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $
 		return;
 	}
 
-	$section->description = sprintf( '%s<br /><a href="%s" class="external-link" target="_blank">%s<span class="screen-reader-text">%s</span></a>',
-		sprintf(
-			/* translators: placeholder is profile URL */
-			__( 'CSS allows you to customize the appearance and layout of your site with code. Separate CSS is saved for each of your themes. In the editing area the Tab key enters a tab character. To move keyboard focus to another element, press the Esc key followed by the Tab key for the next element or Shift+Tab key for the previous element. You can disable the code syntax highlighter in your <a href="%s" target="blank" class="external-link">user profile</a>. This will allow you to work in plain text mode.', 'better-code-editing' ),
-			esc_url( get_edit_profile_url() . '#syntax_highlighting' )
-		),
+	$section->description = '<p>';
+	$section->description .= __( 'Add your own CSS code here to customize the appearance and layout of your site.', 'better-code-editing' );
+	$section->description .= sprintf(
+		' <a href="%1$s" class="external-link" target="_blank">%2$s<span class="screen-reader-text">%3$s</span></a>',
 		esc_url( __( 'https://codex.wordpress.org/CSS', 'default' ) ),
 		__( 'Learn more about CSS', 'default' ),
 		/* translators: accessibility text */
 		__( '(opens in a new window)', 'default' )
 	);
+	$section->description .= '</p>';
+
+	$section->description .= '<p>' . __( 'When using a keyboard to navigate:', 'better-code-editing' ) . '</p>';
+	$section->description .= '<ul>';
+	$section->description .= '<li>' . __( 'In the CSS edit field, Tab enters a tab character.', 'better-code-editing' ) . '</li>';
+	$section->description .= '<li>' . __( 'To move keyboard focus, press Esc then Tab for the next element, or Esc then Shift+Tab for the previous element.', 'better-code-editing' ) . '</li>';
+	$section->description .= '</ul>';
+
+	$section->description .= '<p>';
+	$section->description .= sprintf(
+		/* translators: placeholder is link to user profile */
+		__( 'The edit field automatically highlights code syntax. You can disable this in your %s to work in plain text mode.', 'better-code-editing' ),
+		sprintf(
+			' <a href="%1$s" class="external-link" target="_blank">%2$s<span class="screen-reader-text">%3$s</span></a>',
+			esc_url( get_edit_profile_url() . '#syntax_highlighting' ),
+			__( 'user profile', 'better-code-editing' ),
+			/* translators: accessibility text */
+			__( '(opens in a new window)', 'default' )
+		)
+	);
+	$section->description .= '</p>';
 }
 
 /**
@@ -48,9 +63,9 @@ function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $
  */
 function _better_code_editing_customize_controls_enqueue_scripts() {
 	global $wp_customize;
-	if ( ! empty( $wp_customize->custom_css_code_editor_settings ) ) {
-		wp_enqueue_code_editor( $wp_customize->custom_css_code_editor_settings );
-	}
+	$wp_customize->custom_css_code_editor_settings = wp_enqueue_code_editor( array(
+		'type' => 'text/css',
+	) );
 	wp_add_inline_script( 'customize-controls', file_get_contents( dirname( BETTER_CODE_EDITING_PLUGIN_FILE ) . '/wp-admin/js/customize-controls-addendum.js' ) );
 }
 
@@ -62,7 +77,12 @@ function _better_code_editing_customize_controls_enqueue_scripts() {
  */
 function _better_code_editing_amend_customize_pane_settings() {
 	global $wp_customize;
-	if ( ! empty( $wp_customize->custom_css_code_editor_settings ) ) {
-		printf( '<script>window._wpCustomizeSettings.codeEditor = %s</script>;', wp_json_encode( $wp_customize->custom_css_code_editor_settings ) );
+	if ( empty( $wp_customize->custom_css_code_editor_settings ) ) {
+		return;
 	}
+	printf( '<script>window._wpCustomizeSettings.codeEditor = %s</script>;', wp_json_encode( $wp_customize->custom_css_code_editor_settings ) );
+
+	/* translators: placeholder is error count */
+	$l10n = _n_noop( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 'better-code-editing' );
+	printf( '<script>window._wpCustomizeControlsL10n.customCssErrorNotice = %s</script>;', wp_json_encode( wp_array_slice_assoc( $l10n, array( 'singular', 'plural' ) ) ) );
 }
