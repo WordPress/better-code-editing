@@ -48,13 +48,12 @@ function wp_enqueue_code_editor( $args ) {
 			'direction' => 'ltr', // Code is shown in LTR even in RTL languages.
 		),
 		'csslint' => array(
-			'errors' => 2, // Parsing errors.
-			'box-model' => 1,
-			'display-property-grouping' => 1,
-			'duplicate-properties' => 1,
-			'empty-rules' => 1,
-			'known-properties' => 1,
-			'outline-none' => 1,
+			'errors' => true, // Parsing errors.
+			'box-model' => true,
+			'display-property-grouping' => true,
+			'duplicate-properties' => true,
+			'known-properties' => true,
+			'outline-none' => true,
 		),
 		'jshint' => array(
 			// The following are copied from <https://github.com/WordPress/wordpress-develop/blob/4.8.1/.jshintrc>.
