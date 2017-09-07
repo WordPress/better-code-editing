@@ -72,6 +72,8 @@ wp.themePluginEditor = (function( $ ) {
 			noticeContainer.append( errorNotice );
 			noticeContainer.hide();
 			$( 'p.submit' ).before( noticeContainer );
+
+			// @todo All of this should be abstracted into an onHasLintingErrors handler, something like that.
 			codeEditorSettings.codemirror.lint = _.extend( {}, codeEditorSettings.codemirror.lint, {
 				onUpdateLinting: function( annotations, annotationsSorted, cm ) {
 					currentErrorAnnotations = _.filter( annotations, function( annotation ) {
@@ -92,12 +94,26 @@ wp.themePluginEditor = (function( $ ) {
 		}
 		editor = wp.codeEditor.initialize( $( '#newcontent' ), codeEditorSettings );
 
+		// @todo All of this logic needs to be added to wp.codeEditor for re-use, in a onSignalLintingErrors handler.
 		if ( codeEditorSettings.codemirror.lint ) {
 			editor.on( 'blur', function() {
 				updateNotice();
 			});
-			$( editor.display.wrapper ).on( 'mouseleave', function() {
-				updateNotice();
+			$( editor.display.wrapper ).on( 'mouseenter mouseleave', function( event ) {
+				var onHoverHints, editorHovered;
+				editorHovered = 'mouseenter' === event.type;
+
+				onHoverHints = function() {
+					editorHovered = true;
+				};
+				$( document.body ).on( 'mouseenter', '.CodeMirror-hints', onHoverHints );
+
+				_.delay( function() { // Delay to wait for mouseenter on .CodeMirror-hints to trigger.
+					$( document.body ).off( 'mouseenter', '.CodeMirror-hints', onHoverHints );
+					if ( ! editorHovered ) {
+						updateNotice();
+					}
+				} );
 			});
 		}
 
