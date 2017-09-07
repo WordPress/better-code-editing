@@ -36,7 +36,6 @@ function wp_enqueue_code_editor( $args ) {
 			'inputStyle' => 'contenteditable',
 			'lineNumbers' => true,
 			'lineWrapping' => true,
-			'showTrailingSpace' => true,
 			'styleActiveLine' => true,
 			'continueComments' => true,
 			'extraKeys' => array(
@@ -225,7 +224,6 @@ function wp_enqueue_code_editor( $args ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
 			'mode' => 'gfm',
 			'highlightFormatting' => true,
-			'showTrailingSpace' => false, // GitHub-flavored markdown uses trailing spaces as a feature.
 		) );
 	} elseif ( 'application/javascript' === $type || 'text/javascript' === $type ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
