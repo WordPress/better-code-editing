@@ -2,6 +2,8 @@
 
 cd "$(dirname "$0")/.."
 
+set -e
+
 if [ -e wp-includes/js/codemirror ]; then
     rm -r wp-includes/js/codemirror
 fi

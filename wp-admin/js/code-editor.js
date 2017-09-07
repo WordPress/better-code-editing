@@ -1,4 +1,4 @@
-/* global CodeMirror, CSSLint */
+/* global CodeMirror */
 if ( 'undefined' === typeof window.wp ) {
 	window.wp = {};
 }
@@ -33,22 +33,6 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 	wp.codeEditor.instances = [];
 
 	/**
-	 * Override which CSSLint rules are added.
-	 *
-	 * @param {Array} rules - Subset or rules.
-	 * @returns {void}
-	 */
-	function updateCSSLintRules( rules ) {
-		var allRules = CSSLint.getRules(), i;
-		CSSLint.clearRules();
-		for ( i = 0; i < allRules.length; i++ ) {
-			if ( rules[ allRules[ i ].id ] ) {
-				CSSLint.addRule( allRules[ i ] );
-			}
-		}
-	}
-
-	/**
 	 * Initialize Code Editor (CodeMirror) for an existing textarea.
 	 *
 	 * @since 4.9.0
@@ -68,37 +52,36 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		instanceSettings = $.extend( {}, wp.codeEditor.defaultSettings, settings );
 		instanceSettings.codemirror = $.extend( {}, instanceSettings.codemirror );
 
-		// @todo This can be moved to PHP.
 		if ( instanceSettings.codemirror.lint ) {
 			if ( true === instanceSettings.codemirror.lint ) {
 				instanceSettings.codemirror.lint = {};
 			}
 
-			// Note that rules must be sent in the "deprecated" lint.options property to prevent linter from complaining about unrecognized options.
+			// Note that rules must be sent in the "deprecated" lint.options property to prevent linter from complaining about unrecognized options. See <https://github.com/codemirror/CodeMirror/pull/4944>.
 			if ( ! instanceSettings.codemirror.lint.options ) {
 				instanceSettings.codemirror.lint.options = {};
 			}
 
 			// Configure JSHint.
-			if ( 'javascript' === instanceSettings.codemirror.mode && instanceSettings.jshint && instanceSettings.jshint.rules ) {
-				instanceSettings.codemirror.lint.options = $.extend( {}, instanceSettings.jshint.rules, instanceSettings.codemirror.lint.options );
-			}
-
-			// Configure HTMLHint.
-			if ( 'htmlmixed' === instanceSettings.codemirror.mode && instanceSettings.htmlhint && instanceSettings.htmlhint.rules ) {
-				instanceSettings.codemirror.lint.options = $.extend( {}, instanceSettings.htmlhint, instanceSettings.codemirror.lint.options );
-
-				if ( instanceSettings.jshint && instanceSettings.jshint.rules ) {
-					instanceSettings.codemirror.lint.options.rules.jshint = $.extend( {}, instanceSettings.jshint.rules, instanceSettings.codemirror.lint.options.rules.jshint );
-				}
-				if ( instanceSettings.csslint && instanceSettings.csslint.rules ) {
-					instanceSettings.codemirror.lint.options.rules.csslint = $.extend( {}, instanceSettings.csslint.rules, instanceSettings.codemirror.lint.options.rules.csslint );
-				}
+			if ( 'javascript' === instanceSettings.codemirror.mode && instanceSettings.jshint ) {
+				$.extend( instanceSettings.codemirror.lint.options, instanceSettings.jshint );
 			}
 
 			// Configure CSSLint.
-			if ( 'undefined' !== typeof CSSLint && instanceSettings.csslint && instanceSettings.csslint.rules ) {
-				updateCSSLintRules( instanceSettings.csslint.rules );
+			if ( 'css' === instanceSettings.codemirror.mode && instanceSettings.csslint ) {
+				$.extend( instanceSettings.codemirror.lint.options, instanceSettings.csslint );
+			}
+
+			// Configure HTMLHint.
+			if ( 'htmlmixed' === instanceSettings.codemirror.mode && instanceSettings.htmlhint ) {
+				instanceSettings.codemirror.lint.options.rules = $.extend( {}, instanceSettings.htmlhint );
+
+				if ( instanceSettings.jshint ) {
+					instanceSettings.codemirror.lint.options.rules.jshint = instanceSettings.jshint;
+				}
+				if ( instanceSettings.csslint ) {
+					instanceSettings.codemirror.lint.options.rules.csslint = instanceSettings.csslint;
+				}
 			}
 		}
 

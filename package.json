@@ -30,7 +30,7 @@
     "jshint": "^2.9.5"
   },
   "dependencies": {
-    "codemirror": "5.29.0",
+    "codemirror": "github:codemirror/CodeMirror",
     "csslint": "1.0.5",
     "htmlhint": "github:xwp/HTMLHint",
     "jsonlint": "1.6.2"
