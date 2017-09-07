@@ -147,7 +147,7 @@
 				control.editor.on( 'blur', function() {
 					updateNotifications();
 				});
-				$( control.editor.display.wrapper ).on( 'mouseout', function() {
+				$( control.editor.display.wrapper ).on( 'mouseleave', function() {
 					updateNotifications();
 				});
 

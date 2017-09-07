@@ -96,7 +96,7 @@ wp.themePluginEditor = (function( $ ) {
 			editor.on( 'blur', function() {
 				updateNotice();
 			});
-			$( editor.display.wrapper ).on( 'mouseout', function() {
+			$( editor.display.wrapper ).on( 'mouseleave', function() {
 				updateNotice();
 			});
 		}
