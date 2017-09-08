@@ -26,3 +26,6 @@ contributing.md
 Gruntfile.js
 .DS_Store
 wp-assets
+vendor
+composer.json
+composer.lock
