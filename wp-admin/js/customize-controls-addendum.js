@@ -44,7 +44,7 @@
 							originalCompleteCallback();
 						}
 						if ( control.editor ) {
-							control.editor.focus();
+							control.editor.codemirror.focus();
 						}
 					};
 					originalFocus.call( this, extendedParams );
@@ -68,7 +68,7 @@
 					 *
 					 * @returns {void}
 					 */
-					handleTabNext: function handleTabNext() {
+					onTabNext: function onTabNext() {
 						var controls, controlIndex;
 						controls = section.controls();
 						controlIndex = controls.indexOf( control );
@@ -84,7 +84,7 @@
 					 *
 					 * @returns {void}
 					 */
-					handleTabPrev: function handleTabPrev() {
+					onTabPrevious: function onTabPrevious() {
 						var controls, controlIndex;
 						controls = section.controls();
 						controlIndex = controls.indexOf( control );
@@ -122,19 +122,19 @@
 				control.editor = wp.codeEditor.initialize( $textarea, settings );
 
 				// Refresh when receiving focus.
-				control.editor.on( 'focus', function( editor ) {
-					editor.refresh();
+				control.editor.codemirror.on( 'focus', function( codemirror ) {
+					codemirror.refresh();
 				});
 
 				/*
 				 * When the CodeMirror instance changes, mirror to the textarea,
 				 * where we have our "true" change event handler bound.
 				 */
-				control.editor.on( 'change', function( editor ) {
-					$textarea.val( editor.getValue() ).trigger( 'change' );
+				control.editor.codemirror.on( 'change', function( codemirror ) {
+					$textarea.val( codemirror.getValue() ).trigger( 'change' );
 				});
 
-				control.editor.on( 'keydown', function onKeydown( editor, event ) {
+				control.editor.codemirror.on( 'keydown', function onKeydown( codemirror, event ) {
 					var escKeyCode = 27;
 					if ( escKeyCode === event.keyCode ) {
 						event.stopPropagation(); // Prevent collapsing the section.

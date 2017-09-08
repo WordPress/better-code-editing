@@ -20,8 +20,8 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		csslint: {},
 		htmlhint: {},
 		jshint: {},
-		handleTabNext: function() {}, // @todo Rename to onTabNext?
-		handleTabPrev: function() {}, // @todo Rename to onTabPrevious?
+		onTabNext: function() {},
+		onTabPrevious: function() {},
 		onChangeLintingErrors: function() {},
 		onUpdateErrorNotice: function() {}
 	};
@@ -168,27 +168,27 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 	/**
 	 * Configure tabbing.
 	 *
-	 * @param {CodeMirror} editor - Editor.
+	 * @param {CodeMirror} codemirror - Editor.
 	 * @param {object}     settings - Code editor settings.
 	 * @param {object}     settings.codeMirror - Settings for CodeMirror.
-	 * @param {Function}   settings.handleTabNext - Callback to handle tabbing to the next tabbable element.
-	 * @param {Function}   settings.handleTabPrev - Callback to handle tabbing to the previous tabbable element.
+	 * @param {Function}   settings.onTabNext - Callback to handle tabbing to the next tabbable element.
+	 * @param {Function}   settings.onTabPrevious - Callback to handle tabbing to the previous tabbable element.
 	 * @returns {void}
 	 */
-	function configureTabbing( editor, settings ) {
-		var $textarea = $( editor.getTextArea() );
+	function configureTabbing( codemirror, settings ) {
+		var $textarea = $( codemirror.getTextArea() );
 
-		editor.on( 'blur', function() {
+		codemirror.on( 'blur', function() {
 			$textarea.data( 'next-tab-blurs', false );
 		});
-		editor.on( 'focus', function() {
-			if ( editor.display.wrapper.scrollIntoViewIfNeeded ) {
-				editor.display.wrapper.scrollIntoViewIfNeeded();
+		codemirror.on( 'focus', function() {
+			if ( codemirror.display.wrapper.scrollIntoViewIfNeeded ) {
+				codemirror.display.wrapper.scrollIntoViewIfNeeded();
 			} else {
-				editor.display.wrapper.scrollIntoView();
+				codemirror.display.wrapper.scrollIntoView();
 			}
 		});
-		editor.on( 'keydown', function onKeydown( _editor, event ) {
+		codemirror.on( 'keydown', function onKeydown( editor, event ) {
 			var tabKeyCode = 9, escKeyCode = 27;
 
 			// Take note of the ESC keypress so that the next TAB can focus outside the editor.
@@ -204,9 +204,9 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 
 			// Focus on previous or next focusable item.
 			if ( event.shiftKey ) {
-				settings.handleTabPrev( editor, event );
+				settings.onTabPrevious( codemirror, event );
 			} else {
-				settings.handleTabNext( editor, event );
+				settings.onTabNext( codemirror, event );
 			}
 
 			// Reset tab state.
@@ -226,8 +226,8 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 	 * @param {object}                [settings] - Settings to override defaults.
 	 * @param {Function}              [settings.onChangeLintingErrors] - Callback for when the linting errors have changed.
 	 * @param {Function}              [settings.onUpdateErrorNotice] - Callback for when error notice should be displayed.
-	 * @param {Function}              [settings.handleTabPrev] - Callback to handle tabbing to the previous tabbable element.
-	 * @param {Function}              [settings.handleTabNext] - Callback to handle tabbing to the next tabbable element.
+	 * @param {Function}              [settings.onTabPrevious] - Callback to handle tabbing to the previous tabbable element.
+	 * @param {Function}              [settings.onTabNext] - Callback to handle tabbing to the next tabbable element.
 	 * @param {object}                [settings.codemirror] - Options for CodeMirror.
 	 * @param {object}                [settings.csslint] - Rules for CSSLint.
 	 * @param {object}                [settings.htmlhint] - Rules for HTMLHint.
@@ -235,7 +235,7 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 	 * @returns {CodeMirror} CodeMirror instance.
 	 */
 	wp.codeEditor.initialize = function initialize( textarea, settings ) {
-		var $textarea, editor, instanceSettings;
+		var $textarea, codemirror, instanceSettings, instance;
 		if ( 'string' === typeof textarea ) {
 			$textarea = $( '#' + textarea );
 		} else {
@@ -245,28 +245,33 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		instanceSettings = $.extend( {}, wp.codeEditor.defaultSettings, settings );
 		instanceSettings.codemirror = $.extend( {}, instanceSettings.codemirror );
 
-		editor = CodeMirror.fromTextArea( $textarea[0], instanceSettings.codemirror );
+		codemirror = CodeMirror.fromTextArea( $textarea[0], instanceSettings.codemirror );
 
-		configureLinting( editor, instanceSettings );
+		configureLinting( codemirror, instanceSettings );
+
+		instance = {
+			settings: instanceSettings,
+			codemirror: codemirror
+		};
 
 		// Keep track of the instances that have been created.
-		wp.codeEditor.instances.push( editor ); // @todo return object containing { editor, instanceSettings }.
+		wp.codeEditor.instances.push( instance );
 
-		if ( editor.showHint ) {
-			editor.on( 'keyup', function( _editor, event ) { // eslint-disable-line complexity
+		if ( codemirror.showHint ) {
+			codemirror.on( 'keyup', function( editor, event ) { // eslint-disable-line complexity
 				var shouldAutocomplete, isAlphaKey = /^[a-zA-Z]$/.test( event.key ), lineBeforeCursor, innerMode, token;
-				if ( editor.state.completionActive && isAlphaKey ) {
+				if ( codemirror.state.completionActive && isAlphaKey ) {
 					return;
 				}
 
 				// Prevent autocompletion in string literals or comments.
-				token = editor.getTokenAt( editor.getCursor() );
+				token = codemirror.getTokenAt( codemirror.getCursor() );
 				if ( 'string' === token.type || 'comment' === token.type ) {
 					return;
 				}
 
-				innerMode = CodeMirror.innerMode( editor.getMode(), token.state ).mode.name;
-				lineBeforeCursor = editor.doc.getLine( editor.doc.getCursor().line ).substr( 0, editor.doc.getCursor().ch );
+				innerMode = CodeMirror.innerMode( codemirror.getMode(), token.state ).mode.name;
+				lineBeforeCursor = codemirror.doc.getLine( codemirror.doc.getCursor().line ).substr( 0, codemirror.doc.getCursor().ch );
 				if ( 'html' === innerMode || 'xml' === innerMode ) {
 					shouldAutocomplete =
 						'<' === event.key ||
@@ -281,19 +286,19 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 						' ' === event.key && /:\s+$/.test( lineBeforeCursor );
 				} else if ( 'javascript' === innerMode ) {
 					shouldAutocomplete = isAlphaKey || '.' === event.key;
-				} else if ( 'clike' === innerMode && 'application/x-httpd-php' === editor.options.mode ) {
+				} else if ( 'clike' === innerMode && 'application/x-httpd-php' === codemirror.options.mode ) {
 					shouldAutocomplete = 'keyword' === token.type || 'variable' === token.type;
 				}
 				if ( shouldAutocomplete ) {
-					editor.showHint( { completeSingle: false } );
+					codemirror.showHint( { completeSingle: false } );
 				}
 			});
 		}
 
 		// Facilitate tabbing out of the editor.
-		configureTabbing( editor, settings );
+		configureTabbing( codemirror, settings );
 
-		return editor; // @todo return object containing { editor, instanceSettings }.
+		return instance;
 	};
 
 })( window.jQuery, window.wp );

@@ -33,7 +33,7 @@ wp.themePluginEditor = (function( $ ) {
 		 *
 		 * @returns {void}
 		 */
-		codeEditorSettings.handleTabPrev = function() {
+		codeEditorSettings.onTabPrevious = function() {
 			$( '#templateside' ).find( ':tabbable' ).last().focus();
 		};
 
@@ -42,7 +42,7 @@ wp.themePluginEditor = (function( $ ) {
 		 *
 		 * @returns {void}
 		 */
-		codeEditorSettings.handleTabNext = function() {
+		codeEditorSettings.onTabNext = function() {
 			$( '#template' ).find( ':tabbable:not(.CodeMirror-code)' ).first().focus();
 		};
 
