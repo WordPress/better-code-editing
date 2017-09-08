@@ -224,6 +224,16 @@ wp.customHtmlWidgets = ( function( $ ) {
 					control.syncContainer.find( '.sync-input.content' ).trigger( 'change' );
 				}
 			});
+
+			// Prevent hitting Esc from collapsing the widget control.
+			if ( wp.customize ) {
+				control.editor.codemirror.on( 'keydown', function onKeydown( codemirror, event ) {
+					var escKeyCode = 27;
+					if ( escKeyCode === event.keyCode ) {
+						event.stopPropagation();
+					}
+				});
+			}
 		}
 	});
 

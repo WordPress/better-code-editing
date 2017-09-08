@@ -139,7 +139,7 @@
 					if ( escKeyCode === event.keyCode ) {
 						event.stopPropagation(); // Prevent collapsing the section.
 					}
-				} );
+				});
 
 				// @todo: bind something to setting change, so that we can catch other plugins modifying the css and update CodeMirror?
 			};
