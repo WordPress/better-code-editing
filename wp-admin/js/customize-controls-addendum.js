@@ -54,7 +54,7 @@
 			onceExpanded = function() {
 				var $textarea = control.container.find( 'textarea' ), settings, previousErrorCount = 0, currentErrorAnnotations = [];
 
-				if ( api.settings.customCss.isDefault ) {
+				if ( ! control.setting.get() ) {
 					section.container.find( '.section-meta .customize-section-description:first' )
 						.addClass( 'open' )
 						.show()
