@@ -119,19 +119,23 @@ wp.customHtmlWidgets = ( function( $ ) {
 		 * @returns {void}
 		 */
 		updateErrorNotice: function( errorAnnotations ) {
-			var control = this, errorNotice, message, customizeSetting;
+			var control = this, errorNotice, message = '', customizeSetting;
 
 			if ( 1 === errorAnnotations.length ) {
 				message = component.l10n.errorNotice.singular.replace( '%d', '1' );
-			} else {
+			} else if ( errorAnnotations.length > 1 ) {
 				message = component.l10n.errorNotice.plural.replace( '%d', String( errorAnnotations.length ) );
+			}
+
+			if ( control.fields.content[0].setCustomValidity ) {
+				control.fields.content[0].setCustomValidity( message );
 			}
 
 			if ( wp.customize && wp.customize.has( control.customizeSettingId ) ) {
 				customizeSetting = wp.customize( control.customizeSettingId );
-				customizeSetting.notifications.remove( 'htmllint_error' );
+				customizeSetting.notifications.remove( 'htmlhint_error' );
 				if ( 0 !== errorAnnotations.length ) {
-					customizeSetting.notifications.add( 'htmllint_error', new wp.customize.Notification( 'htmllint_error', {
+					customizeSetting.notifications.add( 'htmlhint_error', new wp.customize.Notification( 'htmlhint_error', {
 						message: message,
 						type: 'error'
 					} ) );
@@ -200,7 +204,7 @@ wp.customHtmlWidgets = ( function( $ ) {
 				 * @returns {void}
 				 */
 				onUpdateErrorNotice: function onUpdateErrorNotice( errorAnnotations ) {
-					control.saveButton.prop( 'disabled', 0 !== errorAnnotations.length );
+					control.saveButton.toggleClass( 'validation-blocked', errorAnnotations.length );
 					control.updateErrorNotice( errorAnnotations );
 				}
 			});
