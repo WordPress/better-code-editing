@@ -24,6 +24,13 @@ function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $
 		return;
 	}
 
+	// Remove default value from Custom CSS setting.
+	foreach ( $wp_customize->settings() as $setting ) {
+		if ( $setting instanceof WP_Customize_Custom_CSS_Setting ) {
+			$setting->default = '';
+		}
+	}
+
 	$section->description = '<p>';
 	$section->description .= __( 'Add your own CSS code here to customize the appearance and layout of your site.', 'better-code-editing' );
 	$section->description .= sprintf(
@@ -54,6 +61,10 @@ function _better_code_editing_amend_custom_css_help_text( WP_Customize_Manager $
 		)
 	);
 	$section->description .= '</p>';
+
+	$section->description .= '<p class="section-description-buttons">';
+	$section->description .= '<button type="button" class="button-link section-description-close">' . __( 'Close', 'default' ) . '</button>';
+	$section->description .= '</p>';
 }
 
 /**
@@ -80,7 +91,16 @@ function _better_code_editing_amend_customize_pane_settings() {
 	if ( empty( $wp_customize->custom_css_code_editor_settings ) ) {
 		return;
 	}
-	printf( '<script>window._wpCustomizeSettings.codeEditor = %s</script>;', wp_json_encode( $wp_customize->custom_css_code_editor_settings ) );
+	$custom_css_setting = $wp_customize->get_setting( sprintf( 'custom_css[%s]', get_stylesheet() ) );
+	if ( ! $custom_css_setting ) {
+		return;
+	}
+
+	$settings = array(
+		'codeEditor' => $wp_customize->custom_css_code_editor_settings,
+	);
+
+	printf( '<script>window._wpCustomizeSettings.customCss = %s</script>;', wp_json_encode( $settings ) );
 
 	/* translators: placeholder is error count */
 	$l10n = _n_noop( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 'better-code-editing' );
