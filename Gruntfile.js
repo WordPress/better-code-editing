@@ -92,6 +92,9 @@ module.exports = function( grunt ) {
 			},
 			build_release_zip: {
 				command: 'npm run build-release-zip'
+			},
+			verify_matching_versions: {
+				command: 'php bin/verify-version-consistency.php'
 			}
 		},
 
@@ -127,8 +130,9 @@ module.exports = function( grunt ) {
 	] );
 
 	grunt.registerTask( 'build', [
-		'shell:lint',
 		'readme',
+		'shell:verify_matching_versions',
+		'shell:lint',
 		'rtl',
 		'shell:build_release_zip'
 	] );
