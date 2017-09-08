@@ -44,7 +44,7 @@
 							originalCompleteCallback();
 						}
 						if ( control.editor ) {
-							control.editor.focus();
+							control.editor.codemirror.focus();
 						}
 					};
 					originalFocus.call( this, extendedParams );
@@ -52,7 +52,7 @@
 			})( control.focus );
 
 			onceExpanded = function() {
-				var $textarea = control.container.find( 'textarea' ), settings, previousErrorCount = 0, currentErrorAnnotations = [];
+				var $textarea = control.container.find( 'textarea' ), settings, suspendEditorUpdate = false;
 
 				if ( ! control.setting.get() ) {
 					section.container.find( '.section-meta .customize-section-description:first' )
@@ -62,7 +62,13 @@
 				}
 
 				settings = _.extend( {}, api.settings.customCss.codeEditor, {
-					handleTabNext: function() {
+
+					/**
+					 * Handle tabbing to the field after the editor.
+					 *
+					 * @returns {void}
+					 */
+					onTabNext: function onTabNext() {
 						var controls, controlIndex;
 						controls = section.controls();
 						controlIndex = controls.indexOf( control );
@@ -72,7 +78,13 @@
 							controls[ controlIndex + 1 ].container.find( ':focusable:first' ).focus();
 						}
 					},
-					handleTabPrev: function() {
+
+					/**
+					 * Handle tabbing to the field before the editor.
+					 *
+					 * @returns {void}
+					 */
+					onTabPrevious: function onTabPrevious() {
 						var controls, controlIndex;
 						controls = section.controls();
 						controlIndex = controls.indexOf( control );
@@ -81,92 +93,63 @@
 						} else {
 							controls[ controlIndex - 1 ].container.find( ':focusable:first' ).focus();
 						}
-					}
-				} );
+					},
 
-				/**
-				 * Update notifications on the setting based on the current CSSLint annotations.
-				 *
-				 * @returns {void}
-				 */
-				function updateNotifications() {
-					var message;
+					/**
+					 * Update error notice.
+					 *
+					 * @param {Array} errorAnnotations - Error annotations.
+					 * @returns {void}
+					 */
+					onUpdateErrorNotice: function onUpdateErrorNotice( errorAnnotations ) {
+						var message;
+						control.setting.notifications.remove( 'csslint_error' );
 
-					// Short-circuit if there are no changes to the error.
-					if ( previousErrorCount === currentErrorAnnotations.length ) {
-						return;
-					}
-					previousErrorCount = currentErrorAnnotations.length;
-
-					control.setting.notifications.remove( 'csslint_error' );
-
-					if ( 0 !== currentErrorAnnotations.length ) {
-						if ( 1 === currentErrorAnnotations.length ) {
-							message = api.l10n.customCssErrorNotice.singular.replace( '%d', '1' );
-						} else {
-							message = api.l10n.customCssErrorNotice.plural.replace( '%d', String( currentErrorAnnotations.length ) );
-						}
-						control.setting.notifications.add( 'csslint_error', new api.Notification( 'csslint_error', {
-							message: message,
-							type: 'error'
-						} ) );
-					}
-				}
-
-				if ( settings.codemirror.lint ) {
-					if ( true === settings.codemirror.lint ) {
-						settings.codemirror.lint = {};
-					}
-					settings.codemirror.lint = _.extend( {}, settings.codemirror.lint, {
-						onUpdateLinting: function( annotations, sortedAnnotations, editor ) {
-							currentErrorAnnotations = _.filter( annotations, function( annotation ) {
-								return 'error' === annotation.severity;
-							} );
-
-							/*
-							 * Update notifications when the editor is not focused to prevent error message
-							 * from overwhelming the user during input, unless there are no annotations
-							 * or there are previous notifications already being displayed, and in that
-							 * case update immediately so they can know that they fixed the errors.
-							 */
-							if ( ! editor.state.focused || 0 === currentErrorAnnotations.length || previousErrorCount > 0 ) {
-								updateNotifications();
+						if ( 0 !== errorAnnotations.length ) {
+							if ( 1 === errorAnnotations.length ) {
+								message = api.l10n.customCssErrorNotice.singular.replace( '%d', '1' );
+							} else {
+								message = api.l10n.customCssErrorNotice.plural.replace( '%d', String( errorAnnotations.length ) );
 							}
+							control.setting.notifications.add( 'csslint_error', new api.Notification( 'csslint_error', {
+								message: message,
+								type: 'error'
+							} ) );
 						}
-					} );
-				}
+					}
+				});
 
 				control.editor = wp.codeEditor.initialize( $textarea, settings );
 
 				// Refresh when receiving focus.
-				control.editor.on( 'focus', function( editor ) {
-					editor.refresh();
-				});
-
-				// Update notifications when blurring the field to prevent user from being inundated with errors during input.
-				control.editor.on( 'blur', function() {
-					updateNotifications();
-				});
-				$( control.editor.display.wrapper ).on( 'mouseout', function() {
-					updateNotifications();
+				control.editor.codemirror.on( 'focus', function( codemirror ) {
+					codemirror.refresh();
 				});
 
 				/*
 				 * When the CodeMirror instance changes, mirror to the textarea,
 				 * where we have our "true" change event handler bound.
 				 */
-				control.editor.on( 'change', function( editor ) {
-					$textarea.val( editor.getValue() ).trigger( 'change' );
+				control.editor.codemirror.on( 'change', function( codemirror ) {
+					suspendEditorUpdate = true;
+					$textarea.val( codemirror.getValue() ).trigger( 'change' );
+					suspendEditorUpdate = false;
 				});
 
-				control.editor.on( 'keydown', function onKeydown( editor, event ) {
+				// Update CodeMirror when the setting is changed by another plugin.
+				control.setting.bind( function( value ) {
+					if ( ! suspendEditorUpdate ) {
+						control.editor.codemirror.setValue( value );
+					}
+				});
+
+				// Prevent collapsing section when hitting Esc to tab out of editor.
+				control.editor.codemirror.on( 'keydown', function onKeydown( codemirror, event ) {
 					var escKeyCode = 27;
 					if ( escKeyCode === event.keyCode ) {
-						event.stopPropagation(); // Prevent collapsing the section.
+						event.stopPropagation();
 					}
-				} );
-
-				// @todo: bind something to setting change, so that we can catch other plugins modifying the css and update CodeMirror?
+				});
 			};
 
 			onExpandedChange = function( isExpanded ) {

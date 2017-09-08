@@ -20,8 +20,10 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		csslint: {},
 		htmlhint: {},
 		jshint: {},
-		handleTabNext: function() {},
-		handleTabPrev: function() {}
+		onTabNext: function() {},
+		onTabPrevious: function() {},
+		onChangeLintingErrors: function() {},
+		onUpdateErrorNotice: function() {}
 	};
 
 	/**
@@ -33,115 +35,160 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 	wp.codeEditor.instances = [];
 
 	/**
-	 * Initialize Code Editor (CodeMirror) for an existing textarea.
+	 * Configure linting.
 	 *
-	 * @since 4.9.0
-	 *
-	 * @param {string|jQuery|Element} textarea The HTML id, jQuery object, or DOM Element for the textarea that is used for the editor.
-	 * @param {object} [settings] Settings to override defaults.
-	 * @returns {CodeMirror} CodeMirror instance.
+	 * @param {CodeMirror} editor - Editor.
+	 * @param {object}     settings - Code editor settings.
+	 * @param {object}     settings.codeMirror - Settings for CodeMirror.
+	 * @param {Function}   settings.onChangeLintingErrors - Callback for when there are changes to linting errors.
+	 * @param {Function}   settings.onUpdateErrorNotice - Callback to update error notice.
+	 * @returns {void}
 	 */
-	wp.codeEditor.initialize = function initialize( textarea, settings ) { // eslint-disable-line complexity
-		var $textarea, editor, instanceSettings;
-		if ( 'string' === typeof textarea ) {
-			$textarea = $( '#' + textarea );
+	function configureLinting( editor, settings ) { // eslint-disable-line complexity
+		var lintOptions = editor.getOption( 'lint' ), currentErrorAnnotations = [], updateErrorNotice, previouslyShownErrorAnnotations = [];
+		if ( ! lintOptions ) {
+			return;
+		}
+
+		if ( true === lintOptions ) {
+			lintOptions = {};
 		} else {
-			$textarea = $( textarea );
+			lintOptions = $.extend( {}, lintOptions );
 		}
 
-		instanceSettings = $.extend( {}, wp.codeEditor.defaultSettings, settings );
-		instanceSettings.codemirror = $.extend( {}, instanceSettings.codemirror );
+		// Note that rules must be sent in the "deprecated" lint.options property to prevent linter from complaining about unrecognized options. See <https://github.com/codemirror/CodeMirror/pull/4944>.
+		if ( ! lintOptions.options ) {
+			lintOptions.options = {};
+		}
 
-		if ( instanceSettings.codemirror.lint ) {
-			if ( true === instanceSettings.codemirror.lint ) {
-				instanceSettings.codemirror.lint = {};
+		// Configure JSHint.
+		if ( 'javascript' === lintOptions.mode && settings.jshint ) {
+			$.extend( lintOptions.options, settings.jshint );
+		}
+
+		// Configure CSSLint.
+		if ( 'css' === lintOptions.mode && settings.csslint ) {
+			$.extend( lintOptions.options, settings.csslint );
+		}
+
+		// Configure HTMLHint.
+		if ( 'htmlmixed' === lintOptions.mode && settings.htmlhint ) {
+			lintOptions.options.rules = $.extend( {}, settings.htmlhint );
+
+			if ( settings.jshint ) {
+				lintOptions.options.rules.jshint = settings.jshint;
 			}
-
-			// Note that rules must be sent in the "deprecated" lint.options property to prevent linter from complaining about unrecognized options. See <https://github.com/codemirror/CodeMirror/pull/4944>.
-			if ( ! instanceSettings.codemirror.lint.options ) {
-				instanceSettings.codemirror.lint.options = {};
-			}
-
-			// Configure JSHint.
-			if ( 'javascript' === instanceSettings.codemirror.mode && instanceSettings.jshint ) {
-				$.extend( instanceSettings.codemirror.lint.options, instanceSettings.jshint );
-			}
-
-			// Configure CSSLint.
-			if ( 'css' === instanceSettings.codemirror.mode && instanceSettings.csslint ) {
-				$.extend( instanceSettings.codemirror.lint.options, instanceSettings.csslint );
-			}
-
-			// Configure HTMLHint.
-			if ( 'htmlmixed' === instanceSettings.codemirror.mode && instanceSettings.htmlhint ) {
-				instanceSettings.codemirror.lint.options.rules = $.extend( {}, instanceSettings.htmlhint );
-
-				if ( instanceSettings.jshint ) {
-					instanceSettings.codemirror.lint.options.rules.jshint = instanceSettings.jshint;
-				}
-				if ( instanceSettings.csslint ) {
-					instanceSettings.codemirror.lint.options.rules.csslint = instanceSettings.csslint;
-				}
+			if ( settings.csslint ) {
+				lintOptions.options.rules.csslint = settings.csslint;
 			}
 		}
 
-		editor = CodeMirror.fromTextArea( $textarea[0], instanceSettings.codemirror );
+		/**
+		 * Call the onUpdateErrorNotice if there are new errors to show.
+		 *
+		 * @returns {void}
+		 */
+		updateErrorNotice = function() {
+			if ( settings.onUpdateErrorNotice && ! _.isEqual( currentErrorAnnotations, previouslyShownErrorAnnotations ) ) {
+				settings.onUpdateErrorNotice( currentErrorAnnotations, editor );
+				previouslyShownErrorAnnotations = currentErrorAnnotations;
+			}
+		};
 
-		// Keep track of the instances that have been created.
-		wp.codeEditor.instances.push( editor );
+		// Wrap the onUpdateLinting CodeMirror event to route to onChangeLintingErrors and onUpdateErrorNotice.
+		lintOptions.onUpdateLinting = (function( onUpdateLintingOverridden ) {
+			return function( annotations, annotationsSorted, cm ) {
+				var errorAnnotations = _.filter( annotations, function( annotation ) {
+					return 'error' === annotation.severity;
+				} );
 
-		if ( editor.showHint ) {
-			editor.on( 'keyup', function( _editor, event ) { // eslint-disable-line complexity
-				var shouldAutocomplete, isAlphaKey = /^[a-zA-Z]$/.test( event.key ), lineBeforeCursor, innerMode, token;
-				if ( editor.state.completionActive && isAlphaKey ) {
+				if ( onUpdateLintingOverridden ) {
+					onUpdateLintingOverridden.apply( annotations, annotationsSorted, cm );
+				}
+
+				// Skip if there are no changes to the errors.
+				if ( _.isEqual( errorAnnotations, currentErrorAnnotations ) ) {
 					return;
 				}
 
-				// Prevent autocompletion in string literals or comments.
-				token = editor.getTokenAt( editor.getCursor() );
-				if ( 'string' === token.type || 'comment' === token.type ) {
-					return;
+				currentErrorAnnotations = errorAnnotations;
+
+				if ( settings.onChangeLintingErrors ) {
+					settings.onChangeLintingErrors( errorAnnotations, annotations, annotationsSorted, cm );
 				}
 
-				innerMode = CodeMirror.innerMode( editor.getMode(), token.state ).mode.name;
-				lineBeforeCursor = editor.doc.getLine( editor.doc.getCursor().line ).substr( 0, editor.doc.getCursor().ch );
-				if ( 'html' === innerMode || 'xml' === innerMode ) {
-					shouldAutocomplete =
-						'<' === event.key ||
-						'/' === event.key && 'tag' === token.type ||
-						isAlphaKey && 'tag' === token.type ||
-						isAlphaKey && 'attribute' === token.type ||
-						'=' === token.string && token.state.htmlState && token.state.htmlState.tagName;
-				} else if ( 'css' === innerMode ) {
-					shouldAutocomplete =
-						isAlphaKey ||
-						':' === event.key ||
-						' ' === event.key && /:\s+$/.test( lineBeforeCursor );
-				} else if ( 'javascript' === innerMode ) {
-					shouldAutocomplete = isAlphaKey || '.' === event.key;
-				} else if ( 'clike' === innerMode && 'application/x-httpd-php' === editor.options.mode ) {
-					shouldAutocomplete = 'keyword' === token.type || 'variable' === token.type;
+				/*
+				 * Update notifications when the editor is not focused to prevent error message
+				 * from overwhelming the user during input, unless there are now no errors or there
+				 * were previously errors shown. In these cases, update immediately so they can know
+				 * that they fixed the errors.
+				 */
+				if ( ! cm.state.focused || 0 === currentErrorAnnotations.length || previouslyShownErrorAnnotations.length > 0 ) {
+					updateErrorNotice();
 				}
-				if ( shouldAutocomplete ) {
-					CodeMirror.commands.autocomplete( editor, null, { completeSingle: false } );
-				}
-			});
-		}
+			};
+		})( lintOptions.onUpdateLinting );
 
-		// Make sure the editor gets updated if the content was updated on the server (sanitization) but not updated in the editor since it was focused.
-		editor.on( 'blur', function() {
+		editor.setOption( 'lint', lintOptions );
+
+		// Update error notice when leaving the editor.
+		editor.on( 'blur', updateErrorNotice );
+
+		// Work around hint selection with mouse causing focus to leave editor.
+		editor.on( 'startCompletion', function() {
+			editor.off( 'blur', updateErrorNotice );
+		} );
+		editor.on( 'endCompletion', function() {
+			var editorRefocusWait = 500;
+			editor.on( 'blur', updateErrorNotice );
+
+			// Wait for editor to possibly get re-focused after selection.
+			_.delay( function() {
+				if ( ! editor.state.focused ) {
+					updateErrorNotice();
+				}
+			}, editorRefocusWait );
+		});
+
+		/*
+		 * Make sure setting validities are set if the user tries to click Publish
+		 * while an autocomplete dropdown is still open. The Customizer will block
+		 * saving when a setting has an error notifications on it. This is only
+		 * necessary for mouse interactions because keyboards will have already
+		 * blurred the field and cause onUpdateErrorNotice to have already been
+		 * called.
+		 */
+		$( document.body ).on( 'mousedown', function( event ) {
+			if ( editor.state.focused && ! $.contains( editor.display.wrapper, event.target ) && ! $( event.target ).hasClass( 'CodeMirror-hint' ) ) {
+				updateErrorNotice();
+			}
+		});
+	}
+
+	/**
+	 * Configure tabbing.
+	 *
+	 * @param {CodeMirror} codemirror - Editor.
+	 * @param {object}     settings - Code editor settings.
+	 * @param {object}     settings.codeMirror - Settings for CodeMirror.
+	 * @param {Function}   settings.onTabNext - Callback to handle tabbing to the next tabbable element.
+	 * @param {Function}   settings.onTabPrevious - Callback to handle tabbing to the previous tabbable element.
+	 * @returns {void}
+	 */
+	function configureTabbing( codemirror, settings ) {
+		var $textarea = $( codemirror.getTextArea() );
+
+		codemirror.on( 'blur', function() {
 			$textarea.data( 'next-tab-blurs', false );
 		});
-
-		editor.on( 'focus', function() {
-			if ( editor.display.wrapper.scrollIntoViewIfNeeded ) {
-				editor.display.wrapper.scrollIntoViewIfNeeded();
+		codemirror.on( 'focus', function() {
+			if ( codemirror.display.wrapper.scrollIntoViewIfNeeded ) {
+				codemirror.display.wrapper.scrollIntoViewIfNeeded();
 			} else {
-				editor.display.wrapper.scrollIntoView();
+				codemirror.display.wrapper.scrollIntoView();
 			}
 		});
-
-		editor.on( 'keydown', function onKeydown( _editor, event ) {
+		codemirror.on( 'keydown', function onKeydown( editor, event ) {
 			var tabKeyCode = 9, escKeyCode = 27;
 
 			// Take note of the ESC keypress so that the next TAB can focus outside the editor.
@@ -157,9 +204,9 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 
 			// Focus on previous or next focusable item.
 			if ( event.shiftKey ) {
-				settings.handleTabPrev( editor, event );
+				settings.onTabPrevious( codemirror, event );
 			} else {
-				settings.handleTabNext( editor, event );
+				settings.onTabNext( codemirror, event );
 			}
 
 			// Reset tab state.
@@ -168,8 +215,90 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 			// Prevent tab character from being added.
 			event.preventDefault();
 		});
+	}
 
-		return editor;
+	/**
+	 * Initialize Code Editor (CodeMirror) for an existing textarea.
+	 *
+	 * @since 4.9.0
+	 *
+	 * @param {string|jQuery|Element} textarea - The HTML id, jQuery object, or DOM Element for the textarea that is used for the editor.
+	 * @param {object}                [settings] - Settings to override defaults.
+	 * @param {Function}              [settings.onChangeLintingErrors] - Callback for when the linting errors have changed.
+	 * @param {Function}              [settings.onUpdateErrorNotice] - Callback for when error notice should be displayed.
+	 * @param {Function}              [settings.onTabPrevious] - Callback to handle tabbing to the previous tabbable element.
+	 * @param {Function}              [settings.onTabNext] - Callback to handle tabbing to the next tabbable element.
+	 * @param {object}                [settings.codemirror] - Options for CodeMirror.
+	 * @param {object}                [settings.csslint] - Rules for CSSLint.
+	 * @param {object}                [settings.htmlhint] - Rules for HTMLHint.
+	 * @param {object}                [settings.jshint] - Rules for JSHint.
+	 * @returns {CodeMirror} CodeMirror instance.
+	 */
+	wp.codeEditor.initialize = function initialize( textarea, settings ) {
+		var $textarea, codemirror, instanceSettings, instance;
+		if ( 'string' === typeof textarea ) {
+			$textarea = $( '#' + textarea );
+		} else {
+			$textarea = $( textarea );
+		}
+
+		instanceSettings = $.extend( {}, wp.codeEditor.defaultSettings, settings );
+		instanceSettings.codemirror = $.extend( {}, instanceSettings.codemirror );
+
+		codemirror = CodeMirror.fromTextArea( $textarea[0], instanceSettings.codemirror );
+
+		configureLinting( codemirror, instanceSettings );
+
+		instance = {
+			settings: instanceSettings,
+			codemirror: codemirror
+		};
+
+		// Keep track of the instances that have been created.
+		wp.codeEditor.instances.push( instance );
+
+		if ( codemirror.showHint ) {
+			codemirror.on( 'keyup', function( editor, event ) { // eslint-disable-line complexity
+				var shouldAutocomplete, isAlphaKey = /^[a-zA-Z]$/.test( event.key ), lineBeforeCursor, innerMode, token;
+				if ( codemirror.state.completionActive && isAlphaKey ) {
+					return;
+				}
+
+				// Prevent autocompletion in string literals or comments.
+				token = codemirror.getTokenAt( codemirror.getCursor() );
+				if ( 'string' === token.type || 'comment' === token.type ) {
+					return;
+				}
+
+				innerMode = CodeMirror.innerMode( codemirror.getMode(), token.state ).mode.name;
+				lineBeforeCursor = codemirror.doc.getLine( codemirror.doc.getCursor().line ).substr( 0, codemirror.doc.getCursor().ch );
+				if ( 'html' === innerMode || 'xml' === innerMode ) {
+					shouldAutocomplete =
+						'<' === event.key ||
+						'/' === event.key && 'tag' === token.type ||
+						isAlphaKey && 'tag' === token.type ||
+						isAlphaKey && 'attribute' === token.type ||
+						'=' === token.string && token.state.htmlState && token.state.htmlState.tagName;
+				} else if ( 'css' === innerMode ) {
+					shouldAutocomplete =
+						isAlphaKey ||
+						':' === event.key ||
+						' ' === event.key && /:\s+$/.test( lineBeforeCursor );
+				} else if ( 'javascript' === innerMode ) {
+					shouldAutocomplete = isAlphaKey || '.' === event.key;
+				} else if ( 'clike' === innerMode && 'application/x-httpd-php' === codemirror.options.mode ) {
+					shouldAutocomplete = 'keyword' === token.type || 'variable' === token.type;
+				}
+				if ( shouldAutocomplete ) {
+					codemirror.showHint( { completeSingle: false } );
+				}
+			});
+		}
+
+		// Facilitate tabbing out of the editor.
+		configureTabbing( codemirror, settings );
+
+		return instance;
 	};
 
 })( window.jQuery, window.wp );
