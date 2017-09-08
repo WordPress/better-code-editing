@@ -52,7 +52,7 @@
 			})( control.focus );
 
 			onceExpanded = function() {
-				var $textarea = control.container.find( 'textarea' ), settings;
+				var $textarea = control.container.find( 'textarea' ), settings, suspendEditorUpdate = false;
 
 				if ( ! control.setting.get() ) {
 					section.container.find( '.section-meta .customize-section-description:first' )
@@ -131,17 +131,25 @@
 				 * where we have our "true" change event handler bound.
 				 */
 				control.editor.codemirror.on( 'change', function( codemirror ) {
+					suspendEditorUpdate = true;
 					$textarea.val( codemirror.getValue() ).trigger( 'change' );
+					suspendEditorUpdate = false;
 				});
 
-				control.editor.codemirror.on( 'keydown', function onKeydown( codemirror, event ) {
-					var escKeyCode = 27;
-					if ( escKeyCode === event.keyCode ) {
-						event.stopPropagation(); // Prevent collapsing the section.
+				// Update CodeMirror when the setting is changed by another plugin.
+				control.setting.bind( function( value ) {
+					if ( ! suspendEditorUpdate ) {
+						control.editor.codemirror.setValue( value );
 					}
 				});
 
-				// @todo: bind something to setting change, so that we can catch other plugins modifying the css and update CodeMirror?
+				// Prevent collapsing section when hitting Esc to tab out of editor.
+				control.editor.codemirror.on( 'keydown', function onKeydown( codemirror, event ) {
+					var escKeyCode = 27;
+					if ( escKeyCode === event.keyCode ) {
+						event.stopPropagation();
+					}
+				});
 			};
 
 			onExpandedChange = function( isExpanded ) {
