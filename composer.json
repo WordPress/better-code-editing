@@ -1,6 +1,6 @@
 {
     "name": "wordpress/better-code-editing",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "description": "Adding CodeMirror functionality to the Plugin and Theme file editors, as well as the Customizer Custom CSS box and Custom HTML widget.",
     "homepage": "https://github.com/WordPress/better-code-editing/",
     "type": "wordpress-plugin",

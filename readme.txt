@@ -1,7 +1,7 @@
 === Better Code Editing ===
 Contributors: georgestephanis, westonruter, obenland, melchoyce, wordpressdotorg
 Tags: codemirror, syntax-highlighter, linting
-Stable tag: trunk
+Stable tag: 0.6.0
 Requires at least: 4.7
 Tested up to: 4.9-alpha
 
@@ -20,6 +20,19 @@ Any questions, reach out to #core-customize on WordPress.org Slack or better ope
 **Development of this plugin is done [on GitHub](https://github.com/WordPress/better-code-editing). Pull requests welcome. Please see [issues](https://github.com/WordPress/better-code-editing/issues) reported there.**
 
 == Changelog ==
+
+= 0.6.0 - 2017-09-08 =
+
+* Improve frequency for when linting error notifications are shown and remove some overly-strict rules. See [#86](https://github.com/WordPress/better-code-editing/pull/86). Fixes [#13](https://github.com/WordPress/better-code-editing/pull/13).
+* Improve disabling of save button for Custom HTML widget. See [#87](https://github.com/WordPress/better-code-editing/pull/87).
+* Enable search addon so that attempting to do a find inside the editor will search contents of file and not use browser find dialog. See [#76](https://github.com/WordPress/better-code-editing/pull/76). Fixes [#75](https://github.com/WordPress/better-code-editing/pull/75).
+* Auto-show Custom CSS section description when value is empty, add close link to bottom of description, and remove default placeholder value for Custom CSS field. See [#84](https://github.com/WordPress/better-code-editing/pull/84). Fixes [#79](https://github.com/WordPress/better-code-editing/pull/79) and [core#39892](https://core.trac.wordpress.org/ticket/39892).
+* Improve passing of linting rulesets to CodeMirror and update CodeMirror to 5.29.1-alpha. See [#59](https://github.com/WordPress/better-code-editing/pull/59).
+* Merge `wp_code_editor_settings()` into `wp_enqueue_code_editor()`. See [#81](https://github.com/WordPress/better-code-editing/pull/81). Fixes [#55](https://github.com/WordPress/better-code-editing/pull/55).
+* Add support for RTL languages. See [#80](https://github.com/WordPress/better-code-editing/pull/80). Fixes [#72](https://github.com/WordPress/better-code-editing/pull/72).
+* Add admin notice to instruct `npm install` when plugin installed from source. See [#74](https://github.com/WordPress/better-code-editing/pull/74). Fixes [#73](https://github.com/WordPress/better-code-editing/pull/73).
+* Update dev-lib to use local tools and add PHPCompatibility sniffs. See [#82](https://github.com/WordPress/better-code-editing/pull/82).
+* See full commit log and diff: [0.5.0...0.6.0](https://github.com/WordPress/better-code-editing/compare/0.5.0...0.6.0).
 
 = 0.5.0 - 2017-08-30 =
 
