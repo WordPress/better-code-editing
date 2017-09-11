@@ -1,0 +1,14 @@
+Editor: Add CodeMirror-powered code editor with syntax highlighting, linting, and completion.
+
+* Code editor is integrated into the Theme/Plugin Editor, Additional CSS in Customizer, and Custom HTML widget.
+* The CodeMirror component in the Custom HTML widget is integrated in a similar way to TinyMCE being integrated into the Text widget.
+* When user lacks `unfiltered_html` the capability, the Custom HTML widget will report any KSES-invalid elements and attributes as errors.
+* When linting errors are detected, the user will be prevented from saving the code until the errors are fixed, reducing instances of broken websites.
+* Code editor is not yet integrated into the post editor.
+* Placeholder value is removed from Custom CSS in favor of a fleshed-out section description which now auto-expands when the CSS field is empty. See #39892.
+* Introduces `wp.codeEditor.initialize()` in JS to convert a `textarea` into CodeMirror, with a `wp_enqueue_code_editor()` function in PHP to manage enqueueing the assets and settings needed to edit a given type of code.
+* User preference is added to manage whether or not "syntax highlighting" is enabled. The feature is opt-out, being enabled by default.
+
+Props westonruter, georgestephanis, obenland, melchoyce, pixolin.
+See #38707.
+Fixes #12423, #39892.

@@ -29,3 +29,4 @@ wp-assets
 vendor
 composer.json
 composer.lock
+core-commit-message.txt
