@@ -89,9 +89,9 @@
 						controls = section.controls();
 						controlIndex = controls.indexOf( control );
 						if ( 0 === controlIndex ) {
-							section.container.find( '.customize-help-toggle' ).focus();
+							section.contentContainer.find( '.customize-section-title .customize-help-toggle, .customize-section-title .customize-section-description.open .section-description-close' ).last().focus();
 						} else {
-							controls[ controlIndex - 1 ].container.find( ':focusable:first' ).focus();
+							controls[ controlIndex - 1 ].contentContainer.find( ':focusable:first' ).focus();
 						}
 					},
 
