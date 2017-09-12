@@ -17,7 +17,22 @@ module.exports = function( grunt ) {
 					banner: '/*! This file is auto-generated from CodeMirror - <%= pkgLock.dependencies.codemirror.version %>\n\n<%= codemirrorLicenseBlock %>\n*/\n\n'
 				},
 				src: 'wp-includes/js/codemirror/codemirror.manifest.js',
-				dest: 'wp-includes/js/codemirror/codemirror.min.js'
+				dest: 'wp-includes/js/codemirror/codemirror.js'
+			}
+		},
+
+		uglify: {
+			options: {
+				ASCIIOnly: true,
+				screwIE8: false,
+
+				// Preserve comments that start with a bang.
+				preserveComments: /^!/
+			},
+			codemirror: {
+				files: {
+					'wp-includes/js/codemirror/codemirror.min.js': [ 'wp-includes/js/codemirror/codemirror.js' ]
+				}
 			}
 		},
 
@@ -175,6 +190,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-rtlcss' );
 	grunt.loadNpmTasks( 'grunt-browserify' );
 	grunt.loadNpmTasks( 'grunt-contrib-concat' );
+	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 
 	grunt.registerTask( 'rtl', [ 'rtlcss:core' ] );
 
@@ -192,6 +208,7 @@ module.exports = function( grunt ) {
 		'copy',
 		'concat',
 		'browserify',
+		'uglify',
 		'shell:verify_matching_versions',
 		'shell:lint',
 		'rtl'
