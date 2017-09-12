@@ -8,6 +8,43 @@ module.exports = function( grunt ) {
 	grunt.initConfig( {
 
 		pkg: grunt.file.readJSON( 'package.json' ),
+		pkgLock: grunt.file.readJSON( 'package-lock.json' ),
+		codemirrorLicenseBlock: grunt.file.read( 'node_modules/codemirror/lib/codemirror.js' ).replace( /\(function(.|\s)+$/, '' ).replace( /(^|\n)\/\/ */g, '$1' ).trim(),
+
+		browserify: {
+			codemirror: {
+				options: {
+					banner: '/*! This file is auto-generated from CodeMirror - <%= pkgLock.dependencies.codemirror.version %>\n\n<%= codemirrorLicenseBlock %>\n*/\n\n'
+				},
+				src: 'wp-includes/js/codemirror/codemirror.manifest.js',
+				dest: 'wp-includes/js/codemirror/codemirror.min.js'
+			}
+		},
+
+		concat: {
+			codemirror: {
+				options: {
+					banner: '/*! This file is auto-generated from CodeMirror - <%= pkgLock.dependencies.codemirror.version %>\n\n<%= codemirrorLicenseBlock %>\n*/\n\n',
+					separator: '\n',
+					process: function( src, filepath ) {
+						return '/* Source: ' + filepath.replace( 'node_modules/', '' ) + '*/\n' + src;
+					}
+				},
+				src: [
+					'node_modules/codemirror/lib/codemirror.css',
+					'node_modules/codemirror/addon/hint/show-hint.css',
+					'node_modules/codemirror/addon/lint/lint.css',
+					'node_modules/codemirror/addon/dialog/dialog.css',
+					'node_modules/codemirror/addon/display/fullscreen.css',
+					'node_modules/codemirror/addon/fold/foldgutter.css',
+					'node_modules/codemirror/addon/merge/merge.css',
+					'node_modules/codemirror/addon/scroll/simplescrollbars.css',
+					'node_modules/codemirror/addon/search/matchesonscrollbar.css',
+					'node_modules/codemirror/addon/tern/tern.css'
+				],
+				dest: 'wp-includes/js/codemirror/codemirror.min.css'
+			}
+		},
 
 		rtlcss: {
 			options: {
@@ -117,6 +154,8 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-shell' );
 	grunt.loadNpmTasks( 'grunt-wp-deploy' );
 	grunt.loadNpmTasks( 'grunt-rtlcss' );
+	grunt.loadNpmTasks( 'grunt-browserify' );
+	grunt.loadNpmTasks( 'grunt-contrib-concat' );
 
 	grunt.registerTask( 'rtl', [ 'rtlcss:core' ] );
 
@@ -131,6 +170,8 @@ module.exports = function( grunt ) {
 
 	grunt.registerTask( 'build', [
 		'readme',
+		'concat',
+		'browserify',
 		'shell:verify_matching_versions',
 		'shell:lint',
 		'rtl',

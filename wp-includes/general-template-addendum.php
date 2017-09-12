@@ -335,37 +335,8 @@ function wp_enqueue_code_editor( $args ) {
 	wp_enqueue_script( 'code-editor' );
 	wp_enqueue_style( 'code-editor' );
 
-	// @todo All of the following could be done in JS instead, similar to the post Editor?
 	wp_enqueue_script( 'codemirror' );
 	wp_enqueue_style( 'codemirror' );
-
-	// Enqueue addons.
-	$option_asset_mappings = array(
-		'showTrailingSpace' => array( 'codemirror-addon-edit-trailingspace' ),
-		'styleActiveLine'   => array( 'codemirror-addon-selection-active-line' ),
-		'autoCloseBrackets' => array( 'codemirror-addon-edit-closebrackets' ),
-		'matchBrackets'     => array( 'codemirror-addon-edit-matchbrackets' ),
-		'autoCloseTags'     => array( 'codemirror-addon-edit-closetag' ),
-		'matchTags'         => array( 'codemirror-addon-edit-matchtags' ),
-		'continueComments'  => array( 'codemirror-addon-comment-continuecomment' ),
-		// @todo Add recognition for all of the addon configs.
-	);
-	foreach ( $option_asset_mappings as $option => $handles ) {
-		if ( ! empty( $settings['codemirror'][ $option ] ) ) {
-			foreach ( $handles as $handle ) {
-				wp_enqueue_script( $handle );
-			}
-		}
-	}
-
-	wp_enqueue_script( 'codemirror-addon-comment' );
-	wp_enqueue_script( 'codemirror-addon-dialog' );
-	wp_enqueue_style( 'codemirror-addon-dialog' );
-	wp_enqueue_script( 'codemirror-addon-search-searchcursor' );
-	wp_enqueue_script( 'codemirror-addon-search' );
-	wp_enqueue_script( 'codemirror-addon-scroll-annotatescrollbar' );
-	wp_enqueue_script( 'codemirror-addon-search-matchesonscrollbar' );
-	wp_enqueue_script( 'codemirror-addon-search-jump-to-line' );
 
 	if ( isset( $settings['codemirror']['mode'] ) ) {
 		$mode = $settings['codemirror']['mode'];
@@ -375,120 +346,37 @@ function wp_enqueue_code_editor( $args ) {
 			);
 		}
 
-		switch ( $mode['name'] ) {
-			case 'css':
-			case 'text/css':
-			case 'text/x-scss':
-			case 'text/x-less':
-				wp_enqueue_script( 'codemirror-mode-css' );
-				wp_enqueue_script( 'codemirror-addon-hint-css' );
-				wp_enqueue_style( 'codemirror-addon-show-hint' );
-
-				if ( ! empty( $settings['codemirror']['lint'] ) ) {
-					wp_enqueue_script( 'codemirror-addon-lint-css' );
-				}
-				break;
-			case 'diff':
-			case 'text/x-diff':
-				wp_enqueue_script( 'codemirror-mode-diff' );
-				break;
-			case 'gfm':
-			case 'text/x-gfm':
-				wp_enqueue_script( 'codemirror-mode-gfm' );
-				break;
-			case 'htmlmixed':
-			case 'text/html':
-			case 'php':
-			case 'application/x-httpd-php':
-			case 'text/x-php':
-				if ( false !== strpos( $mode['name'], 'php' ) ) {
-					wp_enqueue_script( 'codemirror-mode-php' );
-				}
-
-				wp_enqueue_script( 'codemirror-mode-htmlmixed' );
-				wp_enqueue_script( 'codemirror-addon-hint-html' );
-				wp_enqueue_script( 'codemirror-addon-hint-javascript' );
-				wp_enqueue_script( 'codemirror-addon-hint-css' );
-				wp_enqueue_style( 'codemirror-addon-show-hint' );
-
-				if ( ! empty( $settings['codemirror']['lint'] ) ) {
+		if ( ! empty( $settings['codemirror']['lint'] ) ) {
+			switch ( $mode['name'] ) {
+				case 'css':
+				case 'text/css':
+				case 'text/x-scss':
+				case 'text/x-less':
+					wp_enqueue_script( 'csslint' );
+					break;
+				case 'htmlmixed':
+				case 'text/html':
+				case 'php':
+				case 'application/x-httpd-php':
+				case 'text/x-php':
+					wp_enqueue_script( 'htmlhint' );
+					wp_enqueue_script( 'csslint' );
+					wp_enqueue_script( 'jshint' );
 					if ( ! current_user_can( 'unfiltered_html' ) ) {
 						wp_enqueue_script( 'htmlhint-kses' );
 					}
-					wp_enqueue_script( 'codemirror-addon-lint-html' );
-				}
-				break;
-			case 'http':
-			case 'message/http':
-				wp_enqueue_script( 'codemirror-mode-http' );
-				break;
-			case 'javascript':
-			case 'application/ecmascript':
-			case 'application/json':
-			case 'application/javascript':
-			case 'application/ld+json':
-			case 'text/typescript':
-			case 'application/typescript':
-				wp_enqueue_script( 'codemirror-mode-javascript' );
-				wp_enqueue_script( 'codemirror-addon-hint-javascript' );
-				wp_enqueue_style( 'codemirror-addon-show-hint' );
-
-				if ( ! empty( $settings['codemirror']['lint'] ) ) {
-					if ( ! empty( $mode['json'] ) || ! empty( $mode['jsonld'] ) ) {
-							wp_enqueue_script( 'codemirror-addon-lint-json' );
-					} else {
-						wp_enqueue_script( 'codemirror-addon-lint-javascript' );
-					}
-				}
-				break;
-			case 'jsx':
-			case 'text/jsx':
-			case 'text/typescript-jsx':
-				wp_enqueue_script( 'codemirror-mode-jsx' );
-				break;
-			case 'markdown':
-			case 'text/x-markdown':
-				wp_enqueue_script( 'codemirror-mode-markdown' );
-				break;
-			case 'nginx':
-			case 'text/nginx':
-				wp_enqueue_script( 'codemirror-mode-nginx' );
-				break;
-			case 'sass':
-			case 'text/x-sass':
-				wp_enqueue_script( 'codemirror-mode-sass' );
-				break;
-			case 'sh':
-			case 'text/x-sh':
-			case 'application/x-sh':
-				wp_enqueue_script( 'codemirror-mode-shell' );
-				break;
-			case 'sql':
-			case 'text/x-sql':
-			case 'text/x-mysql':
-			case 'text/x-mariadb':
-			case 'text/x-cassandra':
-			case 'text/x-plsql':
-			case 'text/x-mssql':
-			case 'text/x-hive':
-			case 'text/x-pgsql':
-			case 'text/x-gql':
-			case 'text/x-gpsql':
-				wp_enqueue_script( 'codemirror-mode-sql' );
-				break;
-			case 'xml':
-			case 'application/xml':
-			case 'application/svg+xml':
-				wp_enqueue_script( 'codemirror-mode-xml' );
-				break;
-			case 'yaml':
-			case 'codemirror-mode-yaml':
-				wp_enqueue_script( 'codemirror-mode-yaml' );
-				break;
-		}
-
-		if ( ! empty( $settings['codemirror']['lint'] ) ) {
-			wp_enqueue_style( 'codemirror-addon-lint' );
+					break;
+				case 'javascript':
+				case 'application/ecmascript':
+				case 'application/json':
+				case 'application/javascript':
+				case 'application/ld+json':
+				case 'text/typescript':
+				case 'application/typescript':
+					wp_enqueue_script( 'jshint' );
+					wp_enqueue_script( 'jsonlint' );
+					break;
+			}
 		}
 	}
 
