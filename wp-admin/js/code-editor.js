@@ -61,17 +61,17 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		}
 
 		// Configure JSHint.
-		if ( 'javascript' === lintOptions.mode && settings.jshint ) {
+		if ( 'javascript' === settings.codemirror.mode && settings.jshint ) {
 			$.extend( lintOptions.options, settings.jshint );
 		}
 
 		// Configure CSSLint.
-		if ( 'css' === lintOptions.mode && settings.csslint ) {
+		if ( 'css' === settings.codemirror.mode && settings.csslint ) {
 			$.extend( lintOptions.options, settings.csslint );
 		}
 
 		// Configure HTMLHint.
-		if ( 'htmlmixed' === lintOptions.mode && settings.htmlhint ) {
+		if ( 'htmlmixed' === settings.codemirror.mode && settings.htmlhint ) {
 			lintOptions.options.rules = $.extend( {}, settings.htmlhint );
 
 			if ( settings.jshint ) {

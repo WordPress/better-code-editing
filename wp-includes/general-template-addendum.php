@@ -218,7 +218,7 @@ function wp_enqueue_code_editor( $args ) {
 		) );
 
 		if ( ! current_user_can( 'unfiltered_html' ) ) {
-			$settings['htmlhint']['rules']['kses'] = wp_kses_allowed_html( 'post' );
+			$settings['htmlhint']['kses'] = wp_kses_allowed_html( 'post' );
 		}
 	} elseif ( 'text/x-gfm' === $type ) {
 		$settings['codemirror'] = array_merge( $settings['codemirror'], array(
