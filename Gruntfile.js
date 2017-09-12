@@ -24,15 +24,16 @@ module.exports = function( grunt ) {
 		uglify: {
 			options: {
 				ASCIIOnly: true,
-				screwIE8: false,
-
-				// Preserve comments that start with a bang.
-				preserveComments: /^!/
+				screwIE8: false
 			},
 			codemirror: {
-				files: {
-					'wp-includes/js/codemirror/codemirror.min.js': [ 'wp-includes/js/codemirror/codemirror.js' ]
-				}
+				options: {
+
+					// Preserve comments that start with a bang.
+					preserveComments: /^!/
+				},
+				src: 'wp-includes/js/codemirror/codemirror.js',
+				dest: 'wp-includes/js/codemirror/codemirror.min.js'
 			}
 		},
 
