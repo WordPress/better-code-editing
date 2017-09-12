@@ -58,7 +58,20 @@ module.exports = function( grunt ) {
 					'node_modules/codemirror/addon/search/matchesonscrollbar.css',
 					'node_modules/codemirror/addon/tern/tern.css'
 				],
-				dest: 'wp-includes/js/codemirror/codemirror.min.css'
+				dest: 'wp-includes/js/codemirror/codemirror.css'
+			}
+		},
+
+		cssmin: {
+			options: {
+				compatibility: 'ie7'
+			},
+			codemirror: {
+				expand: true,
+				ext: '.min.css',
+				src: [
+					'wp-includes/js/codemirror/codemirror.css'
+				]
 			}
 		},
 
@@ -192,6 +205,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-browserify' );
 	grunt.loadNpmTasks( 'grunt-contrib-concat' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
+	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
 
 	grunt.registerTask( 'rtl', [ 'rtlcss:core' ] );
 
@@ -207,11 +221,14 @@ module.exports = function( grunt ) {
 	grunt.registerTask( 'build', [
 		'readme',
 		'copy',
-		'concat',
-		'browserify',
-		'uglify',
 		'shell:verify_matching_versions',
 		'shell:lint',
+
+		'browserify',
+		'uglify',
+
+		'concat',
+		'cssmin',
 		'rtl'
 	] );
 

@@ -3,6 +3,7 @@
 wp-includes/js/codemirror/*.min.css
 wp-includes/js/codemirror/*.min.js
 wp-includes/js/codemirror/codemirror.js
+wp-includes/js/codemirror/codemirror.css
 wp-includes/js/csslint.js
 wp-includes/js/htmlhint.js
 wp-includes/js/jsonlint.js
