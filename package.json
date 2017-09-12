@@ -4,8 +4,7 @@
   "description": "Howdy!  This is currently a Work In Progress playground for experimenting with bringing syntax highlighting to WordPress Core.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "composer install; bash bin/install-assets.sh",
-    "build-release-zip": "bash bin/build-release-zip.sh"
+    "postinstall": "composer install; grunt build"
   },
   "repository": {
     "type": "git",

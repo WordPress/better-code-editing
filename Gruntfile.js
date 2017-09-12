@@ -46,6 +46,25 @@ module.exports = function( grunt ) {
 			}
 		},
 
+		copy: {
+			csslint: {
+				src: 'node_modules/csslint/dist/csslint.js',
+				dest: 'wp-includes/js/csslint.js'
+			},
+			htmlhint: {
+				src: 'node_modules/htmlhint/lib/htmlhint.js',
+				dest: 'wp-includes/js/htmlhint.js'
+			},
+			jshint: {
+				src: 'node_modules/jshint/dist/jshint.js',
+				dest: 'wp-includes/js/jshint.js'
+			},
+			jsonlint: {
+				src: 'node_modules/jsonlint/lib/jsonlint.js',
+				dest: 'wp-includes/js/jsonlint.js'
+			}
+		},
+
 		rtlcss: {
 			options: {
 				opts: {
@@ -128,7 +147,7 @@ module.exports = function( grunt ) {
 				command: 'CHECK_SCOPE=all bash dev-lib/pre-commit'
 			},
 			build_release_zip: {
-				command: 'npm run build-release-zip'
+				command: 'if [ -e build ]; then rm -r build; fi; mkdir build; rsync -avz ./ build/ --exclude-from=.svnignore; if [ -e better-code-editing.zip ]; then rm better-code-editing.zip; fi; cd build; zip -r ../better-code-editing.zip .; cd ..; echo; echo "Please see: $(pwd)/better-code-editing.zip"'
 			},
 			verify_matching_versions: {
 				command: 'php bin/verify-version-consistency.php'
@@ -170,16 +189,22 @@ module.exports = function( grunt ) {
 
 	grunt.registerTask( 'build', [
 		'readme',
+		'copy',
 		'concat',
 		'browserify',
 		'shell:verify_matching_versions',
 		'shell:lint',
-		'rtl',
+		'rtl'
+	] );
+
+	grunt.registerTask( 'build-release-zip', [
+		'build',
 		'shell:build_release_zip'
 	] );
 
 	grunt.registerTask( 'deploy', [
 		'build',
+		'shell:build_release_zip',
 		'wp_deploy',
 		'clean'
 	] );
