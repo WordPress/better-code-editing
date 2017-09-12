@@ -14,15 +14,15 @@ add_action( 'wp_default_styles', '_better_code_editing_register_styles' );
  * @param WP_Scripts $scripts Scripts.
  */
 function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
-	$codemirror_version = '5.29.1-alpha-453cb1a-' . BETTER_CODE_EDITING_PLUGIN_VERSION;
+	$codemirror_version = '5.29.1-alpha-ee20357-' . BETTER_CODE_EDITING_PLUGIN_VERSION;
 
 	$scripts->add( 'codemirror', plugins_url( 'wp-includes/js/codemirror/codemirror.min.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), $codemirror_version );
 
 	// The linting engines for the lint addons...
-	$scripts->add( 'csslint',  plugins_url( 'wp-includes/js/csslint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '1.0.5' );
-	$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '0.9.14-xwp' );
-	$scripts->add( 'jshint',   plugins_url( 'wp-includes/js/jshint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '2.9.5' );
+	$scripts->add( 'csslint', plugins_url( 'wp-includes/js/csslint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '1.0.5' );
+	$scripts->add( 'jshint', plugins_url( 'wp-includes/js/jshint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '2.9.5' );
 	$scripts->add( 'jsonlint', plugins_url( 'wp-includes/js/jsonlint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '1.6.2' );
+	$scripts->add( 'htmlhint', plugins_url( 'wp-includes/js/htmlhint.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array(), '0.9.14-xwp' );
 	$scripts->add( 'htmlhint-kses', plugins_url( 'wp-includes/js/htmlhint-kses.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'htmlhint' ), BETTER_CODE_EDITING_PLUGIN_VERSION );
 
 	$scripts->add( 'code-editor', plugins_url( 'wp-admin/js/code-editor.js', BETTER_CODE_EDITING_PLUGIN_FILE ), array( 'jquery', 'codemirror' ), BETTER_CODE_EDITING_PLUGIN_VERSION );
@@ -37,7 +37,7 @@ function _better_code_editing_default_scripts( WP_Scripts $scripts ) {
  * @param WP_Styles $styles Styles.
  */
 function _better_code_editing_register_styles( WP_Styles $styles ) {
-	$codemirror_version = '5.29.1-alpha-453cb1a-' . BETTER_CODE_EDITING_PLUGIN_VERSION;
+	$codemirror_version = '5.29.1-alpha-ee20357-' . BETTER_CODE_EDITING_PLUGIN_VERSION;
 
 	/*
 	 * Override common.css with patched version that has proper styling for CodeMirror and textarea.

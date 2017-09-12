@@ -15,8 +15,20 @@
   "bugs": {
     "url": "https://github.com/WordPress/better-code-editing/issues"
   },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "htmlhint": "global:HTMLHint",
+    "jshint": "global:JSHINT",
+    "csslint": "global:CSSLint",
+    "jsonlint": "global:JSONLint"
+  },
   "homepage": "https://github.com/WordPress/better-code-editing#readme",
   "devDependencies": {
+    "browserify-shim": "^3.8.14",
     "eslint": "^4.5.0",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.2.0",
@@ -32,7 +44,7 @@
     "jscs": "^3.0.7"
   },
   "dependencies": {
-    "codemirror": "git://github.com/xwp/CodeMirror.git#remove-required-htmlhint",
+    "codemirror": "github:codemirror/CodeMirror",
     "csslint": "1.0.5",
     "htmlhint": "github:xwp/HTMLHint",
     "jshint": "^2.9.5",
