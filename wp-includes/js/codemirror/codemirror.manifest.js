@@ -79,4 +79,7 @@ require( '../../../node_modules/codemirror/mode/sql/sql.js' );
 require( '../../../node_modules/codemirror/mode/xml/xml.js' );
 require( '../../../node_modules/codemirror/mode/yaml/yaml.js' );
 
-window.CodeMirror = CodeMirror;
+if ( ! window.wp ) {
+	window.wp = {};
+}
+window.wp.CodeMirror = CodeMirror;

@@ -1,4 +1,3 @@
-/* global CodeMirror */
 if ( 'undefined' === typeof window.wp ) {
 	window.wp = {};
 }
@@ -245,7 +244,7 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		instanceSettings = $.extend( {}, wp.codeEditor.defaultSettings, settings );
 		instanceSettings.codemirror = $.extend( {}, instanceSettings.codemirror );
 
-		codemirror = CodeMirror.fromTextArea( $textarea[0], instanceSettings.codemirror );
+		codemirror = wp.CodeMirror.fromTextArea( $textarea[0], instanceSettings.codemirror );
 
 		configureLinting( codemirror, instanceSettings );
 
@@ -270,7 +269,7 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 					return;
 				}
 
-				innerMode = CodeMirror.innerMode( codemirror.getMode(), token.state ).mode.name;
+				innerMode = wp.CodeMirror.innerMode( codemirror.getMode(), token.state ).mode.name;
 				lineBeforeCursor = codemirror.doc.getLine( codemirror.doc.getCursor().line ).substr( 0, codemirror.doc.getCursor().ch );
 				if ( 'html' === innerMode || 'xml' === innerMode ) {
 					shouldAutocomplete =
