@@ -27,13 +27,13 @@
     "grunt-rtlcss": "^2.0.1",
     "grunt-shell": "^2.1.0",
     "grunt-wp-deploy": "^1.2.1",
-    "jscs": "^3.0.7",
-    "jshint": "^2.9.5"
+    "jscs": "^3.0.7"
   },
   "dependencies": {
-    "codemirror": "github:codemirror/CodeMirror",
+    "codemirror": "git://github.com/xwp/CodeMirror.git#remove-required-htmlhint",
     "csslint": "1.0.5",
     "htmlhint": "github:xwp/HTMLHint",
+    "jshint": "^2.9.5",
     "jsonlint": "1.6.2"
   }
 }
