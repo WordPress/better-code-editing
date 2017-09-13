@@ -45,7 +45,7 @@ if ( function_exists( 'wp_enqueue_code_editor' ) ) {
 }
 
 // Show notice if repo was cloned from source without running npm install.
-if ( ! file_exists( dirname( __FILE__ ) . '/wp-includes/js/codemirror/lib/codemirror.js' ) ) {
+if ( ! file_exists( dirname( __FILE__ ) . '/wp-includes/js/codemirror/codemirror.min.js' ) ) {
 	add_action( 'admin_notices', '_better_code_editing_plugin_npm_install_required' );
 	return;
 }

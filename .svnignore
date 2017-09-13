@@ -30,3 +30,5 @@ vendor
 composer.json
 composer.lock
 core-commit-message.txt
+wp-includes/js/codemirror/codemirror.js
+wp-includes/js/codemirror/codemirror.css

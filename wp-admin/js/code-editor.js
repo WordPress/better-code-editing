@@ -1,4 +1,3 @@
-/* global CodeMirror */
 if ( 'undefined' === typeof window.wp ) {
 	window.wp = {};
 }
@@ -62,17 +61,17 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		}
 
 		// Configure JSHint.
-		if ( 'javascript' === lintOptions.mode && settings.jshint ) {
+		if ( 'javascript' === settings.codemirror.mode && settings.jshint ) {
 			$.extend( lintOptions.options, settings.jshint );
 		}
 
 		// Configure CSSLint.
-		if ( 'css' === lintOptions.mode && settings.csslint ) {
+		if ( 'css' === settings.codemirror.mode && settings.csslint ) {
 			$.extend( lintOptions.options, settings.csslint );
 		}
 
 		// Configure HTMLHint.
-		if ( 'htmlmixed' === lintOptions.mode && settings.htmlhint ) {
+		if ( 'htmlmixed' === settings.codemirror.mode && settings.htmlhint ) {
 			lintOptions.options.rules = $.extend( {}, settings.htmlhint );
 
 			if ( settings.jshint ) {
@@ -245,7 +244,7 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 		instanceSettings = $.extend( {}, wp.codeEditor.defaultSettings, settings );
 		instanceSettings.codemirror = $.extend( {}, instanceSettings.codemirror );
 
-		codemirror = CodeMirror.fromTextArea( $textarea[0], instanceSettings.codemirror );
+		codemirror = wp.CodeMirror.fromTextArea( $textarea[0], instanceSettings.codemirror );
 
 		configureLinting( codemirror, instanceSettings );
 
@@ -270,7 +269,7 @@ if ( 'undefined' === typeof window.wp.codeEditor ) {
 					return;
 				}
 
-				innerMode = CodeMirror.innerMode( codemirror.getMode(), token.state ).mode.name;
+				innerMode = wp.CodeMirror.innerMode( codemirror.getMode(), token.state ).mode.name;
 				lineBeforeCursor = codemirror.doc.getLine( codemirror.doc.getCursor().line ).substr( 0, codemirror.doc.getCursor().ch );
 				if ( 'html' === innerMode || 'xml' === innerMode ) {
 					shouldAutocomplete =
