@@ -3,14 +3,14 @@
  * Plugin Name: Better Code Editing (formerly CodeMirror WP)
  * Plugin URI: https://wordpress.org/plugins/better-code-editing/
  * Description: Code highlighting and linting, powered by CodeMirror.
- * Version: 0.6.0
+ * Version: 0.7.0
  * Author: The WordPress Team
  * Text Domain: better-code-editing
  *
  * @package WordPress
  */
 
-define( 'BETTER_CODE_EDITING_PLUGIN_VERSION', '0.6.0' );
+define( 'BETTER_CODE_EDITING_PLUGIN_VERSION', '0.7.0' );
 define( 'BETTER_CODE_EDITING_PLUGIN_FILE', __FILE__ );
 
 /**
