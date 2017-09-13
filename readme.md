@@ -7,15 +7,13 @@ Adding CodeMirror functionality to the Plugin and Theme file editors, as well as
 **Tags:** [codemirror](https://wordpress.org/plugins/tags/codemirror), [syntax-highlighter](https://wordpress.org/plugins/tags/syntax-highlighter), [linting](https://wordpress.org/plugins/tags/linting)  
 **Requires at least:** 4.7  
 **Tested up to:** 4.9-alpha  
-**Stable tag:** 0.6.0  
+**Stable tag:** 0.7.0  
 
 [![Build Status](https://travis-ci.org/WordPress/better-code-editing.svg?branch=master)](https://travis-ci.org/WordPress/better-code-editing) [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com) 
 
 ## Description ##
 
 This project is adding CodeMirror functionality to the Plugin and Theme file editors, as well as the Customizer Custom CSS box and the Custom HTML widget.
-
-This is currently a Work In Progress playground for experimenting with bringing syntax highlighting to WordPress Core.
 
 We're working around discussion on a Core ticket, [#12423](https://core.trac.wordpress.org/ticket/12423)
 
@@ -24,6 +22,10 @@ Any questions, reach out to #core-customize on WordPress.org Slack or better ope
 **Development of this plugin is done [on GitHub](https://github.com/WordPress/better-code-editing). Pull requests welcome. Please see [issues](https://github.com/WordPress/better-code-editing/issues) reported there.**
 
 ## Changelog ##
+
+### 0.7.0 - 2017-09-12 ###
+* Create minified bundles for CodeMirror assets. See [#92](https://github.com/WordPress/better-code-editing/pull/92). Fixes [#71](https://github.com/WordPress/better-code-editing/issues/71).
+* Fix tabbing backward when Additional CSS section description is expanded, to focus on Close link instead of Help toggle. See [#91](https://github.com/WordPress/better-code-editing/pull/91). Fixes [#90](https://github.com/WordPress/better-code-editing/issues/90).
 
 ### 0.6.0 - 2017-09-08 ###
 * Improve frequency for when linting error notifications are shown and remove some overly-strict rules. See [#86](https://github.com/WordPress/better-code-editing/pull/86). Fixes [#13](https://github.com/WordPress/better-code-editing/pull/13).

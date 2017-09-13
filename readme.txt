@@ -1,7 +1,7 @@
 === Better Code Editing ===
 Contributors: georgestephanis, westonruter, obenland, melchoyce, wordpressdotorg
 Tags: codemirror, syntax-highlighter, linting
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 Requires at least: 4.7
 Tested up to: 4.9-alpha
 
@@ -11,8 +11,6 @@ Adding CodeMirror functionality to the Plugin and Theme file editors, as well as
 
 This project is adding CodeMirror functionality to the Plugin and Theme file editors, as well as the Customizer Custom CSS box and the Custom HTML widget.
 
-This is currently a Work In Progress playground for experimenting with bringing syntax highlighting to WordPress Core.
-
 We're working around discussion on a Core ticket, [#12423](https://core.trac.wordpress.org/ticket/12423)
 
 Any questions, reach out to #core-customize on WordPress.org Slack or better open an issue on GitHub! See [contributing](https://github.com/WordPress/better-code-editing/blob/master/contributing.md).
@@ -20,6 +18,11 @@ Any questions, reach out to #core-customize on WordPress.org Slack or better ope
 **Development of this plugin is done [on GitHub](https://github.com/WordPress/better-code-editing). Pull requests welcome. Please see [issues](https://github.com/WordPress/better-code-editing/issues) reported there.**
 
 == Changelog ==
+
+= 0.7.0 - 2017-09-12 =
+
+* Create minified bundles for CodeMirror assets. See [#92](https://github.com/WordPress/better-code-editing/pull/92). Fixes [#71](https://github.com/WordPress/better-code-editing/issues/71).
+* Fix tabbing backward when Additional CSS section description is expanded, to focus on Close link instead of Help toggle. See [#91](https://github.com/WordPress/better-code-editing/pull/91). Fixes [#90](https://github.com/WordPress/better-code-editing/issues/90).
 
 = 0.6.0 - 2017-09-08 =
 
