@@ -13,6 +13,10 @@ Adding CodeMirror functionality to the Plugin and Theme file editors, as well as
 
 ## Description ##
 
+*Notice*: This feature plugin has been merged into core via [r41376](https://core.trac.wordpress.org/changeset/41376). Please test on WordPress 4.9-alpha in a non-production environment. Read more about [beta testing](https://make.wordpress.org/core/handbook/testing/beta/). This plugin will do nothing on a nightly release.
+
+***
+
 This project is adding CodeMirror functionality to the Plugin and Theme file editors, as well as the Customizer Custom CSS box and the Custom HTML widget.
 
 We're working around discussion on a Core ticket, [#12423](https://core.trac.wordpress.org/ticket/12423)
